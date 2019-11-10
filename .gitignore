@@ -32,6 +32,7 @@
 *.app
 
 #Folders and files
+nb-configuration.xml
 nbactions.xml
 target/
 nbproject/
