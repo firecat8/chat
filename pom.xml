@@ -10,8 +10,9 @@
         <module>domain</module>
         <module>business-logic</module>
         <module>persistence</module>
-    <module>client-jfx</module>
+        <module>client-jfx</module>
         <module>server</module>
+        <module>public-api</module>
     </modules>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
