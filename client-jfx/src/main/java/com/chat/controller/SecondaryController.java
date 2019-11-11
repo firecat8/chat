@@ -1,5 +1,6 @@
-package com.chat.jfx;
+package com.chat.controller;
 
+import com.chat.app.App;
 import java.io.IOException;
 import javafx.fxml.FXML;
 

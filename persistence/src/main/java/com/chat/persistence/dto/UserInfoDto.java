@@ -1,69 +1,118 @@
 package com.chat.persistence.dto;
 
+import com.chat.domain.User;
 import com.chat.domain.UserInfo;
+import com.chat.domain.UserStatus;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
 
 /**
  *
  * @author gdimitrova
  */
-public class UserInfoDto extends AbstractDto implements UserInfo{
+@Entity(name = "users_info")
+@Table(name = "users_info")
+public class UserInfoDto extends AbstractDto implements UserInfo {
 
-   private String firstname;
+    public final static String FIRST_NAME_COLUMN = "first_name";
 
-   private String lastname;
+    public final static String LAST_NAME_COLUMN = "last_name";
 
-   private String email;
+    public final static String USER_ID = "user_id";
 
-   private String phone;
+    @Column(name = FIRST_NAME_COLUMN)
+    private String firstname;
 
-   private String city;
+    @Column(name = LAST_NAME_COLUMN)
+    private String lastname;
 
-   @Override
+    @Column
+    private String email;
+
+    @Column
+    private String phone;
+
+    @Column
+    private String city;
+
+    @OneToOne(cascade = CascadeType.ALL, targetEntity = UserDto.class)
+    @JoinColumn(name = USER_ID)
+    private User user;
+
+    public UserInfoDto() {
+      //  hibernate
+    }
+
+    public UserInfoDto(String username, String password, String firstname, String lastname, String email, String phone, String city) {
+        this.user = new UserDto(username,password,UserStatus.INACTIVE);
+        this.firstname = firstname;
+        this.lastname = lastname;
+        this.email = email;
+        this.phone = phone;
+        this.city = city;
+    }
+    
+
+    @Override
+    public User getUser() {
+        return user;
+    }
+
+    @Override
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    @Override
     public String getFirstname() {
         return firstname;
     }
 
-   @Override
+    @Override
     public void setFirstname(String firstname) {
         this.firstname = firstname;
     }
 
-   @Override
+    @Override
     public String getLastname() {
         return lastname;
     }
 
-   @Override
+    @Override
     public void setLastname(String lastname) {
         this.lastname = lastname;
     }
 
-   @Override
+    @Override
     public String getEmail() {
         return email;
     }
 
-   @Override
+    @Override
     public void setEmail(String email) {
         this.email = email;
     }
 
-   @Override
+    @Override
     public String getPhone() {
         return phone;
     }
 
-   @Override
+    @Override
     public void setPhone(String phone) {
         this.phone = phone;
     }
 
-   @Override
+    @Override
     public String getCity() {
         return city;
     }
 
-   @Override
+    @Override
     public void setCity(String city) {
         this.city = city;
     }

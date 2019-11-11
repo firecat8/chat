@@ -12,12 +12,17 @@
         <module>persistence</module>
         <module>client-jfx</module>
         <module>server</module>
-        <module>public-api</module>
+        <module>service-api</module>
+        <module>client</module>
+        <module>dao-api</module>
     </modules>
+    
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
+        <maven.compiler.release>11</maven.compiler.release>
+        <javafx.version>13</javafx.version>
         <junit.version>4.12</junit.version>
     </properties>
     

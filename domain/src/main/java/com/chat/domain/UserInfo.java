@@ -6,6 +6,10 @@ package com.chat.domain;
  */
 public interface UserInfo {
 
+    public User getUser();
+
+    public void setUser(User user);
+
     public String getFirstname();
 
     public void setFirstname(String firstname);

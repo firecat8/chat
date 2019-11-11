@@ -2,6 +2,7 @@ package com.chat.persistence.dao;
 
 import com.chat.domain.Entity;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.persistence.EntityManager;
@@ -42,7 +43,7 @@ public abstract class AbstractDao<E extends Entity> {
     protected E getResult(String property, Object value) {
         List<E> results = getResults(property, value);
         if (results.isEmpty()) {
-      //      throw new NotFoundResultsException();
+            //      throw new NotFoundResultsException();
         }
         return results.get(0);
     }
@@ -91,7 +92,7 @@ public abstract class AbstractDao<E extends Entity> {
         return em.createQuery(query).getResultList();
     }
 
-    protected void update(E oldOne, Map<String, Object> properties) {
+    protected int update(E oldOne, Map<String, Object> properties) {
         CriteriaBuilder cb = getCriteriaBuilder();
         CriteriaUpdate<E> updateCriteria = cb.createCriteriaUpdate(dtoClassName);
         Root<E> root = updateCriteria.from(dtoClassName);
@@ -99,7 +100,7 @@ public abstract class AbstractDao<E extends Entity> {
             updateCriteria.set(entry.getKey(), entry.getValue());
         });
         updateCriteria.where(cb.equal(root.get("id"), oldOne.getId()));
-        em.createQuery(updateCriteria).executeUpdate();
+        return em.createQuery(updateCriteria).executeUpdate();
     }
 
     private Expression<Boolean> makeExpr(CriteriaBuilder cb, Expression<Double> prop, Double val, ComparisonSign sign) {
@@ -118,4 +119,5 @@ public abstract class AbstractDao<E extends Entity> {
         return t == null ? dtoClass.getSimpleName() : t.name();
     }
 
+    protected abstract Map<String, Object> loadProperties(E newOne);
 }
