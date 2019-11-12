@@ -26,6 +26,13 @@
         <junit.version>4.12</junit.version>
     </properties>
     
+    <repositories>
+        <repository>
+            <id>gluonhq-repo</id>
+            <name>Gluonhq repo</name>
+            <url>http://nexus.gluonhq.com/nexus/content/repositories/releases/</url>
+        </repository>
+    </repositories>
     <dependencyManagement>
         <dependencies>
             <dependency>
