@@ -4,9 +4,7 @@ package com.chat.bl.service.dao;
  *
  * @author gdimitrova
  */
-public interface ServiceProviderRegistry {
+public interface ServiceProviderRegistry  extends AutoCloseable{
 
-    public ServiceProvider getProvider(Class endPoint);
-
-  //  public UserServiceProvider getUserServiceProvider();
+    public UserServiceProvider getUserServiceProvider();
 }

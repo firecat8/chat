@@ -4,6 +4,7 @@ package com.chat.bl.service.messaging;
  *
  * @author gdimitrova
  */
-public interface Message {
-    public MessageType getMessageType();
+public enum MessageType {
+    REQUEST,
+    RESPONSE
 }

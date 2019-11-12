@@ -1,12 +1,7 @@
-package com.chat.server;
+package com.chat.server.app;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.net.ServerSocket;
-import java.net.Socket;
+import com.chat.server.Server;
 import java.util.Scanner;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -23,6 +18,14 @@ public class ServerApplication {
             System.out.println("Type stop to stop the server..");
             do {
                 command = scanner.nextLine();
+                switch (command) {
+                    case "restart":
+                        server.restart();
+                        break;
+                    case "stop":
+                        server.stop();
+                        break;
+                }
             } while (!command.equals("stop"));
         } catch (Exception e) {
             throw new RuntimeException(e);

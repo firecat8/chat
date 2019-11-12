@@ -8,4 +8,16 @@
     </parent>
     <artifactId>server</artifactId>
     <packaging>jar</packaging>
+    <dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>service-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>business-logic</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
 </project>

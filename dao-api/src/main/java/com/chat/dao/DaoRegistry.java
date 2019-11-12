@@ -4,7 +4,7 @@ package com.chat.dao;
  *
  * @author gdimitrova
  */
-public interface DaoRegistry {
+public interface DaoRegistry{
 
     public UserDao getUserDao();
 

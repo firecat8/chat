@@ -8,12 +8,11 @@ import javax.persistence.EntityTransaction;
  *
  * @author gdimitrova
  */
-public abstract class AbstractServiceProvider implements ServiceProvider{
+public abstract class AbstractServiceProvider implements ServiceProvider {
 
+    private EntityManager em;
 
-    private EntityManager em ;
-
-    protected final DaoRegistry registry ;
+    protected final DaoRegistry registry;
 
     public AbstractServiceProvider(EntityManager em, DaoRegistry registry) {
         this.em = em;

@@ -15,7 +15,7 @@ public class UserEndpoint implements EndPoint, UserService {
     private UserServiceProvider provider;
 
     public UserEndpoint(ServiceProviderRegistry registry) {
-        provider = (UserServiceProvider) registry.getProvider(this.getClass());
+        provider = registry.getUserServiceProvider();
     }
 
     @Override
