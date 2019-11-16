@@ -1,28 +1,35 @@
 package com.chat.messaging;
 
-import com.chat.bl.service.messaging.response.ResponseVo;
-import com.chat.bl.service.messaging.user.RegistrationVo;
+import com.chat.bl.service.messaging.response.ResponseImpl;
+import com.chat.bl.service.messaging.user.RegistrationRequest;
+import com.chat.bl.service.messaging.user.UserRequest;
 import com.chat.bl.service.messaging.user.UserService;
 
 /**
  *
  * @author gdimitrova
  */
-public class UserServiceImpl implements UserService{
+public class UserServiceImpl implements UserService,ServicePoint {
+
+    private Client client;
+
+    public UserServiceImpl(Client client) {
+        this.client = client;
+    }
 
     @Override
-    public ResponseVo login(String username, String password) {
+    public ResponseImpl login(UserRequest req) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public ResponseVo logout(String username, String password) {
+    public ResponseImpl logout(UserRequest req) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public ResponseVo register(RegistrationVo request) {
+    public ResponseImpl register(RegistrationRequest request) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-    
+
 }

@@ -1,6 +1,6 @@
 package com.chat.bl.service.messaging.user;
 
-import com.chat.bl.service.messaging.response.ResponseVo;
+import com.chat.bl.service.messaging.response.ResponseImpl;
 
 /**
  *
@@ -8,9 +8,9 @@ import com.chat.bl.service.messaging.response.ResponseVo;
  */
 public interface UserService {
 
-    public ResponseVo login(String username, String password);
+    public ResponseImpl login(UserRequest req);
 
-    public ResponseVo logout(String username, String password);
+    public ResponseImpl logout(UserRequest req);
 
-    public ResponseVo register(RegistrationVo request);
+    public ResponseImpl register(RegistrationRequest request);
 }

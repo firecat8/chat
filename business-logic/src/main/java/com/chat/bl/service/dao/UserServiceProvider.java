@@ -1,6 +1,6 @@
 package com.chat.bl.service.dao;
 
-import com.chat.bl.service.messaging.user.RegistrationVo;
+import com.chat.bl.service.messaging.user.RegistrationRequest;
 import com.chat.dao.DaoRegistry;
 import com.chat.domain.User;
 import com.chat.domain.UserInfo;

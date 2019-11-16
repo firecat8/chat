@@ -18,14 +18,6 @@ public class ServerApplication {
             System.out.println("Type stop to stop the server..");
             do {
                 command = scanner.nextLine();
-                switch (command) {
-                    case "restart":
-                        server.restart();
-                        break;
-                    case "stop":
-                        server.stop();
-                        break;
-                }
             } while (!command.equals("stop"));
         } catch (Exception e) {
             throw new RuntimeException(e);

@@ -2,7 +2,7 @@ package com.chat.mapper;
 
 import com.chat.bl.service.messaging.Request;
 import com.chat.bl.service.messaging.Response;
-import com.chat.bl.service.messaging.user.RegistrationVo;
+import com.chat.bl.service.messaging.user.RegistrationRequest;
 import com.chat.bl.service.messaging.user.UserEndpoint;
 import com.chat.server.EndpointRegistry;
 import java.util.Map;
@@ -37,7 +37,7 @@ class ResourceMapper {
     private void addUserEndpointResources(UserEndpoint endpoint) {
         Set<EndpointResource> set = mapper.get(UserEndpoint.class);
         addResource(set, "register", (req) -> {
-            return endpoint.register((RegistrationVo) req);
+            return endpoint.register((RegistrationRequest) req);
         });
         //  addResource(set, "register", endpoint::register);
         // UserEndpoint::

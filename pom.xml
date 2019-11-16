@@ -13,7 +13,6 @@
         <module>client-jfx</module>
         <module>server</module>
         <module>service-api</module>
-        <module>client</module>
         <module>dao-api</module>
     </modules>
     

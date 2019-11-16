@@ -1,10 +1,12 @@
 package com.chat.bl.service.messaging;
 
+import java.io.Serializable;
+
 /**
  *
  * @author gdimitrova
  */
-public class MessageWrapper {
+public class RequestWrapper implements Serializable{
 
     private final Class serviceClass;
 
@@ -14,7 +16,7 @@ public class MessageWrapper {
 
     private final Message message;
 
-    public MessageWrapper(Class serviceClass, String resource, Class messageClass, Message message) {
+    public RequestWrapper(Class serviceClass, String resource, Class messageClass, Message message) {
         this.serviceClass = serviceClass;
         this.resource = resource;
         this.messageClass = messageClass;

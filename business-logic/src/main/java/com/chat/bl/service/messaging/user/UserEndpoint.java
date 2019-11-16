@@ -3,7 +3,7 @@ package com.chat.bl.service.messaging.user;
 import com.chat.bl.service.dao.ServiceProviderRegistry;
 import com.chat.bl.service.dao.UserServiceProvider;
 import com.chat.bl.service.messaging.EndPoint;
-import com.chat.bl.service.messaging.response.ResponseVo;
+import com.chat.bl.service.messaging.response.ResponseImpl;
 import com.chat.domain.User;
 
 /**
@@ -19,17 +19,17 @@ public class UserEndpoint implements EndPoint, UserService {
     }
 
     @Override
-    public ResponseVo login(String username, String password) {
+    public synchronized ResponseImpl login(UserRequest req) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public ResponseVo logout(String username, String password) {
+    public synchronized ResponseImpl logout(UserRequest req) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public ResponseVo register(RegistrationVo req) {
+    public synchronized ResponseImpl register(RegistrationRequest req) {
         User user = provider.register(
                 req.getUsername(), req.getPassword(), req.getFirstname(),
                 req.getLastname(), req.getEmail(), req.getEmail(), req.getCity());

@@ -21,15 +21,11 @@ public class Server {
 
     private ServerSocket serverSocket;
 
-    private ThreadPool pool;
+    private ThreadPool pool = new ThreadPool(100);
 
-    private EndpointRegistry endpointRegistry;
+    private EndpointRegistry endpointRegistry = new EndpointRegistry();
 
-    private ServiceEndpointMapper mapper;
-
-    public Server() {
-        init();
-    }
+    private ServiceEndpointMapper mapper = new ServiceEndpointMapper(endpointRegistry);
 
     public void start() {
         System.out.println("Opening port...");
@@ -44,10 +40,22 @@ public class Server {
         while (!serverSocket.isClosed()) {
             try {
                 Socket socket = serverSocket.accept();
-                pool.accept(new ClientHandler(socket, endpointRegistry));
+                new ClientHandler(socket, mapper).processRequest();
             } catch (IOException ex) {
                 Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
             }
+        }
+    }
+
+    public void stop() {
+        try {
+            config = null;
+            serverSocket.close();
+            pool.close();
+        } catch (IOException ex) {
+            Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (Exception ex) {
+            Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -64,23 +72,4 @@ public class Server {
         return config;
     }
 
-    public void stop() {
-        config = null;
-        try {
-            serverSocket.close();
-        } catch (IOException ex) {
-            Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
-    public void restart() {
-        stop();
-        init();
-        start();
-    }
-
-    private void init() {
-        Properties props = loadProperties();
-        String maxThreads = props.getProperty("maxThreads");
-    }
 }

@@ -6,7 +6,7 @@ import com.chat.bl.service.messaging.Request;
  *
  * @author gdimitrova
  */
-public class RegistrationVo implements Request {
+public class RegistrationRequest implements Request {
 
     private final String username;
 
@@ -22,7 +22,7 @@ public class RegistrationVo implements Request {
 
     private final String city;
 
-    public RegistrationVo(String username, String password, String firstname, String lastname, String email, String phone, String city) {
+    public RegistrationRequest(String username, String password, String firstname, String lastname, String email, String phone, String city) {
         this.username = username;
         this.password = password;
         this.firstname = firstname;
