@@ -1,6 +1,7 @@
 package com.chat.bl.service.messaging.user;
 
-import com.chat.bl.service.messaging.response.ResponseImpl;
+import com.chat.bl.service.messaging.ResponseListener;
+import com.chat.domain.User;
 
 /**
  *
@@ -8,9 +9,9 @@ import com.chat.bl.service.messaging.response.ResponseImpl;
  */
 public interface UserService {
 
-    public ResponseImpl login(UserRequest req);
+    public void login(UserRequest req, ResponseListener<User> listener);
 
-    public ResponseImpl logout(UserRequest req);
+    public void logout(UserRequest req, ResponseListener<User> listener);
 
-    public ResponseImpl register(RegistrationRequest request);
+    public void register(RegistrationRequest request, ResponseListener<User> listener);
 }

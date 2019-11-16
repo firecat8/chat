@@ -32,6 +32,10 @@ public class App extends Application {
     }
 
     public static void main(String[] args) {
+        start(args);
+    }
+    public static void start(String[] args) {
+        System.out.println("Launch JFX App");
         launch();
     }
 

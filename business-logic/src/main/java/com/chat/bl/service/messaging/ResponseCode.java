@@ -1,4 +1,4 @@
-package com.chat.bl.service.messaging.response;
+package com.chat.bl.service.messaging;
 
 /**
  *

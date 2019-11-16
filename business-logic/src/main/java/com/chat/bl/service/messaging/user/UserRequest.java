@@ -1,10 +1,12 @@
 package com.chat.bl.service.messaging.user;
 
+import com.chat.bl.service.messaging.Request;
+
 /**
  *
  * @author gdimitrova
  */
-public class UserRequest {
+public class UserRequest implements Request{
 
     String username;
 

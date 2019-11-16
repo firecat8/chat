@@ -6,38 +6,45 @@ import java.io.Serializable;
  *
  * @author gdimitrova
  */
-public class RequestWrapper implements Serializable{
+public class RequestWrapper implements Serializable {
 
     private final Class serviceClass;
 
-    private final String resource;
+    private final String method;
 
-    private final Class messageClass;
+    private final Class reqClass;
 
-    private final Message message;
+    private final Class respClass;
 
-    public RequestWrapper(Class serviceClass, String resource, Class messageClass, Message message) {
+    private final Request req;
+
+    public RequestWrapper(Class serviceClass, String method, Request req, Class respClass) {
         this.serviceClass = serviceClass;
-        this.resource = resource;
-        this.messageClass = messageClass;
-        this.message = message;
+        this.method = method;
+        this.reqClass = req.getClass();
+        this.req = req;
+        this.respClass = respClass;
     }
 
     public Class getServiceClass() {
         return serviceClass;
     }
 
-    public String getResource() {
-        return resource;
+    public String getMethod() {
+        return method;
     }
 
-    public Class getMessageClass() {
-        return messageClass;
+    public Class getReqClass() {
+        return reqClass;
     }
 
-    public Message getMessage() {
-        return message;
+    public Request getRequest() {
+        return req;
+    }
+
+    public Class getRespClass() {
+        return respClass;
     }
     
-    
+
 }

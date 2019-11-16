@@ -1,10 +1,11 @@
 package com.chat.server;
 
+import com.chat.bl.service.dao.MessageException;
 import com.chat.bl.service.messaging.CloseConnectionRequest;
 import com.chat.bl.service.messaging.EndPoint;
 import com.chat.bl.service.messaging.RequestWrapper;
-import com.chat.bl.service.messaging.response.ResponseCode;
-import com.chat.bl.service.messaging.response.ResponseImpl;
+import com.chat.bl.service.messaging.ResponseCode;
+import com.chat.bl.service.messaging.ResponseWrapper;
 import com.chat.mapper.ServiceEndpointMapper;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -32,23 +33,29 @@ public class ClientHandler {
     public ClientHandler(Socket s, ServiceEndpointMapper mapper) throws IOException {
         this.socket = s;
         this.mapper = mapper;
-        objInput = new ObjectInputStream(s.getInputStream());
         objOutput = new ObjectOutputStream(s.getOutputStream());
+        objInput = new ObjectInputStream(s.getInputStream());
     }
 
     public void processRequest() {
-        try {
-            try (objOutput; objInput; socket) {
-                boolean connected = true;
-                while (connected) {
-                    RequestWrapper msgWrapper = (RequestWrapper) objInput.readObject();
-                    if (msgWrapper.getMessage() instanceof CloseConnectionRequest) {
-                        connected = false;
-                        break;
-                    }
+        try (objOutput; objInput; socket) {
+            boolean connected = true;
+            while (connected) {
+                RequestWrapper msgWrapper = (RequestWrapper) objInput.readObject();
+                if (msgWrapper.getRequest() instanceof CloseConnectionRequest) {
+                    connected = false;
+                    break;
+                }
+                try {
                     EndPoint endpoint = mapper.getEndpoint(msgWrapper.getServiceClass());
-                    Object response = invokeMethod(endpoint.getClass(), msgWrapper);
-                    objOutput.writeObject(response);
+                    Method method = getMethod(endpoint.getClass(), msgWrapper);
+                    Object response = method.invoke(this, msgWrapper.getRequest());
+                    objOutput.writeObject(new ResponseWrapper(ResponseCode.OK, response));
+                } catch (IOException | IllegalAccessException | IllegalArgumentException | NoSuchMethodException | InvocationTargetException ex) {
+                    objOutput.writeObject(new ResponseWrapper(ResponseCode.SERVER_ERROR, ex.getMessage()));
+
+                } catch (MessageException ex) {
+                    objOutput.writeObject(new ResponseWrapper(ResponseCode.ERROR, ex.getMessage()));
                 }
             }
 
@@ -57,14 +64,8 @@ public class ClientHandler {
         }
     }
 
-    private Object invokeMethod(Class<? extends EndPoint> endpointClass, RequestWrapper msgWrapper) {
-        try {
-            Method method = endpointClass.getMethod(msgWrapper.getResource(), msgWrapper.getMessageClass());
-            return method.invoke(this, msgWrapper.getMessage());
-        } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-            Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
-            return new ResponseImpl(ResponseCode.SERVER_ERROR, ex.getMessage());
-        }
+    private Method getMethod(Class<? extends EndPoint> endpointClass, RequestWrapper msgWrapper) throws NoSuchMethodException {
+        return endpointClass.getMethod(msgWrapper.getMethod(), msgWrapper.getReqClass());
     }
 
 }

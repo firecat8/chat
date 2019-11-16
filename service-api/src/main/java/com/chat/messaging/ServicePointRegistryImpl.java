@@ -1,12 +1,9 @@
 package com.chat.messaging;
 
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -20,11 +17,12 @@ public class ServicePointRegistryImpl extends AbstractServicePointRegistry imple
 
     protected Map<Class, ServicePoint> servicePoints = new ConcurrentHashMap<>();
 
-    public ServicePointRegistryImpl() {
-        config = loadProperties();
+    public ServicePointRegistryImpl(Properties props) throws IOException {
+        this(props.getProperty("host"), Integer.valueOf(props.getProperty("port")));
+        this.config = props;
     }
 
-    public ServicePointRegistryImpl(String host, int port) throws IOException {
+    private ServicePointRegistryImpl(String host, int port) throws IOException {
         client = new Client(host, port);
         client.connectToServer();
         registerServicePoints();
@@ -44,16 +42,4 @@ public class ServicePointRegistryImpl extends AbstractServicePointRegistry imple
         return (T) servicePoints.get(sei);
     }
 
-    private Properties loadProperties() {
-        if (config == null) {
-            try {
-                config = new Properties();
-                InputStreamReader in = new InputStreamReader(getClass().getResourceAsStream("/config.properties"));
-                config.load(in);
-            } catch (IOException ex) {
-                Logger.getLogger(ServicePointRegistryImpl.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-        return config;
-    }
 }

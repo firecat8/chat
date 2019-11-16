@@ -1,7 +1,6 @@
 package com.chat.mapper;
 
 import com.chat.bl.service.messaging.EndPoint;
-import com.chat.bl.service.messaging.user.UserEndpoint;
 import com.chat.messaging.UserServiceImpl;
 import com.chat.server.EndpointRegistry;
 import java.util.Map;

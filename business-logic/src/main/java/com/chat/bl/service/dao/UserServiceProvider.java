@@ -1,6 +1,5 @@
 package com.chat.bl.service.dao;
 
-import com.chat.bl.service.messaging.user.RegistrationRequest;
 import com.chat.dao.DaoRegistry;
 import com.chat.domain.User;
 import com.chat.domain.UserInfo;
@@ -59,7 +58,7 @@ public class UserServiceProvider extends AbstractServiceProvider {
             registry.getUserDao().updateStatus(user, status);
             commit();
 
-        } catch (Exception ex) {
+        } catch (MessageException ex) {
             Logger.getLogger(UserServiceProvider.class.getName()).log(Level.SEVERE, null, ex);
             if (getTransaction() != null) {
                 rollback();
