@@ -1,0 +1,13 @@
+#main{
+     -fx-background-image: url("../image/rainbowBackground.jpg");
+/*     -fx-background-position: top left;
+     -fx-background-repeat: stretch;*/
+     -fx-background-size: cover;
+}
+.table-row-cell:empty {
+    -fx-background-color: lightyellow;
+}
+ 
+.table-row-cell:empty .table-cell {
+    -fx-border-width: 0px;
+}

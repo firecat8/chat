@@ -2,7 +2,6 @@ package com.chat.persistence.dao;
 
 import com.chat.domain.Entity;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.persistence.EntityManager;
@@ -43,7 +42,7 @@ public abstract class AbstractDao<E extends Entity> {
     protected E getResult(String property, Object value) {
         List<E> results = getResults(property, value);
         if (results.isEmpty()) {
-            //      throw new NotFoundResultsException();
+             return null;
         }
         return results.get(0);
     }

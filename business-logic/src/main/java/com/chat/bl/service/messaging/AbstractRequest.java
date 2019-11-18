@@ -4,10 +4,11 @@ package com.chat.bl.service.messaging;
  *
  * @author gdimitrova
  */
-public class AbstractResponse implements Response{
-    
+public class AbstractRequest implements Request{
+
     @Override
     public MessageType getMessageType() {
-        return MessageType.RESPONSE;
+        return MessageType.REQUEST;
     }
+    
 }

@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.net.URL?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane fx:id="main" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.chat.controller.TestController">
+    <stylesheets>
+        <URL value="@../styles/test.css" />
+    </stylesheets> 
+    <children>
+        <AnchorPane fx:id="loginPane" layoutX="215.0" layoutY="71.0" prefHeight="376.0" prefWidth="286.0">
+            <children>
+                <Button fx:id="loginBtn" layoutX="84.0" layoutY="280.0" mnemonicParsing="false" onMouseClicked="#login" prefHeight="26.0" prefWidth="85.0" style="-fx-background-color: #993333;" text="Login" textAlignment="CENTER" textFill="WHITE">
+                    <font>
+                        <Font size="16.0" />
+                    </font>
+                </Button>
+                <PasswordField fx:id="passField" layoutX="84.0" layoutY="231.0" prefHeight="26.0" prefWidth="159.0" promptText="password">
+                    <font>
+                        <Font name="System Bold" size="12.0" />
+                    </font>
+                </PasswordField>
+                <TextField fx:id="usernameTxtF" layoutX="84.0" layoutY="191.0" promptText="username">
+                    <font>
+                        <Font name="System Bold" size="12.0" />
+                    </font>
+                </TextField>
+                <Button fx:id="registerBtn" layoutX="171.0" layoutY="280.0" mnemonicParsing="false" onMouseClicked="#register" prefHeight="32.0" prefWidth="101.0" style="-fx-background-color: #993333;" text="Register" textAlignment="CENTER" textFill="WHITE">
+                    <font>
+                        <Font size="16.0" />
+                    </font>
+                </Button>
+                <ImageView fitHeight="150.0" fitWidth="182.0" layoutX="94.0" layoutY="30.0" pickOnBounds="true" preserveRatio="true">
+                    <image>
+                        <Image url="@../image/avatar.png" />
+                    </image>
+                </ImageView>
+            </children>
+        </AnchorPane>
+        <Label fx:id="error" layoutX="252.0" layoutY="24.0" text="Error" textOverrun="CENTER_WORD_ELLIPSIS">
+            <font>
+                <Font name="System Bold" size="13.0" />
+            </font>
+        </Label>    
+        
+        <AnchorPane fx:id="chatPane" prefHeight="200.0" prefWidth="200.0" visible="false">
+            <children>
+                <VBox fx:id="chatWindow" layoutX="108.0" layoutY="30.0" prefHeight="520.0" prefWidth="692.0">
+                    <children>
+                        <ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" pannable="true" prefHeight="489.0" prefWidth="600.0" vbarPolicy="NEVER" vmin="1.0" vvalue="1.0">
+                            <content>
+                                <ListView fx:id="chatPanel" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="440.0" prefWidth="724.0" />
+                            </content>
+                        </ScrollPane>
+                        <TextField fx:id="serverChat" prefHeight="26.0" prefWidth="325.0" promptText="Server chat: " />
+                        <HBox prefHeight="58.0" prefWidth="693.0">
+                            <children>
+                                <TextArea fx:id="messageBox" prefHeight="42.0" prefWidth="564.0" promptText="Enter a Message:" />
+                                <Button fx:id="sendButton" minWidth="51.0" mnemonicParsing="false" prefHeight="42.0" prefWidth="83.0" text="Send" textAlignment="CENTER" />
+                                <Button fx:id="sendFileButton" minWidth="32.0" mnemonicParsing="false" prefHeight="42.0" prefWidth="45.0">
+                                    <graphic>
+                                        <ImageView fx:id="sendFileImageView1" fitHeight="23.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
+                                            <image>
+                                                <Image url="@../image/file.png" />
+                                            </image>
+                                        </ImageView>
+                                    </graphic>
+                                </Button>
+                            </children>
+                        </HBox>
+                    </children>
+                </VBox>
+                <Button fx:id="logoutBtn" layoutX="14.0" layoutY="36.0" mnemonicParsing="false" onMouseClicked="#logout" prefHeight="32.0" prefWidth="85.0" style="-fx-background-color: #993333;" text="Logout" textAlignment="CENTER" textFill="WHITE">
+                    <font>
+                        <Font size="16.0" />
+                    </font>
+                </Button>
+            </children>
+        </AnchorPane>
+    </children>
+</AnchorPane>

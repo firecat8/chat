@@ -1,16 +1,16 @@
 package com.chat.bl.service.messaging.user;
 
-import com.chat.bl.service.messaging.Request;
+import com.chat.bl.service.messaging.AbstractRequest;
 
 /**
  *
  * @author gdimitrova
  */
-public class UserRequest implements Request{
+public class UserRequest extends AbstractRequest{
 
-    String username;
+    private final String username;
 
-    String password;
+    private final String password;
 
     public UserRequest(String username, String password) {
         this.username = username;
@@ -24,5 +24,5 @@ public class UserRequest implements Request{
     public String getPassword() {
         return password;
     }
-    
+
 }

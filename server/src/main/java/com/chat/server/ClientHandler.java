@@ -22,6 +22,10 @@ import java.util.logging.Logger;
  */
 public class ClientHandler {
 
+    private final static Logger LOGGER = Logger.getLogger(ClientHandler.class.getName());
+
+    private String sessionId;
+
     private final ServiceEndpointMapper mapper;
 
     private final Socket socket;
@@ -30,7 +34,8 @@ public class ClientHandler {
 
     private final ObjectOutputStream objOutput;
 
-    public ClientHandler(Socket s, ServiceEndpointMapper mapper) throws IOException {
+    public ClientHandler(String sessionId, Socket s, ServiceEndpointMapper mapper) throws IOException {
+        this.sessionId = sessionId;
         this.socket = s;
         this.mapper = mapper;
         objOutput = new ObjectOutputStream(s.getOutputStream());
@@ -39,33 +44,43 @@ public class ClientHandler {
 
     public void processRequest() {
         try (objOutput; objInput; socket) {
-            boolean connected = true;
-            while (connected) {
+            objOutput.writeObject(sessionId);
+            while (true) {
                 RequestWrapper msgWrapper = (RequestWrapper) objInput.readObject();
+                log("Received request: " + msgWrapper.getRequest().getClass().getSimpleName());
                 if (msgWrapper.getRequest() instanceof CloseConnectionRequest) {
-                    connected = false;
                     break;
                 }
                 try {
                     EndPoint endpoint = mapper.getEndpoint(msgWrapper.getServiceClass());
                     Method method = getMethod(endpoint.getClass(), msgWrapper);
-                    Object response = method.invoke(this, msgWrapper.getRequest());
-                    objOutput.writeObject(new ResponseWrapper(ResponseCode.OK, response));
+                    Object respWrapper = method.invoke(endpoint, msgWrapper.getRequest());
+                    log("Invoked response: " + respWrapper.toString());
+                    objOutput.writeObject(respWrapper);
                 } catch (IOException | IllegalAccessException | IllegalArgumentException | NoSuchMethodException | InvocationTargetException ex) {
-                    objOutput.writeObject(new ResponseWrapper(ResponseCode.SERVER_ERROR, ex.getMessage()));
-
+                    logError(ResponseCode.SERVER_ERROR, ex.getMessage());
                 } catch (MessageException ex) {
-                    objOutput.writeObject(new ResponseWrapper(ResponseCode.ERROR, ex.getMessage()));
+                    logError(ResponseCode.ERROR, ex.getMessage());
                 }
             }
 
         } catch (IOException | ClassNotFoundException ex) {
-            Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.severe(ex.getMessage());
         }
+        log("Session ended.");
     }
 
     private Method getMethod(Class<? extends EndPoint> endpointClass, RequestWrapper msgWrapper) throws NoSuchMethodException {
         return endpointClass.getMethod(msgWrapper.getMethod(), msgWrapper.getReqClass());
+    }
+
+    private void log(String msg) {
+        LOGGER.log(Level.INFO, "Session: {0}\n{1}", new Object[]{sessionId, msg});
+    }
+
+    private void logError(ResponseCode code, String msg) throws IOException {
+        LOGGER.severe(msg);
+        objOutput.writeObject(new ResponseWrapper(code, msg));
     }
 
 }

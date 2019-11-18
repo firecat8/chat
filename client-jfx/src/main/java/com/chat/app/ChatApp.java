@@ -10,6 +10,8 @@ import java.util.logging.Logger;
 
 public class ChatApp {
 
+    private final static Logger logger = Logger.getLogger(ChatApp.class.getName());
+
     public static ServicePointRegistry registry;
 
     private static InputStreamReader in;
@@ -18,8 +20,8 @@ public class ChatApp {
         try {
             registry = new ServicePointRegistryImpl(loadProperties());
             App.start(args);
-        } catch (IOException ex) {
-            Logger.getLogger(ChatApp.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException | ClassNotFoundException ex) {
+            logger.log(Level.SEVERE, null, ex);
         }
     }
 
@@ -31,7 +33,7 @@ public class ChatApp {
             config.load(in);
             return config;
         } catch (IOException ex) {
-            Logger.getLogger(ChatApp.class.getName()).log(Level.SEVERE, null, ex);
+           logger.log(Level.SEVERE, null, ex);
         }
         return config;
 

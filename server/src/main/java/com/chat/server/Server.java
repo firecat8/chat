@@ -2,10 +2,9 @@ package com.chat.server;
 
 import com.chat.mapper.ServiceEndpointMapper;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Properties;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -14,6 +13,8 @@ import java.util.logging.Logger;
  * @author gdimitrova
  */
 public class Server {
+
+    private final static Logger LOGGER = Logger.getLogger(Server.class.getName());
 
     private static final int PORT = 1230;
 
@@ -28,7 +29,7 @@ public class Server {
         try {
             serverSocket = new ServerSocket(PORT);
         } catch (IOException ex) {
-            Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.severe(ex.getMessage());
             System.err.println("Unable to set up port!");
             System.exit(1);
         }
@@ -36,11 +37,12 @@ public class Server {
         while (!serverSocket.isClosed()) {
             try {
                 Socket socket = serverSocket.accept();
-                System.out.print("Handling client");
-                new ClientHandler(socket, mapper).processRequest();
-                
+                String sessionId = UUID.randomUUID().toString();
+                LOGGER.log(Level.INFO, "Handling client, Session ID {0}", sessionId);
+                new ClientHandler(sessionId, socket, mapper).processRequest();
+
             } catch (IOException ex) {
-                Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
+                LOGGER.severe(ex.getMessage());
             }
         }
     }
@@ -49,9 +51,9 @@ public class Server {
         try {
             serverSocket.close();
         } catch (IOException ex) {
-            Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.severe(ex.getMessage());
         } catch (Exception ex) {
-            Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.severe(ex.getMessage());
         }
     }
 

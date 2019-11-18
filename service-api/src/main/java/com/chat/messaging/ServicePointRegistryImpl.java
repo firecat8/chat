@@ -13,16 +13,13 @@ public class ServicePointRegistryImpl extends AbstractServicePointRegistry imple
 
     private static Client client;
 
-    private Properties config = null;
-
     protected Map<Class, ServicePoint> servicePoints = new ConcurrentHashMap<>();
 
-    public ServicePointRegistryImpl(Properties props) throws IOException {
+    public ServicePointRegistryImpl(Properties props) throws IOException, ClassNotFoundException {
         this(props.getProperty("host"), Integer.valueOf(props.getProperty("port")));
-        this.config = props;
     }
 
-    private ServicePointRegistryImpl(String host, int port) throws IOException {
+    private ServicePointRegistryImpl(String host, int port) throws IOException, ClassNotFoundException {
         client = new Client(host, port);
         client.connectToServer();
         registerServicePoints();

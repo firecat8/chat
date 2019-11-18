@@ -4,6 +4,6 @@ package com.chat.bl.service.messaging;
  *
  * @author gdimitrova
  */
-public class CloseConnectionRequest implements Request {
+public class CloseConnectionRequest extends AbstractRequest{
 
 }

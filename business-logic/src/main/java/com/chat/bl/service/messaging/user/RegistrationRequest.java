@@ -1,12 +1,13 @@
 package com.chat.bl.service.messaging.user;
 
-import com.chat.bl.service.messaging.Request;
+import com.chat.bl.service.messaging.AbstractRequest;
+
 
 /**
  *
  * @author gdimitrova
  */
-public class RegistrationRequest implements Request {
+public class RegistrationRequest extends AbstractRequest{
 
     private final String username;
 

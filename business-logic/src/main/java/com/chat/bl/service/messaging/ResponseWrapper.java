@@ -5,6 +5,7 @@ import java.io.Serializable;
 /**
  *
  * @author gdimitrova
+ * @param <T> response type
  */
 public class ResponseWrapper<T> implements Serializable {
 

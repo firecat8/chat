@@ -14,7 +14,6 @@
         <module>server</module>
         <module>service-api</module>
         <module>dao-api</module>
-        <module>client-app</module>
     </modules>
     
     <properties>

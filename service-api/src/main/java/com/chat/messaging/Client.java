@@ -9,12 +9,18 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
  * @author gdimitrova
  */
 class Client {
+
+    private final static Logger LOGGER = Logger.getLogger(Client.class.getName());
+
+    public static String sessionId;
 
     private static Socket clientSocket;
 
@@ -31,16 +37,20 @@ class Client {
         this.port = port;
     }
 
-    void connectToServer() throws IOException {
+    void connectToServer() throws IOException, ClassNotFoundException {
         clientSocket = new Socket(host, port);
         oos = new ObjectOutputStream(clientSocket.getOutputStream());
         ois = new ObjectInputStream(clientSocket.getInputStream());
+        sessionId = (String) ois.readObject();
+        LOGGER.log(Level.INFO, "Received session id: {0}", sessionId);
     }
 
     synchronized <Resp> void sendMessage(Class serviceClass, String method, Request req, Class respClass, ResponseListener<Resp> listener) {
         try {
             oos.writeObject(new RequestWrapper(serviceClass, method, req, respClass));
             ResponseWrapper<Resp> respWrapper = (ResponseWrapper<Resp>) ois.readObject();
+
+            LOGGER.log(Level.INFO, "Received response {0}", respWrapper);
             if (respWrapper.getCode() == ResponseCode.OK) {
                 listener.onSuccess(respWrapper.getResponse());
             } else {

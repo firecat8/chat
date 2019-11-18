@@ -2,7 +2,7 @@ package com.chat.server;
 
 import com.chat.bl.service.dao.ServiceProviderRegistry;
 import com.chat.bl.service.dao.ServiceProviderRegistryImpl;
-import com.chat.bl.service.messaging.user.UserEndpoint;
+import com.chat.server.endpoint.UserEndpoint;
 
 /**
  *

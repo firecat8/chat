@@ -16,21 +16,21 @@ import javax.persistence.criteria.Root;
  * @author gdimitrova
  */
 public abstract class AbstractCrudDao<E extends Entity> extends AbstractDao<E> implements CrudDao<E> {
-    
+
     protected AbstractCrudDao(Class<E> dtoClass, EntityManager em) {
         super(dtoClass, em);
     }
-    
+
     @Override
     public void save(E entity) {
         saveOrUpdate(entity);
     }
-    
+
     @Override
     public void update(E update) {
         super.update(update, new HashMap<>());
     }
-    
+
     @Override
     public void delete(Long id) {
         CriteriaBuilder cb = getCriteriaBuilder();
@@ -39,7 +39,7 @@ public abstract class AbstractCrudDao<E extends Entity> extends AbstractDao<E> i
         delete.where(cb.equal(root.get("id"), id));
         em.createQuery(delete).executeUpdate();
     }
-    
+
     @Override
     public void deleteAll(List<E> list) {
         list.forEach((e) -> {
@@ -47,39 +47,39 @@ public abstract class AbstractCrudDao<E extends Entity> extends AbstractDao<E> i
 //            em.remove(e);
         });
     }
-    
+
     @Override
     public E loadById(Long id) {
         return getResult("id", id);
     }
-    
+
     public List<E> loadAll() {
         CriteriaBuilder cb = getCriteriaBuilder();
         CriteriaQuery<E> query = cb.createQuery(dtoClassName);
         query.select(query.from(dtoClassName));
         return em.createQuery(query).getResultList();
     }
-    
+
     protected void persistEntity(E entity) {
         em.persist(entity);
     }
-    
+
     protected void saveOrUpdateAll(List<E> entities) {
         entities.forEach((e) -> {
             saveOrUpdate(e);
         });
     }
-    
+
     protected void mergeEntity(E entity) {
         em.merge(entity);
     }
-    
+
     private void saveOrUpdate(E entity) {
-        if (entity.getId() > 0) {
+        if (entity.getId() == null || entity.getId() > 0) {
             mergeEntity(entity);
             return;
         }
         persistEntity(entity);
     }
-    
+
 }

@@ -26,12 +26,16 @@ public class UserDaoImpl extends AbstractDao<UserDto> implements UserDao {
     @Override
     public boolean updateStatus(User user, UserStatus status) {
         user.setStatus(status);
-        return super.update((UserDto) user, new HashMap<>()) == 1;
+        return super.update((UserDto) user, loadProperties((UserDto) user)) == 1;
     }
 
     @Override
     protected Map<String, Object> loadProperties(UserDto newOne) {
-        return new HashMap<>();
+        HashMap<String, Object> map = new HashMap<>();
+        map.put(UserDto.USER_NAME, newOne.getUsername());
+        map.put(UserDto.PASSWORD, newOne.getPassword());
+        map.put(UserDto.STATUS, newOne.getStatus());
+        return map;
     }
 
 }
