@@ -11,4 +11,6 @@ public interface ChatEvent {
     public User getSender();
 
     public Chat getChat();
+
+    public ChatEventType getChatEventType();
 }

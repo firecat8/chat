@@ -24,19 +24,19 @@ public class UserInfoDto extends AbstractDto implements UserInfo {
 
     public final static String USER_ID = "user_id";
 
-    @Column(name = FIRST_NAME_COLUMN)
+    @Column(name = FIRST_NAME_COLUMN, nullable = false)
     private String firstname;
 
-    @Column(name = LAST_NAME_COLUMN)
+    @Column(name = LAST_NAME_COLUMN, nullable = false)
     private String lastname;
 
-    @Column
+    @Column(nullable = false)
     private String email;
 
-    @Column
+    @Column(nullable = false)
     private String phone;
 
-    @Column
+    @Column(nullable = false)
     private String city;
 
     @OneToOne(cascade = CascadeType.ALL, targetEntity = UserDto.class)
@@ -44,18 +44,17 @@ public class UserInfoDto extends AbstractDto implements UserInfo {
     private User user;
 
     public UserInfoDto() {
-      //  hibernate
+        //  hibernate
     }
 
     public UserInfoDto(String username, String password, String firstname, String lastname, String email, String phone, String city) {
-        this.user = new UserDto(username,password,UserStatus.INACTIVE);
+        this.user = new UserDto(username, password, UserStatus.INACTIVE);
         this.firstname = firstname;
         this.lastname = lastname;
         this.email = email;
         this.phone = phone;
         this.city = city;
     }
-    
 
     @Override
     public User getUser() {

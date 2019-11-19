@@ -1,6 +1,7 @@
 package com.chat.persistence.dto;
 
 import com.chat.domain.Chat;
+import com.chat.domain.ChatEventType;
 import com.chat.domain.ChatFile;
 import com.chat.domain.User;
 import java.sql.Blob;
@@ -57,6 +58,11 @@ public class ChatFileDto extends ChatEventDto implements ChatFile {
 
     public void setFilename(String filename) {
         this.filename = filename;
+    }
+
+    @Override
+    public ChatEventType getChatEventType() {
+        return ChatEventType.FILE_TRANSFER;
     }
 
 }

@@ -9,6 +9,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
@@ -30,17 +31,17 @@ public class UserDto extends AbstractDto implements User {
 
     public final static String STATUS = "status";
 
-    @Column(name = USER_NAME_COLUMN, unique = true)
+    @Column(name = USER_NAME_COLUMN, unique = true,nullable = false)
     private String username;
 
-    @Column
+    @Column(nullable = false)
     private String password;
 
     @Enumerated(EnumType.STRING)
     @Column
     private UserStatus status;
 
-    @ManyToMany(cascade = {CascadeType.ALL}, targetEntity = UserDto.class)
+    @ManyToMany(cascade = {CascadeType.ALL}, fetch = FetchType.EAGER, targetEntity = UserDto.class)
     @JoinTable(name = "friends",
             joinColumns = {
                 @JoinColumn(name = "user_id")},
@@ -48,7 +49,7 @@ public class UserDto extends AbstractDto implements User {
                 @JoinColumn(name = "friend_id")})
     private final Set<User> friends = new HashSet<User>();
 
-    @ManyToMany(mappedBy = "friends", targetEntity = UserDto.class)
+    @ManyToMany(mappedBy = "friends", fetch = FetchType.EAGER, targetEntity = UserDto.class)
     private final Set<User> users = new HashSet<User>();
 
     public UserDto() {

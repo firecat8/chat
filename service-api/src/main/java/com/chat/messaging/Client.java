@@ -50,7 +50,6 @@ class Client {
             oos.writeObject(new RequestWrapper(serviceClass, method, req, respClass));
             ResponseWrapper<Resp> respWrapper = (ResponseWrapper<Resp>) ois.readObject();
 
-            LOGGER.log(Level.INFO, "Received response {0}", respWrapper);
             if (respWrapper.getCode() == ResponseCode.OK) {
                 listener.onSuccess(respWrapper.getResponse());
             } else {

@@ -1,38 +1,11 @@
-
-.chatPane {
-    -fx-background-color: palegoldenrod ;
+#main{
+    -fx-background-image: url("../image/rainbowBackground.jpg");
+    -fx-background-size: cover;
 }
-
-.hyperlink {
-    -fx-background-color: #808080 ;
-    -fx-text-fill: orangered ;
-    -fx-font-weight: bold;
-    -fx-padding: 5px;
-    -fx-text-align: center;
-    -fx-text-decoration: none;
-    -fx-display: inline-block;
-}
-
-
-.text-field {
-    -fx-background-color: lightsalmon;
-    -fx-background-insets: 0 -1 -1 -1, 0 0 0 0, 0 -1 3 -1;
-    -fx-border-color: #808080;
-    -fx-border-width: 0 0 1 0;
-    -fx-underline: true;
-    -fx-prompt-text-fill: #808080   ;
-}
-
-.text-field:focused {
-    -fx-background-color: lightsalmon;
-    -fx-background-insets: 0 -1 -1 -1, 0 0 0 0, 0 -1 3 -1;
-}
-
 .tab-pane *.tab-header-area *.tab-header-background {
     -fx-text-fill: transparent;
     -fx-background-color: transparent;
 }
-
 .tab {
     -fx-background-color: transparent;
     -fx-alignment: center;
@@ -67,7 +40,6 @@
     -fx-background-insets: 0 0 10 0;
     -fx-padding: 0.0em 0.0em 0.0em 0.0em;
 }
-
 .list-cell:empty {
     visibility: hidden;
 }
@@ -88,8 +60,7 @@
     -fx-text-color: black;
     -fx-background-color: lightblue;
 }
-
-.send {
+/*.send {
     -fx-text-fill: black;
     -fx-border-color: black;
     -fx-background-color: lightskyblue ;
@@ -106,4 +77,11 @@
     -fx-text-fill: black;
     -fx-border-color: black;
     -fx-background-color: salmon  ;
+}*/
+.table-row-cell:empty {
+    -fx-background-color: lightyellow;
+}
+
+.table-row-cell:empty .table-cell {
+    -fx-border-width: 0px;
 }

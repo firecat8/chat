@@ -18,29 +18,29 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="main" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.chat.controller.TestController">
+<AnchorPane fx:id="main" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.chat.controller.ChatController">
     <stylesheets>
-        <URL value="@../styles/test.css" />
+        <URL value="@../styles/chat.css" />
     </stylesheets> 
     <children>
         <AnchorPane fx:id="loginPane" layoutX="215.0" layoutY="71.0" prefHeight="376.0" prefWidth="354.0">
             <children>
-                <Button fx:id="loginBtn" layoutX="84.0" layoutY="280.0" mnemonicParsing="false" onMouseClicked="#login" prefHeight="26.0" prefWidth="85.0" style="-fx-background-color: #993333;" text="Login" textAlignment="CENTER" textFill="WHITE">
+                <Button fx:id="loginBtn" layoutX="59.0" layoutY="277.0" mnemonicParsing="false" onMouseClicked="#login" prefHeight="26.0" prefWidth="85.0" style="-fx-background-color: #993333;" text="Login" textAlignment="CENTER" textFill="WHITE">
                     <font>
                         <Font size="16.0" />
                     </font>
                 </Button>
-                <PasswordField fx:id="passField" layoutX="84.0" layoutY="231.0" prefHeight="26.0" prefWidth="173.0" promptText="password">
+                <PasswordField fx:id="passField" layoutX="59.0" layoutY="228.0" prefHeight="26.0" prefWidth="234.0" promptText="password">
                     <font>
                         <Font name="System Bold" size="12.0" />
                     </font>
                 </PasswordField>
-                <TextField fx:id="usernameTxtF" layoutX="84.0" layoutY="191.0" promptText="username">
+                <TextField fx:id="usernameTxtF" layoutX="59.0" layoutY="188.0" prefHeight="23.0" prefWidth="234.0" promptText="username">
                     <font>
                         <Font name="System Bold" size="12.0" />
                     </font>
                 </TextField>
-                <Button fx:id="registerBtn" layoutX="171.0" layoutY="280.0" mnemonicParsing="false" onMouseClicked="#register" prefHeight="32.0" prefWidth="101.0" style="-fx-background-color: #993333;" text="Register" textAlignment="CENTER" textFill="WHITE">
+                <Button fx:id="createAccountBtn" layoutX="146.0" layoutY="277.0" mnemonicParsing="false" onAction="#onRegPane" prefHeight="32.0" prefWidth="150.0" style="-fx-background-color: #993333;" text="Create account" textAlignment="CENTER" textFill="WHITE">
                     <font>
                         <Font size="16.0" />
                     </font>
@@ -52,7 +52,7 @@
                 </ImageView>
             </children>
         </AnchorPane>
-        <Label fx:id="error" layoutX="237.0" layoutY="6.0" prefHeight="16.0" prefWidth="44.0" text="Error" textOverrun="CENTER_WORD_ELLIPSIS">
+        <Label fx:id="error" layoutX="100.0" layoutY="6.0" textOverrun="CENTER_WORD_ELLIPSIS">
             <font>
                 <Font name="System Bold" size="13.0" />
             </font>
@@ -60,41 +60,31 @@
         
         <AnchorPane fx:id="chatPane" prefHeight="200.0" prefWidth="200.0" visible="false">
             <children>
-                <AnchorPane id="anchorPaneUser" layoutY="30.0" prefHeight="520.0" prefWidth="300.0" styleClass="userPane" stylesheets="@../styles/mainstyles.css">
+                <AnchorPane id="anchorPaneUser" layoutY="30.0" prefHeight="520.0" prefWidth="300.0" styleClass="userPane" stylesheets="@../styles/chat.css">
                     <children>
                         <HBox prefHeight="80.0" prefWidth="300.0">
                             <children>
                                 <ImageView fx:id="userImageView" fitHeight="90.0" fitWidth="80.0" pickOnBounds="true" preserveRatio="true">
                                     <image>
-                                        <Image url="@../image/account.png" />
+                                        <Image url="@../image/avatar.png" />
                                     </image>
                                 </ImageView>
                                 <VBox prefHeight="80.0" prefWidth="221.0">
                                     <children>
                                         <Label fx:id="userName" prefHeight="39.0" prefWidth="222.0" text="User Name" />
-                                        <ChoiceBox fx:id="statusBar" prefHeight="30.0" prefWidth="80.0" />
+                                        <ChoiceBox fx:id="statusBar" prefHeight="30.0" prefWidth="100.0" />
                                     </children>
                                 </VBox>
                             </children>
                         </HBox>
-                        <ImageView fitHeight="30.0" fitWidth="30.0" layoutX="256.0" layoutY="137.0" pickOnBounds="true" preserveRatio="true">
-                            <image>
-                                <Image url="@../image/add.png" />
-                            </image>
-                        </ImageView>
-                        <TextField fx:id="searchBar" layoutX="31.0" layoutY="139.0" prefHeight="26.0" prefWidth="130.0" promptText="Search:" stylesheets="@../styles/mainstyles.css" />
-                        <ImageView fitHeight="20.0" fitWidth="20.0" layoutX="4.0" layoutY="142.0" pickOnBounds="true" preserveRatio="true">
-                            <image>
-                                <Image url="@../image/search.png" />
-                            </image>
-                        </ImageView>
+                        <TextField fx:id="searchBar" layoutX="10.0" layoutY="105.0" prefHeight="26.0" prefWidth="130.0" promptText="Search:" stylesheets="@../styles/chat.css" />
                         <TabPane layoutY="170.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="399.0" prefWidth="300.0" tabClosingPolicy="UNAVAILABLE">
                             <tabs>
                                 <Tab text="     Friends     ">
                                     <content>
                                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                                             <children>
-                                                <ListView fx:id="listViewFriends" prefHeight="367.0" prefWidth="300.0" stylesheets="@../styles/mainstyles.css" />
+                                                <ListView fx:id="friendsList" prefHeight="367.0" prefWidth="300.0" stylesheets="@../styles/chat.css" />
                                             </children>
                                         </AnchorPane>
                                     </content>
@@ -103,16 +93,17 @@
                                     <content>
                                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="200.0">
                                             <children>
-                                                <ListView fx:id="listViewSearch" prefHeight="368.0" prefWidth="300.0" stylesheets="@../styles/mainstyles.css" />
+                                                <ListView fx:id="userSearchList" prefHeight="368.0" prefWidth="300.0" stylesheets="@../styles/chat.css" />
+                                                <ListView fx:id="chatSearchList" prefHeight="368.0" prefWidth="300.0" stylesheets="@../styles/chat.css" visible="false" />
                                             </children>
                                         </AnchorPane>
                                     </content>
                                 </Tab>
                             </tabs>
                         </TabPane>
-                        <Button fx:id="addFriendButton" layoutX="176.0" layoutY="140.0" mnemonicParsing="false" onAction="#addFriend" text="Add" />
-                        <Button fx:id="searchButton" layoutX="175.0" layoutY="105.0" mnemonicParsing="false" onAction="#searchBtn" text="Search" />
-                        <Label fx:id="serverMessage" layoutX="10.0" layoutY="80.0" text="Server Message:" />
+                        <Button fx:id="addButton" layoutX="10.0" layoutY="138.0" mnemonicParsing="false" onAction="#add" text="Add" />
+                        <Button fx:id="searchChat" layoutX="156.0" layoutY="106.0" mnemonicParsing="false" onAction="#searchChat" prefHeight="26.0" prefWidth="106.0" text="Search chat" />
+                        <Button fx:id="searchFriend" layoutX="156.0" layoutY="138.0" mnemonicParsing="false" onAction="#searchFriend" text="Search friend" />
                     </children>
                 </AnchorPane>
                 <VBox fx:id="chatWindow" layoutX="299.0" layoutY="30.0" prefHeight="568.0" prefWidth="501.0">
@@ -123,11 +114,11 @@
                             </content>
                         </ScrollPane>
                         <TextField fx:id="serverChat" prefHeight="26.0" prefWidth="325.0" promptText="Server chat: " />
-                        <HBox prefHeight="47.0" prefWidth="501.0">
+                        <HBox prefHeight="59.0" prefWidth="501.0">
                             <children>
                                 <TextArea fx:id="messageBox" prefHeight="42.0" prefWidth="564.0" promptText="Enter a Message:" />
-                                <Button fx:id="sendButton" minWidth="51.0" mnemonicParsing="false" prefHeight="50.0" prefWidth="51.0" text="Send" textAlignment="CENTER" />
-                                <Button fx:id="sendFileButton" minWidth="32.0" mnemonicParsing="false" prefHeight="48.0" prefWidth="32.0">
+                                <Button fx:id="sendButton" minWidth="51.0" mnemonicParsing="false" prefHeight="57.0" prefWidth="51.0" text="Send" textAlignment="CENTER" />
+                                <Button fx:id="sendFileButton" minWidth="32.0" mnemonicParsing="false" prefHeight="56.0" prefWidth="32.0">
                                     <graphic>
                                         <ImageView fx:id="sendFileImageView1" fitHeight="23.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
                                             <image>
@@ -145,6 +136,60 @@
                         <Font size="16.0" />
                     </font>
                 </Button>
+            </children>
+        </AnchorPane>
+        <AnchorPane fx:id="regPane" layoutX="225.0" layoutY="45.0" prefHeight="550.0" prefWidth="354.0" visible="false">
+            <children>
+                <PasswordField fx:id="passField1" layoutX="83.0" layoutY="210.0" prefHeight="26.0" prefWidth="173.0" promptText="password">
+                    <font>
+                        <Font name="System Bold" size="12.0" />
+                    </font>
+                </PasswordField>
+                <TextField fx:id="usernameTxtF1" layoutX="83.0" layoutY="169.0" promptText="username">
+                    <font>
+                        <Font name="System Bold" size="12.0" />
+                    </font>
+                </TextField>
+                <Button fx:id="registerBtn" layoutX="83.0" layoutY="456.0" mnemonicParsing="false" onMouseClicked="#register" prefHeight="32.0" prefWidth="173.0" style="-fx-background-color: #993333;" text="Register" textAlignment="CENTER" textFill="WHITE">
+                    <font>
+                        <Font size="16.0" />
+                    </font>
+                </Button>
+                <ImageView fitHeight="150.0" fitWidth="182.0" layoutX="94.0" pickOnBounds="true" preserveRatio="true">
+                    <image>
+                        <Image url="@../image/avatar.png" />
+                    </image>
+                </ImageView>
+                <TextField fx:id="firstNameTxtF" layoutX="83.0" layoutY="251.0" promptText="first name">
+                    <font>
+                        <Font name="System Bold" size="12.0" />
+                    </font>
+                </TextField>
+                <TextField fx:id="lastNameTxtF" layoutX="84.0" layoutY="292.0" promptText="last name">
+                    <font>
+                        <Font name="System Bold" size="12.0" />
+                    </font>
+                </TextField>
+                <TextField fx:id="emailTxtF" layoutX="83.0" layoutY="333.0" promptText="e-mail">
+                    <font>
+                        <Font name="System Bold" size="12.0" />
+                    </font>
+                </TextField>
+                <TextField fx:id="phoneTxtF" layoutX="84.0" layoutY="374.0" promptText="phone">
+                    <font>
+                        <Font name="System Bold" size="12.0" />
+                    </font>
+                </TextField>
+                <TextField fx:id="cityTxtF" layoutX="83.0" layoutY="415.0" promptText="city">
+                    <font>
+                        <Font name="System Bold" size="12.0" />
+                    </font>
+                </TextField>
+            <Button fx:id="backLoginPane" layoutX="83.0" layoutY="497.0" mnemonicParsing="false" onMouseClicked="#backLoginPane" prefHeight="32.0" prefWidth="173.0" style="-fx-background-color: #993333;" text="Back Login Form" textAlignment="CENTER" textFill="WHITE">
+               <font>
+                  <Font size="16.0" />
+               </font>
+            </Button>
             </children>
         </AnchorPane>
     </children>

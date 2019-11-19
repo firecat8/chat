@@ -1,6 +1,7 @@
 package com.chat.persistence.dto;
 
 import com.chat.domain.Chat;
+import com.chat.domain.ChatEventType;
 import com.chat.domain.ChatMessage;
 import com.chat.domain.User;
 import javax.persistence.Column;
@@ -36,6 +37,11 @@ public class ChatMessageDto extends ChatEventDto implements ChatMessage {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    @Override
+    public ChatEventType getChatEventType() {
+        return ChatEventType.MESSAGE;
     }
 
 }

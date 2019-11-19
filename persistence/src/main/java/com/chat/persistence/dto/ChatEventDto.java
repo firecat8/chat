@@ -27,11 +27,9 @@ public abstract class ChatEventDto extends AbstractDto implements ChatEvent {
     private Long eventTime;
 
     @ManyToOne(targetEntity = UserDto.class)
-    @Column
     private User sender;
 
     @ManyToOne(targetEntity = ChatDto.class)
-    @Column
     private Chat chat;
 
     public ChatEventDto() {
