@@ -6,15 +6,9 @@ import java.sql.Blob;
  *
  * @author gdimitrova
  */
-public interface ChatFile {
+public interface ChatFile extends ChatEvent {
 
     public Blob getFile();
 
     public String getFilename();
-    
-    public Long getSentTime();
-
-    public User getSender();
-
-    public Chat getChat() ;
 }
