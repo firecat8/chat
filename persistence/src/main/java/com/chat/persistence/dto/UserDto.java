@@ -2,10 +2,16 @@ package com.chat.persistence.dto;
 
 import com.chat.domain.User;
 import com.chat.domain.UserStatus;
+import java.util.HashSet;
+import java.util.Set;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
 /**
@@ -34,7 +40,19 @@ public class UserDto extends AbstractDto implements User {
     @Column
     private UserStatus status;
 
+    @ManyToMany(cascade = {CascadeType.ALL}, targetEntity = UserDto.class)
+    @JoinTable(name = "friends",
+            joinColumns = {
+                @JoinColumn(name = "user_id")},
+            inverseJoinColumns = {
+                @JoinColumn(name = "friend_id")})
+    private final Set<User> friends = new HashSet<User>();
+
+    @ManyToMany(mappedBy = "friends", targetEntity = UserDto.class)
+    private final Set<User> users = new HashSet<User>();
+
     public UserDto() {
+        // Hibernate
     }
 
     public UserDto(String username, String password, UserStatus status) {
@@ -63,12 +81,29 @@ public class UserDto extends AbstractDto implements User {
         this.password = password;
     }
 
+    @Override
     public UserStatus getStatus() {
         return status;
     }
 
+    @Override
     public void setStatus(UserStatus status) {
         this.status = status;
+    }
+
+    @Override
+    public Set<User> getFriends() {
+        return friends;
+    }
+
+    @Override
+    public void addFriend(User friend) {
+        friends.add(friend);
+    }
+
+    @Override
+    public void removeFriend(User friend) {
+        friends.remove(friend);
     }
 
 }

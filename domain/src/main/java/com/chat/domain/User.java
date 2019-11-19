@@ -1,5 +1,7 @@
 package com.chat.domain;
 
+import java.util.Set;
+
 /**
  *
  * @author gdimitrova
@@ -17,4 +19,10 @@ public interface User extends Entity {
     public UserStatus getStatus();
 
     public void setStatus(UserStatus status);
+
+    public Set<User> getFriends();
+
+    public void addFriend(User friend);
+
+    public void removeFriend(User friend);
 }

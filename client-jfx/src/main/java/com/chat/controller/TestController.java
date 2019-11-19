@@ -5,7 +5,6 @@ import com.chat.bl.service.messaging.ResponseListener;
 import com.chat.domain.User;
 import com.chat.task.LoginTask;
 import com.chat.task.RegisterTask;
-import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.concurrent.ExecutorService;
@@ -14,23 +13,12 @@ import javafx.application.Platform;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.geometry.Pos;
 import javafx.scene.control.Button;
-import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.HBox;
-import javafx.scene.paint.Color;
-import javafx.stage.FileChooser;
 
 /**
  * FXML Controller class
@@ -73,6 +61,17 @@ public class TestController implements Initializable {
     }
 
     @FXML
+    private void addFriend() {
+        // TODO
+
+    }
+    @FXML
+    private void searchBtn() {
+        // TODO
+
+    }
+
+    @FXML
     private void login(Event e) {
         pool.execute(new LoginTask(usernameTxtF.getText(), passField.getText(), new ResponseListener<User>() {
             @Override
@@ -82,7 +81,7 @@ public class TestController implements Initializable {
                     public void run() {
                         currentUser = response;
                         setSuccess(response.getUsername());
-                        setViewVisibility( false, true);
+                        setViewVisibility(false, true);
                     }
                 });
             }
@@ -109,7 +108,7 @@ public class TestController implements Initializable {
                     public void run() {
                         currentUser = null;
                         setSuccess(response.getUsername());
-                        setViewVisibility( true, false);
+                        setViewVisibility(true, false);
                     }
                 });
             }
@@ -153,7 +152,7 @@ public class TestController implements Initializable {
         }));
     }
 
-    private void setViewVisibility( boolean isloginPane, boolean ischatPane) {
+    private void setViewVisibility(boolean isloginPane, boolean ischatPane) {
         setViewVisibility(loginPane, isloginPane);
         setViewVisibility(chatPane, ischatPane);
     }
@@ -246,7 +245,6 @@ public class TestController implements Initializable {
         messageBox.setText("");
         messageBox.requestFocus();
     }*/
-
     public void setError(String msg) {
         error.setText("ERROR: " + msg);
     }

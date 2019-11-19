@@ -5,7 +5,7 @@ package com.chat.domain;
  *
  * @author gdimitrova
  */
-public enum ConversationType {
+public enum ChatType {
     PRIVATE,
     GROUP
 }
