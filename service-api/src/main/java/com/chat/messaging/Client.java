@@ -1,5 +1,6 @@
 package com.chat.messaging;
 
+import com.chat.bl.service.messaging.CloseConnectionRequest;
 import com.chat.bl.service.messaging.ResponseListener;
 import com.chat.bl.service.messaging.Request;
 import com.chat.bl.service.messaging.RequestWrapper;
@@ -61,8 +62,17 @@ class Client {
     }
 
     void closeConnection() throws IOException {
-//        sendMessage(this.getClass(), "close", new CloseConnectionRequest());
-//        ois.close();
-//        oos.close();
+        sendMessage(this.getClass(), "close", new CloseConnectionRequest(), String.class, new ResponseListener<String>() {
+            @Override
+            public void onSuccess(String response) {
+            }
+
+            @Override
+            public void onError(String error) {
+            }
+        });
+        
+        ois.close();
+        oos.close();
     }
 }

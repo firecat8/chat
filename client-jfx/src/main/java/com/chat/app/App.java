@@ -1,5 +1,6 @@
 package com.chat.app;
 
+import static com.chat.app.ChatApp.registry;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -7,6 +8,10 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javafx.application.Platform;
+import javafx.stage.WindowEvent;
 
 /**
  * JavaFX App
@@ -18,6 +23,14 @@ public class App extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         scene = new Scene(loadFXML("chat"));
+        stage.setOnCloseRequest((WindowEvent event1) -> {
+            try {
+                registry.close();
+                Platform.exit();
+            } catch (Exception ex) {
+                Logger.getLogger(App.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        });
         stage.setScene(scene);
         stage.show();
     }

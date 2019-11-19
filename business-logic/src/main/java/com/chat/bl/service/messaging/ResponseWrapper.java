@@ -38,7 +38,7 @@ public class ResponseWrapper<T> implements Serializable {
     }
 
     public String getError() {
-        return error;
+        return code.name() + " " + error;
     }
 
 }
