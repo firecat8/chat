@@ -6,6 +6,8 @@ package com.chat.domain;
  */
 public interface ChatEvent {
 
+    public String getMessage();
+
     public Long getEventTime();
 
     public User getSender();

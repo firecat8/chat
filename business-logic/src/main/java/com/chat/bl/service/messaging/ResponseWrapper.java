@@ -41,4 +41,9 @@ public class ResponseWrapper<T> implements Serializable {
         return code.name() + " " + error;
     }
 
+    @Override
+    public String toString() {
+        return code.name() + " " + (response == null ? "" : response.getClass().getSimpleName()) + error;
+    }
+
 }

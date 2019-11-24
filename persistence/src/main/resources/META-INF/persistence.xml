@@ -4,11 +4,9 @@
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
         <class>com.chat.persistence.dto.UserInfoDto</class>
         <class>com.chat.persistence.dto.UseDto</class>
-        <class>com.chat.persistence.dto.ChatDto.</class>
+        <class>com.chat.persistence.dto.ChatDto</class>
         <class>com.chat.persistence.dto.ParticipantDto</class>
-        <class>com.chat.persistence.dto.ChatFileDto</class>
-        <class>com.chat.persistence.dto.ChatMessageDto</class>
-        <class>com.chat.persistence.dto.ChatLogDto</class>
+        <class>com.chat.persistence.dto.ChatEventDto</class>
         <properties>
             <property name="javax.persistence.jdbc.driver" value="org.hsqldb.jdbcDriver"/>
             <property name="javax.persistence.jdbc.url" value="jdbc:hsqldb:file:~/databases/chat/db"/>

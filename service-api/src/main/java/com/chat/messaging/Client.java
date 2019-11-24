@@ -10,6 +10,9 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -20,6 +23,8 @@ import java.util.logging.Logger;
 class Client {
 
     private final static Logger LOGGER = Logger.getLogger(Client.class.getName());
+
+    private DateFormat date_formater = new SimpleDateFormat("HH:mm:ss");
 
     public static String sessionId;
 
@@ -49,8 +54,10 @@ class Client {
     synchronized <Resp> void sendMessage(Class serviceClass, String method, Request req, Class respClass, ResponseListener<Resp> listener) {
         try {
             oos.writeObject(new RequestWrapper(serviceClass, method, req, respClass));
+            log("Sent request " + req.toString());
             ResponseWrapper<Resp> respWrapper = (ResponseWrapper<Resp>) ois.readObject();
-
+            
+            log("Received response " + respWrapper.toString());
             if (respWrapper.getCode() == ResponseCode.OK) {
                 listener.onSuccess(respWrapper.getResponse());
             } else {
@@ -62,17 +69,11 @@ class Client {
     }
 
     void closeConnection() throws IOException {
-        sendMessage(this.getClass(), "close", new CloseConnectionRequest(), String.class, new ResponseListener<String>() {
-            @Override
-            public void onSuccess(String response) {
-            }
-
-            @Override
-            public void onError(String error) {
-            }
-        });
-        
         ois.close();
         oos.close();
+    }
+
+    private void log(String message) {
+        LOGGER.log(Level.INFO, "{0} {1}", new Object[]{date_formater.format(Calendar.getInstance().getTime()), message});
     }
 }

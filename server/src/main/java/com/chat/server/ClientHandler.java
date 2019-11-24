@@ -48,14 +48,10 @@ public class ClientHandler {
             while (true) {
                 RequestWrapper msgWrapper = (RequestWrapper) objInput.readObject();
                 log("Received request: " + msgWrapper.getRequest().getClass().getSimpleName());
-                if (msgWrapper.getRequest() instanceof CloseConnectionRequest) {
-                    break;
-                }
                 try {
                     EndPoint endpoint = mapper.getEndpoint(msgWrapper.getServiceClass());
                     Method method = getMethod(endpoint.getClass(), msgWrapper);
                     Object respWrapper = method.invoke(endpoint, msgWrapper.getRequest());
-                    log("Invoked response: " + respWrapper.toString());
                     objOutput.writeObject(respWrapper);
                 } catch (IOException | IllegalAccessException | IllegalArgumentException | NoSuchMethodException | InvocationTargetException ex) {
                     logError(ResponseCode.SERVER_ERROR, ex.getMessage());

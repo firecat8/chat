@@ -4,9 +4,13 @@ package com.chat.dao;
  *
  * @author gdimitrova
  */
-public interface DaoRegistry{
+public interface DaoRegistry {
 
     public UserDao getUserDao();
 
     public UserInfoDao getUserInfoDao();
+
+    public ChatDao getChatDao();
+
+    public ChatEventDao getChatEventDao();
 }

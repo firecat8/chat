@@ -2,26 +2,40 @@ package com.chat.persistence.dto;
 
 import com.chat.domain.Chat;
 import com.chat.domain.ChatEvent;
+import com.chat.domain.ChatEventType;
 import com.chat.domain.User;
 import javax.persistence.Column;
+import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
-import javax.persistence.MappedSuperclass;
+import javax.persistence.Table;
 
 /**
  *
  * @author gdimitrova
  */
-
-@MappedSuperclass
-public abstract class ChatEventDto extends AbstractDto implements ChatEvent {
+@Entity(name = "chat_events")
+@Table(name = "chat_events")
+public class ChatEventDto extends AbstractDto implements ChatEvent {
 
     public final static String EVENT_TIME_COLUMN = "event_time";
+
+    public final static String CHAT_EVENT_TYPE_COLUMN = "event_type";
 
     public final static String EVENT_TIME = "eventTime";
 
     public final static String SENDER = "sender";
 
     public final static String CHAT = "chat";
+
+    public final static String MESSAGE = "message";
+
+    public final static String CHAT_EVENT_TYPE = "chatEventType";
+
+    @Column()
+    private String message;
+
+    @Column(name = CHAT_EVENT_TYPE_COLUMN)
+    private ChatEventType chatEventType;
 
     @Column(name = EVENT_TIME_COLUMN)
     private Long eventTime;
@@ -36,7 +50,9 @@ public abstract class ChatEventDto extends AbstractDto implements ChatEvent {
         //Hibernate
     }
 
-    public ChatEventDto(Long eventTime, User sender, Chat chat) {
+    public ChatEventDto(String message, ChatEventType chatEventType, Long eventTime, User sender, Chat chat) {
+        this.message = message;
+        this.chatEventType = chatEventType;
         this.eventTime = eventTime;
         this.sender = sender;
         this.chat = chat;
@@ -68,4 +84,23 @@ public abstract class ChatEventDto extends AbstractDto implements ChatEvent {
     public void setChat(Chat chat) {
         this.chat = chat;
     }
+
+    @Override
+    public String getMessage() {
+        return message;
+    }
+
+    @Override
+    public ChatEventType getChatEventType() {
+        return chatEventType;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public void setChatEventType(ChatEventType chatEventType) {
+        this.chatEventType = chatEventType;
+    }
+
 }
