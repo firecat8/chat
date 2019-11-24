@@ -1,5 +1,6 @@
 package com.chat.server;
 
+import com.chat.server.endpoint.EndpointRegistry;
 import com.chat.mapper.ServiceEndpointMapper;
 import java.io.IOException;
 import java.net.ServerSocket;

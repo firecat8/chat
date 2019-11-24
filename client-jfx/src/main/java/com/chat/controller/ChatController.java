@@ -2,14 +2,18 @@ package com.chat.controller;
 
 import com.chat.task.LogoutTask;
 import com.chat.bl.service.messaging.ResponseListener;
+import com.chat.domain.Chat;
 import com.chat.domain.User;
 import com.chat.task.LoginTask;
 import com.chat.task.RegisterTask;
+import com.chat.task.SendMessageTask;
 import com.chat.utils.ListViewUtils;
 import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
@@ -22,6 +26,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 
@@ -58,9 +63,16 @@ public class ChatController implements Initializable {
     @FXML
     private TextField searchBar, serverChat;
 
+    @FXML
+    private TextArea messageBox;
+
     private ExecutorService pool = Executors.newFixedThreadPool(30);
 
     private DateFormat date_formater = new SimpleDateFormat("HH:mm:ss");
+
+    private Map<String, Chat> chats = new HashMap<>();
+
+    private Chat currentChat;
 
     /**
      * Initializes the controller class.
@@ -91,13 +103,33 @@ public class ChatController implements Initializable {
     }
 
     @FXML
+    private void sendMessage() {
+        pool.execute(new SendMessageTask(messageBox.getText(), currentUser, currentChat, new ResponseListener<Void>() {
+            @Override
+            public void onSuccess(Void response) {
+                //nothing
+            }
+
+            @Override
+            public void onError(String error) {
+                setMessage(error);
+            }
+        }));
+    }
+
+    @FXML
+    private void sendFile() {
+        // TODO
+    }
+
+    @FXML
     private void backLoginPane() {
-        setViewVisibility(true, false, false);
+        setPanesVisibility(true, false, false);
     }
 
     @FXML
     private void onRegPane() {
-        setViewVisibility(false, true, false);
+        setPanesVisibility(false, true, false);
     }
 
     private void addFriendList() {
@@ -120,7 +152,7 @@ public class ChatController implements Initializable {
                         currentUser = response;
                         addFriendList();
                         setMessage("Sucessfully login " + response.getUsername());
-                        setViewVisibility(false, false, true);
+                        setPanesVisibility(false, false, true);
                     }
                 });
             }
@@ -147,7 +179,7 @@ public class ChatController implements Initializable {
                     public void run() {
                         currentUser = null;
                         setMessage("Sucessfully logout " + response.getUsername());
-                        setViewVisibility(true, false, false);
+                        setPanesVisibility(true, false, false);
                     }
                 });
             }
@@ -166,13 +198,16 @@ public class ChatController implements Initializable {
 
     @FXML
     private void register(Event e) {
-        pool.execute(new RegisterTask(usernameTxtF1.getText(), passField1.getText(), null, null, null, null, null, new ResponseListener<User>() {
+        String username = usernameTxtF1.getText();
+        String pass = passField1.getText();
+        // TODO
+        pool.execute(new RegisterTask(null, null, null, null, null, null, null, new ResponseListener<User>() {
             @Override
             public void onSuccess(User response) {
                 Platform.runLater(new Runnable() {
                     @Override
                     public void run() {
-                        setViewVisibility(true, false, false);
+                        setPanesVisibility(true, false, false);
                         setMessage("Sucessfully registered " + response.getUsername());
                     }
                 });
@@ -190,13 +225,13 @@ public class ChatController implements Initializable {
         }));
     }
 
-    private void setViewVisibility(boolean isloginPane, boolean isregPane, boolean ischatPane) {
-        setViewVisibility(loginPane, isloginPane);
-        setViewVisibility(regPane, isregPane);
-        setViewVisibility(chatPane, ischatPane);
+    private void setPanesVisibility(boolean isloginPane, boolean isregPane, boolean ischatPane) {
+        setPaneVisibility(loginPane, isloginPane);
+        setPaneVisibility(regPane, isregPane);
+        setPaneVisibility(chatPane, ischatPane);
     }
 
-    private void setViewVisibility(AnchorPane pane, boolean visible) {
+    private void setPaneVisibility(AnchorPane pane, boolean visible) {
         pane.setVisible(visible);
         pane.setManaged(visible);
     }

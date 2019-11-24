@@ -20,10 +20,17 @@ public class ServiceProviderRegistryImpl implements ServiceProviderRegistry {
 
     private UserServiceProvider userServiceProvider = new UserServiceProvider(em, registry);
 
+    private ChatServiceProvider chatServiceProvider = new ChatServiceProvider(em, registry);
+
     @Override
     public UserServiceProvider getUserServiceProvider() {
         return userServiceProvider;
     }
+
+    public ChatServiceProvider getChatServiceProvider() {
+        return chatServiceProvider;
+    }
+    
 
     @Override
     public void close() throws Exception {

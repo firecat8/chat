@@ -27,6 +27,7 @@ public class ServicePointRegistryImpl extends AbstractServicePointRegistry imple
 
     private void registerServicePoints() {
         servicePoints.put(UserServiceImpl.class, new UserServiceImpl(client));
+        servicePoints.put(ChatServiceImpl.class, new ChatServiceImpl(client));
     }
 
     @Override

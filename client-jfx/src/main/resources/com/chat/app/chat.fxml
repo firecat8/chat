@@ -117,8 +117,8 @@
                         <HBox prefHeight="59.0" prefWidth="501.0">
                             <children>
                                 <TextArea fx:id="messageBox" prefHeight="42.0" prefWidth="564.0" promptText="Enter a Message:" />
-                                <Button fx:id="sendButton" minWidth="51.0" mnemonicParsing="false" prefHeight="57.0" prefWidth="51.0" text="Send" textAlignment="CENTER" />
-                                <Button fx:id="sendFileButton" minWidth="32.0" mnemonicParsing="false" prefHeight="56.0" prefWidth="32.0">
+                                <Button fx:id="sendButton" onAction="#sendMessage" minWidth="51.0" mnemonicParsing="false" prefHeight="57.0" prefWidth="51.0" text="Send" textAlignment="CENTER" />
+                                <Button fx:id="sendFileButton" onAction="#sendFile" minWidth="32.0" mnemonicParsing="false" prefHeight="56.0" prefWidth="32.0">
                                     <graphic>
                                         <ImageView fx:id="sendFileImageView1" fitHeight="23.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
                                             <image>
