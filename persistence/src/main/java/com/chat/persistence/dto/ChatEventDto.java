@@ -103,4 +103,9 @@ public class ChatEventDto extends AbstractDto implements ChatEvent {
         this.chatEventType = chatEventType;
     }
 
+    @Override
+    public String getStorageFileName() {
+        return getId() + "_" + getMessage();
+    }
+
 }

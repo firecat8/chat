@@ -4,7 +4,6 @@ import com.chat.dao.CrudDao;
 import com.chat.domain.Entity;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaDelete;
@@ -14,6 +13,7 @@ import javax.persistence.criteria.Root;
 /**
  *
  * @author gdimitrova
+ * @param <E>
  */
 public abstract class AbstractCrudDao<E extends Entity> extends AbstractDao<E> implements CrudDao<E> {
 

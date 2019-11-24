@@ -19,9 +19,15 @@ public class ChatApp {
     public static void main(String[] args) {
         try {
             registry = new ServicePointRegistryImpl(loadProperties());
-            App.start(args);
+            GUIApp.start(args);
         } catch (IOException | ClassNotFoundException ex) {
             logger.log(Level.SEVERE, null, ex);
+            try {
+                registry.close();
+            } catch (Exception ex1) {
+
+                logger.log(Level.SEVERE, null, ex1);
+            }
         }
     }
 
@@ -33,7 +39,7 @@ public class ChatApp {
             config.load(in);
             return config;
         } catch (IOException ex) {
-           logger.log(Level.SEVERE, null, ex);
+            logger.log(Level.SEVERE, null, ex);
         }
         return config;
 

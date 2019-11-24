@@ -42,7 +42,7 @@ public abstract class AbstractDao<E extends Entity> {
     protected E getResult(String property, Object value) {
         List<E> results = getResults(property, value);
         if (results.isEmpty()) {
-             return null;
+            return null;
         }
         return results.get(0);
     }
@@ -53,6 +53,15 @@ public abstract class AbstractDao<E extends Entity> {
         Expression<E> prop = query.from(dtoClassName).get(property);
         query.where(cb.equal(prop, value));
         return em.createQuery(query).getResultList();
+    }
+
+    protected List<E> getResults(String property, Object value, String orderProperty, int limit) {
+        CriteriaBuilder cb = getCriteriaBuilder();
+        CriteriaQuery<E> query = cb.createQuery(dtoClassName);
+        Expression<E> prop = query.from(dtoClassName).get(property);
+        query.orderBy(cb.desc(query.from(dtoClassName).get(orderProperty)));
+        query.where(cb.equal(prop, value));
+        return em.createQuery(query).setMaxResults(limit).getResultList();
     }
 
     protected List<E> getResults(Map<String, Object> properties) {

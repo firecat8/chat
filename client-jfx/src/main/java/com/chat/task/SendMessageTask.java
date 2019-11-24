@@ -4,6 +4,7 @@ import com.chat.app.ChatApp;
 import com.chat.bl.service.messaging.ResponseListener;
 import com.chat.bl.service.messaging.chat.SendMessageRequest;
 import com.chat.domain.Chat;
+import com.chat.domain.ChatEvent;
 import com.chat.domain.User;
 import javafx.concurrent.Task;
 
@@ -13,11 +14,11 @@ import javafx.concurrent.Task;
  */
 public class SendMessageTask extends Task<Void> {
 
-    private final ResponseListener<Void> listener;
+    private final ResponseListener<ChatEvent> listener;
 
     private final SendMessageRequest request;
 
-    public SendMessageTask(String message, User sender, Chat chat, ResponseListener<Void> listener) {
+    public SendMessageTask(String message, User sender, Chat chat, ResponseListener<ChatEvent> listener) {
         this.listener = listener;
         this.request = new SendMessageRequest(message, sender, chat);
     }

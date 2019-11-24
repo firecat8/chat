@@ -3,6 +3,7 @@ package com.chat.controller;
 import com.chat.task.LogoutTask;
 import com.chat.bl.service.messaging.ResponseListener;
 import com.chat.domain.Chat;
+import com.chat.domain.ChatEvent;
 import com.chat.domain.User;
 import com.chat.task.LoginTask;
 import com.chat.task.RegisterTask;
@@ -66,7 +67,7 @@ public class ChatController implements Initializable {
     @FXML
     private TextArea messageBox;
 
-    private ExecutorService pool = Executors.newFixedThreadPool(30);
+    public static ExecutorService pool = Executors.newFixedThreadPool(30);
 
     private DateFormat date_formater = new SimpleDateFormat("HH:mm:ss");
 
@@ -104,9 +105,9 @@ public class ChatController implements Initializable {
 
     @FXML
     private void sendMessage() {
-        pool.execute(new SendMessageTask(messageBox.getText(), currentUser, currentChat, new ResponseListener<Void>() {
+        pool.execute(new SendMessageTask(messageBox.getText(), currentUser, currentChat, new ResponseListener<ChatEvent>() {
             @Override
-            public void onSuccess(Void response) {
+            public void onSuccess(ChatEvent response) {
                 //nothing
             }
 

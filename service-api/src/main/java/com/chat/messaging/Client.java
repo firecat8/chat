@@ -20,7 +20,7 @@ import java.util.logging.Logger;
  *
  * @author gdimitrova
  */
-class Client {
+public class Client {
 
     private final static Logger LOGGER = Logger.getLogger(Client.class.getName());
 
@@ -54,9 +54,10 @@ class Client {
     synchronized <Resp> void sendMessage(Class serviceClass, String method, Request req, Class respClass, ResponseListener<Resp> listener) {
         try {
             oos.writeObject(new RequestWrapper(serviceClass, method, req, respClass));
+            oos.flush();
             log("Sent request " + req.toString());
             ResponseWrapper<Resp> respWrapper = (ResponseWrapper<Resp>) ois.readObject();
-            
+
             log("Received response " + respWrapper.toString());
             if (respWrapper.getCode() == ResponseCode.OK) {
                 listener.onSuccess(respWrapper.getResponse());

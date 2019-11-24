@@ -12,7 +12,7 @@ import com.chat.domain.User;
  */
 public class UserServiceImpl implements UserService, ServicePoint {
 
-    private Client client;
+    private final Client client;
 
     public UserServiceImpl(Client client) {
         this.client = client;

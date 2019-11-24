@@ -36,6 +36,16 @@ public class ChatDto extends AbstractDto implements Chat {
     @OneToMany(cascade = {CascadeType.ALL}, fetch = FetchType.EAGER, targetEntity = ParticipantDto.class, mappedBy = "chat")
     private Set<Participant> participants = new HashSet<>();
 
+    public ChatDto() {
+        //Hibernate
+    }
+
+    public ChatDto(String name, ChatType type) {
+        this.name = name;
+        this.type = type;
+    }
+    
+
     @Override
     public String getName() {
         return name;

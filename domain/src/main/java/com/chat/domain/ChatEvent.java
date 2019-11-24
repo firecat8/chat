@@ -8,6 +8,8 @@ public interface ChatEvent {
 
     public String getMessage();
 
+    public String getStorageFileName();
+
     public Long getEventTime();
 
     public User getSender();

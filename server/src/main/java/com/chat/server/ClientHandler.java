@@ -20,7 +20,7 @@ import java.util.logging.Logger;
  *
  * @author gdimitrova
  */
-public class ClientHandler {
+public class ClientHandler implements Runnable {
 
     private final static Logger LOGGER = Logger.getLogger(ClientHandler.class.getName());
 
@@ -42,9 +42,11 @@ public class ClientHandler {
         objInput = new ObjectInputStream(s.getInputStream());
     }
 
-    public void processRequest() {
+    @Override
+    public void run() {
         try (objOutput; objInput; socket) {
             objOutput.writeObject(sessionId);
+            objOutput.flush();
             while (true) {
                 RequestWrapper msgWrapper = (RequestWrapper) objInput.readObject();
                 log("Received request: " + msgWrapper.getRequest().getClass().getSimpleName());
@@ -53,6 +55,7 @@ public class ClientHandler {
                     Method method = getMethod(endpoint.getClass(), msgWrapper);
                     Object respWrapper = method.invoke(endpoint, msgWrapper.getRequest());
                     objOutput.writeObject(respWrapper);
+                    objOutput.flush();
                 } catch (IOException | IllegalAccessException | IllegalArgumentException | NoSuchMethodException | InvocationTargetException ex) {
                     logError(ResponseCode.SERVER_ERROR, ex.getMessage());
                 } catch (MessageException ex) {
