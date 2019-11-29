@@ -1,6 +1,6 @@
 package com.chat.app;
 
-import com.chat.messaging.ServicePointRegistry;
+import com.chat.messaging.services.ServicePointRegistry;
 import com.chat.messaging.ServicePointRegistryImpl;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -27,7 +27,7 @@ public class ChatApp {
             } catch (Exception ex1) {
 
                 logger.log(Level.SEVERE, null, ex1);
-            }
+    }
         }
     }
 

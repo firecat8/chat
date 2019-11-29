@@ -4,17 +4,68 @@ package com.chat.domain;
  *
  * @author gdimitrova
  */
-public interface ChatEvent {
+public class ChatEvent extends Entity{
 
-    public String getMessage();
+    private String message;
 
-    public String getStorageFileName();
+    private ChatEventType chatEventType;
 
-    public Long getEventTime();
+    private Long eventTime;
 
-    public User getSender();
+    private User sender;
 
-    public Chat getChat();
+    private Chat chat;
 
-    public ChatEventType getChatEventType();
+    public ChatEvent(String message, ChatEventType chatEventType, Long eventTime, User sender, Chat chat) {
+        this.message = message;
+        this.chatEventType = chatEventType;
+        this.eventTime = eventTime;
+        this.sender = sender;
+        this.chat = chat;
+    }
+
+    public Long getEventTime() {
+        return eventTime;
+    }
+
+    public void setEventTime(Long sentTime) {
+        this.eventTime = sentTime;
+    }
+
+    public User getSender() {
+        return sender;
+    }
+
+    public void setSender(User sender) {
+        this.sender = sender;
+    }
+
+    public Chat getChat() {
+        return chat;
+    }
+
+    public void setChat(Chat chat) {
+        this.chat = chat;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public ChatEventType getChatEventType() {
+        return chatEventType;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public void setChatEventType(ChatEventType chatEventType) {
+        this.chatEventType = chatEventType;
+    }
+
+    public String getStorageFileName() {
+        return getId() + "_" + getMessage();
+    }
+
 }

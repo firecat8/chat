@@ -1,6 +1,5 @@
 package com.chat.persistence.dto;
 
-import com.chat.domain.Entity;
 import java.io.Serializable;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -12,7 +11,7 @@ import org.hibernate.annotations.GenericGenerator;
  * @author gdimitrova
  */
 @MappedSuperclass
-public abstract class AbstractDto implements Entity, Serializable {
+public abstract class AbstractDto implements Dto, Serializable {
 
     @Id
     @GeneratedValue(generator = "id")
@@ -24,8 +23,9 @@ public abstract class AbstractDto implements Entity, Serializable {
         return id;
     }
 
-    private void setId(Long id) {
+    @Override
+    public void setId(Long id) {
         this.id = id;
     }
-    
+
 }

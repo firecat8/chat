@@ -3,23 +3,23 @@
  */
 package com.chat.dao;
 
+import com.chat.domain.Entity;
 import java.util.List;
 
 /**
  *
  * @author gdimitrova
- * @param <Entity>
  */
-public interface CrudDao<Entity> {
+public interface CrudDao<E extends Entity> {
 
-    public void update(Entity oldOne);
+    public void update(E oldOne);
 
-    public void save(Entity entity);
+    public void save(E entity);
 
     public void delete(Long id);
 
-    public void deleteAll(List<Entity> list);
+    public void deleteAll(List<E> list);
 
-    public Entity loadById(Long id) ;
+    public E loadById(Long id);
 
 }

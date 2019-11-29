@@ -1,10 +1,11 @@
 package com.chat.app;
 
 import static com.chat.app.ChatApp.registry;
-import com.chat.bl.service.messaging.ResponseListener;
+import com.chat.messaging.message.ResponseListener;
 import com.chat.controller.ChatController;
 import static com.chat.controller.ChatController.pool;
-import com.chat.domain.User;
+import com.chat.messaging.dto.ErrorMessageDto;
+import com.chat.messaging.dto.UserMessageDto;
 import com.chat.task.LogoutTask;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -30,9 +31,9 @@ public class GUIApp extends Application {
         scene = new Scene(loadFXML("chat"));
         stage.setOnCloseRequest((WindowEvent event1) -> {
             pool.shutdownNow();
-            new LogoutTask(ChatController.currentUser.getUsername(), ChatController.currentUser.getPassword(), new ResponseListener<User>() {
+            new LogoutTask(ChatController.currentUser.getUsername(), ChatController.currentUser.getPassword(), new ResponseListener<UserMessageDto>() {
                 @Override
-                public void onSuccess(User response) {
+                public void onSuccess(UserMessageDto response) {
 
                     try {
                         registry.close();
@@ -43,7 +44,7 @@ public class GUIApp extends Application {
                 }
 
                 @Override
-                public void onError(String error) {
+                public void onError(ErrorMessageDto error) {
                     throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
                 }
             }).run();

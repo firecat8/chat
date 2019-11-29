@@ -1,9 +1,9 @@
 package com.chat.task;
 
 import com.chat.app.ChatApp;
-import com.chat.bl.service.messaging.ResponseListener;
-import com.chat.bl.service.messaging.user.UserRequest;
-import com.chat.domain.User;
+import com.chat.messaging.message.ResponseListener;
+import com.chat.messaging.message.user.UserRequest;
+import com.chat.messaging.dto.UserMessageDto;
 import javafx.concurrent.Task;
 
 /**
@@ -14,9 +14,9 @@ public class LoginTask extends Task<Void> {
 
     private final UserRequest userRequest;
 
-    private final ResponseListener<User> listener;
+    private final ResponseListener<UserMessageDto> listener;
 
-    public LoginTask(String username, String password, ResponseListener<User> listener) {
+    public LoginTask(String username, String password, ResponseListener<UserMessageDto> listener) {
         userRequest = new UserRequest(username, password);
         this.listener = listener;
     }

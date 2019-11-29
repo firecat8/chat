@@ -1,7 +1,6 @@
 package com.chat.persistence.dto;
 
-import com.chat.domain.User;
-import com.chat.domain.UserStatus;
+import com.chat.persistence.dto.UserStatusDto;
 import java.util.HashSet;
 import java.util.Set;
 import javax.persistence.CascadeType;
@@ -21,7 +20,7 @@ import javax.persistence.Table;
  */
 @Entity(name = "users")
 @Table(name = "users")
-public class UserDto extends AbstractDto implements User {
+public class UserDto extends AbstractDto {
 
     public final static String USER_NAME_COLUMN = "user_name";
 
@@ -31,7 +30,7 @@ public class UserDto extends AbstractDto implements User {
 
     public final static String STATUS = "status";
 
-    @Column(name = USER_NAME_COLUMN, unique = true,nullable = false)
+    @Column(name = USER_NAME_COLUMN, unique = true, nullable = false)
     private String username;
 
     @Column(nullable = false)
@@ -39,71 +38,62 @@ public class UserDto extends AbstractDto implements User {
 
     @Enumerated(EnumType.STRING)
     @Column
-    private UserStatus status;
+    private UserStatusDto status;
 
-    @ManyToMany(cascade = {CascadeType.ALL}, fetch = FetchType.EAGER, targetEntity = UserDto.class)
+    @ManyToMany(cascade = {CascadeType.ALL}, fetch = FetchType.EAGER)
     @JoinTable(name = "friends",
             joinColumns = {
                 @JoinColumn(name = "user_id")},
             inverseJoinColumns = {
                 @JoinColumn(name = "friend_id")})
-    private final Set<User> friends = new HashSet<User>();
+    private final Set<UserDto> friends = new HashSet<>();
 
-    @ManyToMany(mappedBy = "friends", fetch = FetchType.EAGER, targetEntity = UserDto.class)
-    private final Set<User> users = new HashSet<User>();
+    @ManyToMany(mappedBy = "friends", fetch = FetchType.EAGER)
+    private final Set<UserDto> users = new HashSet<>();
 
     public UserDto() {
         // Hibernate
     }
 
-    public UserDto(String username, String password, UserStatus status) {
+    public UserDto(String username, String password, UserStatusDto status) {
         this.username = username;
         this.password = password;
         this.status = status;
     }
 
-    @Override
     public String getUsername() {
         return username;
     }
 
-    @Override
     public void setUsername(String username) {
         this.username = username;
     }
 
-    @Override
     public String getPassword() {
         return password;
     }
 
-    @Override
     public void setPassword(String password) {
         this.password = password;
     }
 
-    @Override
-    public UserStatus getStatus() {
+    public UserStatusDto getStatus() {
         return status;
     }
 
-    @Override
-    public void setStatus(UserStatus status) {
+    public void setStatus(UserStatusDto status) {
         this.status = status;
     }
 
-    @Override
-    public Set<User> getFriends() {
+    public Set<UserDto> getFriends() {
         return friends;
     }
 
-    @Override
-    public void addFriend(User friend) {
+    public void addFriend(UserDto friend) {
         friends.add(friend);
     }
 
-    @Override
-    public void removeFriend(User friend) {
+    public void removeFriend(UserDto friend) {
         friends.remove(friend);
     }
 

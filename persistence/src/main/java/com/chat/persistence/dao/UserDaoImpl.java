@@ -4,6 +4,7 @@ import com.chat.dao.UserDao;
 import com.chat.domain.User;
 import com.chat.domain.UserStatus;
 import com.chat.persistence.dto.UserDto;
+import com.chat.persistence.exchanger.UserDtoExchanger;
 import java.util.HashMap;
 import java.util.Map;
 import javax.persistence.EntityManager;
@@ -12,10 +13,10 @@ import javax.persistence.EntityManager;
  *
  * @author gdimitrova
  */
-public class UserDaoImpl extends AbstractDao<UserDto> implements UserDao {
+public class UserDaoImpl extends AbstractDao<UserDto, User> implements UserDao {
 
     public UserDaoImpl(EntityManager em) {
-        super(UserDto.class, em);
+        super(UserDto.class, em, UserDtoExchanger.INSTANCE);
     }
 
     @Override
@@ -26,7 +27,8 @@ public class UserDaoImpl extends AbstractDao<UserDto> implements UserDao {
     @Override
     public boolean updateStatus(User user, UserStatus status) {
         user.setStatus(status);
-        return super.update((UserDto) user, loadProperties((UserDto) user)) == 1;
+        UserDto dto = exchanger.exchange(user);
+        return super.update(dto, loadProperties(dto)) == 1;
     }
 
     @Override

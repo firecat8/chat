@@ -1,22 +1,46 @@
 package com.chat.domain;
 
+import java.util.HashSet;
 import java.util.Set;
 
 /**
  *
  * @author gdimitrova
  */
-public interface Chat extends Entity {
+public class Chat extends Entity {
 
-    public String getName();
+    private String name;
 
-    public void setName(String name);
+    private ChatType type;
 
-    public ChatType getChatType();
+    private final Set<Participant> participants = new HashSet<>();
 
-    public Set<Participant> getParticipants();
+    public Chat(String name, ChatType type) {
+        this.name = name;
+        this.type = type;
+    }
 
-    public void addParticipant(Participant participant);
+    public String getName() {
+        return name;
+    }
 
-    public void removeParticipant(Participant participant);
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public ChatType getChatType() {
+        return type;
+    }
+
+    public Set<Participant> getParticipants() {
+        return participants;
+    }
+
+    public void addParticipant(Participant participant) {
+        this.participants.add(participant);
+    }
+
+    public void removeParticipant(Participant participant) {
+        this.participants.remove(participant);
+    }
 }

@@ -13,6 +13,8 @@ import javax.persistence.EntityManager;
  */
 public class DaoImplRegistry implements DaoRegistry {
 
+    private final EntityManager em;
+
     private final UserDao userDao;
 
     private final UserInfoDao userInfoDao;
@@ -22,10 +24,15 @@ public class DaoImplRegistry implements DaoRegistry {
     private final ChatEventDao chatEventDao;
 
     public DaoImplRegistry(EntityManager em) {
+        this.em = em;
         userDao = new UserDaoImpl(em);
         userInfoDao = new UserInfoDaoImpl(em);
         chatDao = new ChatDaoImpl(em);
         chatEventDao = new ChatEventDaoImpl(em);
+    }
+
+    public DaoImplRegistry() {
+        this(EntityManagerFactoryHolder.FACTORY.createEntityManager());
     }
 
     @Override
@@ -48,4 +55,24 @@ public class DaoImplRegistry implements DaoRegistry {
         return chatEventDao;
     }
 
+    @Override
+    public void beginTransaction() {
+        if (!em.getTransaction().isActive()) {
+            em.getTransaction().begin();
+        }
+    }
+
+    @Override
+    public void rollbackTransaction() {
+        if (em.getTransaction().isActive()) {
+            em.getTransaction().rollback();
+        }
+    }
+
+    @Override
+    public void commitTransaction() {
+        if (em.getTransaction().isActive()) {
+            em.getTransaction().commit();
+        }
+    }
 }

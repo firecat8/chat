@@ -1,11 +1,11 @@
 package com.chat.task;
 
 import com.chat.app.ChatApp;
-import com.chat.bl.service.messaging.ResponseListener;
-import com.chat.bl.service.messaging.chat.SendMessageRequest;
-import com.chat.domain.Chat;
-import com.chat.domain.ChatEvent;
-import com.chat.domain.User;
+import com.chat.messaging.message.ResponseListener;
+import com.chat.messaging.message.chat.SendMessageRequest;
+import com.chat.messaging.dto.ChatEventMessageDto;
+import com.chat.messaging.dto.ChatMessageDto;
+import com.chat.messaging.dto.UserMessageDto;
 import javafx.concurrent.Task;
 
 /**
@@ -14,11 +14,11 @@ import javafx.concurrent.Task;
  */
 public class SendMessageTask extends Task<Void> {
 
-    private final ResponseListener<ChatEvent> listener;
+    private final ResponseListener<ChatEventMessageDto> listener;
 
     private final SendMessageRequest request;
 
-    public SendMessageTask(String message, User sender, Chat chat, ResponseListener<ChatEvent> listener) {
+    public SendMessageTask(String message, UserMessageDto sender, ChatMessageDto chat, ResponseListener<ChatEventMessageDto> listener) {
         this.listener = listener;
         this.request = new SendMessageRequest(message, sender, chat);
     }

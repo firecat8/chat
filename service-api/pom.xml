@@ -9,10 +9,5 @@
     <artifactId>service-api</artifactId>
     <packaging>jar</packaging>
     <dependencies>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>business-logic</artifactId>
-            <version>${project.version}</version>
-        </dependency>
     </dependencies>
 </project>

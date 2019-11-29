@@ -1,12 +1,11 @@
 package com.chat.server;
 
-import com.chat.bl.service.dao.MessageException;
-import com.chat.bl.service.messaging.CloseConnectionRequest;
 import com.chat.bl.service.messaging.EndPoint;
-import com.chat.bl.service.messaging.RequestWrapper;
-import com.chat.bl.service.messaging.ResponseCode;
-import com.chat.bl.service.messaging.ResponseWrapper;
-import com.chat.mapper.ServiceEndpointMapper;
+import com.chat.messaging.message.RequestWrapper;
+import com.chat.messaging.message.ResponseCode;
+import com.chat.messaging.message.ResponseWrapper;
+import com.chat.messaging.dto.ErrorMessageDto;
+import com.chat.messaging.message.ResponseListener;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -24,9 +23,9 @@ public class ClientHandler implements Runnable {
 
     private final static Logger LOGGER = Logger.getLogger(ClientHandler.class.getName());
 
-    private String sessionId;
+    private final String sessionId;
 
-    private final ServiceEndpointMapper mapper;
+    private final ServiceProvider svcProvider;
 
     private final Socket socket;
 
@@ -34,10 +33,10 @@ public class ClientHandler implements Runnable {
 
     private final ObjectOutputStream objOutput;
 
-    public ClientHandler(String sessionId, Socket s, ServiceEndpointMapper mapper) throws IOException {
+    public ClientHandler(String sessionId, Socket s, ServiceProvider svcProvider) throws IOException {
         this.sessionId = sessionId;
         this.socket = s;
-        this.mapper = mapper;
+        this.svcProvider = svcProvider;
         objOutput = new ObjectOutputStream(s.getOutputStream());
         objInput = new ObjectInputStream(s.getInputStream());
     }
@@ -50,17 +49,7 @@ public class ClientHandler implements Runnable {
             while (true) {
                 RequestWrapper msgWrapper = (RequestWrapper) objInput.readObject();
                 log("Received request: " + msgWrapper.getRequest().getClass().getSimpleName());
-                try {
-                    EndPoint endpoint = mapper.getEndpoint(msgWrapper.getServiceClass());
-                    Method method = getMethod(endpoint.getClass(), msgWrapper);
-                    Object respWrapper = method.invoke(endpoint, msgWrapper.getRequest());
-                    objOutput.writeObject(respWrapper);
-                    objOutput.flush();
-                } catch (IOException | IllegalAccessException | IllegalArgumentException | NoSuchMethodException | InvocationTargetException ex) {
-                    logError(ResponseCode.SERVER_ERROR, ex.getMessage());
-                } catch (MessageException ex) {
-                    logError(ResponseCode.ERROR, ex.getMessage());
-                }
+                handleRequest(msgWrapper);
             }
 
         } catch (IOException | ClassNotFoundException ex) {
@@ -69,17 +58,48 @@ public class ClientHandler implements Runnable {
         log("Session ended.");
     }
 
-    private Method getMethod(Class<? extends EndPoint> endpointClass, RequestWrapper msgWrapper) throws NoSuchMethodException {
-        return endpointClass.getMethod(msgWrapper.getMethod(), msgWrapper.getReqClass());
+    private void handleRequest(RequestWrapper rqWrapper) {
+        ResponseListener listener = new ResponseListenerImpl(objOutput);
+        try {
+            Object svc = svcProvider.getService(rqWrapper.getServiceClass());
+            Method method = rqWrapper.getServiceClass().getMethod(rqWrapper.getMethod(), rqWrapper.getReqClass(), ResponseListener.class);
+            method.invoke(svc, rqWrapper.getRequest(), listener);
+        } catch (IllegalAccessException | IllegalArgumentException | NoSuchMethodException | SecurityException | InvocationTargetException e) {
+            listener.onError(new ErrorMessageDto(ResponseCode.SERVER_ERROR, e.getMessage()));
+        }
     }
 
     private void log(String msg) {
         LOGGER.log(Level.INFO, "Session: {0}\n{1}", new Object[]{sessionId, msg});
     }
 
-    private void logError(ResponseCode code, String msg) throws IOException {
-        LOGGER.severe(msg);
-        objOutput.writeObject(new ResponseWrapper(code, msg));
+    private static class ResponseListenerImpl<T> implements ResponseListener<T> {
+
+        private final ObjectOutputStream objOutput;
+
+        public ResponseListenerImpl(ObjectOutputStream objOutput) {
+            this.objOutput = objOutput;
+        }
+
+        @Override
+        public void onSuccess(T response) {
+            writeResponse(new ResponseWrapper(ResponseCode.OK, response));
+        }
+
+        @Override
+        public void onError(ErrorMessageDto error) {
+            writeResponse(new ResponseWrapper(error.getErrorCode(), error.getMessage()));
+        }
+
+        private void writeResponse(ResponseWrapper respWrapper) {
+            try {
+                objOutput.writeObject(respWrapper);
+                objOutput.flush();
+            } catch (IOException ex) {
+                LOGGER.severe(ex.getMessage());
+            }
+        }
+
     }
 
 }

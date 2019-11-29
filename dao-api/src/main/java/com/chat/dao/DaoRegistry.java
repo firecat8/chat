@@ -13,4 +13,10 @@ public interface DaoRegistry {
     public ChatDao getChatDao();
 
     public ChatEventDao getChatEventDao();
+
+    public void beginTransaction();
+
+    public void rollbackTransaction();
+
+    public void commitTransaction();
 }

@@ -4,29 +4,78 @@ package com.chat.domain;
  *
  * @author gdimitrova
  */
-public interface UserInfo {
+public class UserInfo extends Entity {
 
-    public User getUser();
+    private String firstname;
 
-    public void setUser(User user);
+    private String lastname;
 
-    public String getFirstname();
+    private String email;
 
-    public void setFirstname(String firstname);
+    private String phone;
 
-    public String getLastname();
+    private String city;
 
-    public void setLastname(String lastname);
+    private User user;
 
-    public String getEmail();
+    public UserInfo() {
+    }
 
-    public void setEmail(String email);
+    public UserInfo(String username, String password, String firstname, String lastname, String email, String phone, String city) {
+        this.user = new User(username, password, UserStatus.INACTIVE);
+        this.firstname = firstname;
+        this.lastname = lastname;
+        this.email = email;
+        this.phone = phone;
+        this.city = city;
+    }
 
-    public String getPhone();
+    public User getUser() {
+        return user;
+    }
 
-    public void setPhone(String phone);
+    public void setUser(User user) {
+        this.user = user;
+    }
 
-    public String getCity();
+    public String getFirstname() {
+        return firstname;
+    }
 
-    public void setCity(String city);
+    public void setFirstname(String firstname) {
+        this.firstname = firstname;
+    }
+
+    public String getLastname() {
+        return lastname;
+    }
+
+    public void setLastname(String lastname) {
+        this.lastname = lastname;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
 }

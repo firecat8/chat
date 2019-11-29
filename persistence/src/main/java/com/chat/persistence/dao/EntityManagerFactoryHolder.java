@@ -16,16 +16,9 @@ public class EntityManagerFactoryHolder {
 
     private static EntityManagerFactory createFactory() {
         EntityManagerFactory factory = null;
-        try {
-            factory = Persistence.createEntityManagerFactory("com.chat");
-        } catch (Exception e) {
-            System.out.println("\n " + e.getMessage() + "\n");
-        }
+        factory = Persistence.createEntityManagerFactory("com.chat");
         return factory;
     }
 
-    public static EntityManagerFactory getFactory() {
-        return FACTORY;
-    }
 
 }

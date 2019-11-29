@@ -1,9 +1,5 @@
 package com.chat.persistence.dto;
 
-import com.chat.domain.Chat;
-import com.chat.domain.ChatUser;
-import com.chat.domain.Participant;
-import com.chat.domain.User;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -20,7 +16,7 @@ import javax.persistence.Table;
  */
 @Entity(name = "participants")
 @Table(name = "participants")
-public class ParticipantDto extends AbstractDto implements Participant {
+public class ParticipantDto extends AbstractDto {
 
     public final static String USER = "user";
 
@@ -30,40 +26,37 @@ public class ParticipantDto extends AbstractDto implements Participant {
 
     @OneToOne(cascade = CascadeType.ALL, targetEntity = UserDto.class)
     @JoinColumn(name = USER_ID)
-    private User user;
+    private UserDto user;
 
     @Enumerated(EnumType.STRING)
     @Column
-    private ChatUser userType;
+    private ChatUserDto userType;
 
     @ManyToOne(targetEntity = ChatDto.class)
     @JoinColumn(name = CHAT_COLUMN)
-    private Chat chat;
+    private ChatDto chat;
 
-    @Override
-    public User getUser() {
+    public UserDto getUser() {
         return user;
     }
 
-    public void setUser(User user) {
+    public void setUser(UserDto user) {
         this.user = user;
     }
 
-    @Override
-    public ChatUser getUserType() {
+    public ChatUserDto getUserType() {
         return userType;
     }
 
-    public void setUserType(ChatUser userType) {
+    public void setUserType(ChatUserDto userType) {
         this.userType = userType;
     }
 
-    @Override
-    public Chat getChat() {
+    public ChatDto getChat() {
         return chat;
     }
 
-    public void setChat(Chat chat) {
+    public void setChat(ChatDto chat) {
         this.chat = chat;
     }
 

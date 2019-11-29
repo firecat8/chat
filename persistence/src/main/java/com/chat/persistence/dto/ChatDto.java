@@ -1,8 +1,5 @@
 package com.chat.persistence.dto;
 
-import com.chat.domain.Chat;
-import com.chat.domain.ChatType;
-import com.chat.domain.Participant;
 import java.util.HashSet;
 import java.util.Set;
 import javax.persistence.CascadeType;
@@ -20,7 +17,7 @@ import javax.persistence.Table;
  */
 @Entity(name = "chats")
 @Table(name = "chats")
-public class ChatDto extends AbstractDto implements Chat {
+public class ChatDto extends AbstractDto {
 
     public final static String NAME = "name";
 
@@ -31,48 +28,41 @@ public class ChatDto extends AbstractDto implements Chat {
 
     @Enumerated(EnumType.STRING)
     @Column
-    private ChatType type;
+    private ChatTypeDto type;
 
     @OneToMany(cascade = {CascadeType.ALL}, fetch = FetchType.EAGER, targetEntity = ParticipantDto.class, mappedBy = "chat")
-    private Set<Participant> participants = new HashSet<>();
+    private Set<ParticipantDto> participants = new HashSet<>();
 
     public ChatDto() {
         //Hibernate
     }
 
-    public ChatDto(String name, ChatType type) {
+    public ChatDto(String name, ChatTypeDto type) {
         this.name = name;
         this.type = type;
     }
-    
 
-    @Override
     public String getName() {
         return name;
     }
 
-    @Override
     public void setName(String name) {
         this.name = name;
     }
 
-    @Override
-    public ChatType getChatType() {
+    public ChatTypeDto getChatType() {
         return type;
     }
 
-    @Override
-    public Set<Participant> getParticipants() {
+    public Set<ParticipantDto> getParticipants() {
         return participants;
     }
 
-    @Override
-    public void addParticipant(Participant participant) {
+    public void addParticipant(ParticipantDto participant) {
         this.participants.add(participant);
     }
 
-    @Override
-    public void removeParticipant(Participant participant) {
+    public void removeParticipant(ParticipantDto participant) {
         this.participants.remove(participant);
     }
 

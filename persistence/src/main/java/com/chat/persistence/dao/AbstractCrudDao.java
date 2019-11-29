@@ -2,6 +2,8 @@ package com.chat.persistence.dao;
 
 import com.chat.dao.CrudDao;
 import com.chat.domain.Entity;
+import com.chat.domain.exchanger.DtoEntityExchanger;
+import com.chat.persistence.dto.Dto;
 import java.util.HashMap;
 import java.util.List;
 import javax.persistence.EntityManager;
@@ -15,27 +17,27 @@ import javax.persistence.criteria.Root;
  * @author gdimitrova
  * @param <E>
  */
-public abstract class AbstractCrudDao<E extends Entity> extends AbstractDao<E> implements CrudDao<E> {
+public abstract class AbstractCrudDao<D extends Dto, E extends Entity> extends AbstractDao<D, E> implements CrudDao<E> {
 
-    protected AbstractCrudDao(Class<E> dtoClass, EntityManager em) {
-        super(dtoClass, em);
+    protected AbstractCrudDao(Class<D> dtoClass, EntityManager em, DtoEntityExchanger<D, E> exchanger) {
+        super(dtoClass, em, exchanger);
     }
 
     @Override
     public void save(E entity) {
-        saveOrUpdate(entity);
+        saveOrUpdate(exchanger.exchange(entity));
     }
 
     @Override
-    public void update(E update) {
-        super.update(update, new HashMap<>());
+    public void update(E e) {
+        super.update(exchanger.exchange(e), new HashMap<>());
     }
 
     @Override
     public void delete(Long id) {
         CriteriaBuilder cb = getCriteriaBuilder();
-        CriteriaDelete<E> delete = cb.createCriteriaDelete(dtoClassName);
-        Root<E> root = delete.from(dtoClassName);
+        CriteriaDelete<D> delete = cb.createCriteriaDelete(dtoClassName);
+        Root<D> root = delete.from(dtoClassName);
         delete.where(cb.equal(root.get("id"), id));
         em.createQuery(delete).executeUpdate();
     }
@@ -55,26 +57,26 @@ public abstract class AbstractCrudDao<E extends Entity> extends AbstractDao<E> i
 
     public List<E> loadAll() {
         CriteriaBuilder cb = getCriteriaBuilder();
-        CriteriaQuery<E> query = cb.createQuery(dtoClassName);
+        CriteriaQuery<D> query = cb.createQuery(dtoClassName);
         query.select(query.from(dtoClassName));
-        return em.createQuery(query).getResultList();
+        return exchangeResults(em.createQuery(query).getResultList());
     }
 
-    protected void persistEntity(E entity) {
+    protected void persistEntity(D entity) {
         em.persist(entity);
     }
 
-    protected void saveOrUpdateAll(List<E> entities) {
+    protected void saveOrUpdateAll(List<D> entities) {
         entities.forEach((e) -> {
             saveOrUpdate(e);
         });
     }
 
-    protected void mergeEntity(E entity) {
+    protected void mergeEntity(D entity) {
         em.merge(entity);
     }
 
-    private void saveOrUpdate(E entity) {
+    protected void saveOrUpdate(D entity) {
         if (entity.getId() == null || entity.getId() > 0) {
             mergeEntity(entity);
             return;
@@ -82,4 +84,8 @@ public abstract class AbstractCrudDao<E extends Entity> extends AbstractDao<E> i
         persistEntity(entity);
     }
 
+    public E save(D entity) {
+        saveOrUpdate(entity);
+        return exchanger.exchange(entity);
+    }
 }

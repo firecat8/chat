@@ -1,10 +1,11 @@
 package com.chat.controller;
 
 import com.chat.task.LogoutTask;
-import com.chat.bl.service.messaging.ResponseListener;
-import com.chat.domain.Chat;
-import com.chat.domain.ChatEvent;
-import com.chat.domain.User;
+import com.chat.messaging.message.ResponseListener;
+import com.chat.messaging.dto.ChatEventMessageDto;
+import com.chat.messaging.dto.ChatMessageDto;
+import com.chat.messaging.dto.ErrorMessageDto;
+import com.chat.messaging.dto.UserMessageDto;
 import com.chat.task.LoginTask;
 import com.chat.task.RegisterTask;
 import com.chat.task.SendMessageTask;
@@ -38,7 +39,7 @@ import javafx.scene.layout.AnchorPane;
  */
 public class ChatController implements Initializable {
 
-    public static User currentUser = null;
+    public static UserMessageDto currentUser = null;
 
     @FXML
     private Button loginBtn, registerBtn, logoutBtn;
@@ -59,7 +60,7 @@ public class ChatController implements Initializable {
     private ListView chatPanel, chatSearchList;
 
     @FXML
-    private ListView<User> friendsList, userSearchList;
+    private ListView<UserMessageDto> friendsList, userSearchList;
 
     @FXML
     private TextField searchBar, serverChat;
@@ -71,9 +72,9 @@ public class ChatController implements Initializable {
 
     private DateFormat date_formater = new SimpleDateFormat("HH:mm:ss");
 
-    private Map<String, Chat> chats = new HashMap<>();
+    private Map<String, ChatMessageDto> chats = new HashMap<>();
 
-    private Chat currentChat;
+    private ChatMessageDto currentChat;
 
     /**
      * Initializes the controller class.
@@ -105,15 +106,15 @@ public class ChatController implements Initializable {
 
     @FXML
     private void sendMessage() {
-        pool.execute(new SendMessageTask(messageBox.getText(), currentUser, currentChat, new ResponseListener<ChatEvent>() {
+        pool.execute(new SendMessageTask(messageBox.getText(), currentUser, currentChat, new ResponseListener<ChatEventMessageDto>() {
             @Override
-            public void onSuccess(ChatEvent response) {
+            public void onSuccess(ChatEventMessageDto response) {
                 //nothing
             }
 
             @Override
-            public void onError(String error) {
-                setMessage(error);
+            public void onError(ErrorMessageDto error) {
+                setMessage(error.getMessage());
             }
         }));
     }
@@ -134,7 +135,7 @@ public class ChatController implements Initializable {
     }
 
     private void addFriendList() {
-        Set<User> friends = currentUser.getFriends();
+        Set<UserMessageDto> friends = currentUser.getFriends();
         if (friends.isEmpty()) {
             System.out.println("NO FRIENDS");
             return;
@@ -144,9 +145,9 @@ public class ChatController implements Initializable {
 
     @FXML
     private void login(Event e) {
-        pool.execute(new LoginTask(usernameTxtF.getText(), passField.getText(), new ResponseListener<User>() {
+        pool.execute(new LoginTask(usernameTxtF.getText(), passField.getText(), new ResponseListener<UserMessageDto>() {
             @Override
-            public void onSuccess(User response) {
+            public void onSuccess(UserMessageDto response) {
                 Platform.runLater(new Runnable() {
                     @Override
                     public void run() {
@@ -159,11 +160,11 @@ public class ChatController implements Initializable {
             }
 
             @Override
-            public void onError(String error) {
+            public void onError(ErrorMessageDto error) {
                 Platform.runLater(new Runnable() {
                     @Override
                     public void run() {
-                        setMessage(error);
+                        setMessage(error.getMessage());
                     }
                 });
             }
@@ -172,9 +173,9 @@ public class ChatController implements Initializable {
 
     @FXML
     private void logout(Event e) {
-        pool.execute(new LogoutTask(currentUser.getUsername(), currentUser.getPassword(), new ResponseListener<User>() {
+        pool.execute(new LogoutTask(currentUser.getUsername(), currentUser.getPassword(), new ResponseListener<UserMessageDto>() {
             @Override
-            public void onSuccess(User response) {
+            public void onSuccess(UserMessageDto response) {
                 Platform.runLater(new Runnable() {
                     @Override
                     public void run() {
@@ -186,11 +187,11 @@ public class ChatController implements Initializable {
             }
 
             @Override
-            public void onError(String error) {
+            public void onError(ErrorMessageDto error) {
                 Platform.runLater(new Runnable() {
                     @Override
                     public void run() {
-                        setMessage(error);
+                        setMessage(error.getMessage());
                     }
                 });
             }
@@ -202,9 +203,9 @@ public class ChatController implements Initializable {
         String username = usernameTxtF1.getText();
         String pass = passField1.getText();
         // TODO
-        pool.execute(new RegisterTask(null, null, null, null, null, null, null, new ResponseListener<User>() {
+        pool.execute(new RegisterTask(null, null, null, null, null, null, null, new ResponseListener<UserMessageDto>() {
             @Override
-            public void onSuccess(User response) {
+            public void onSuccess(UserMessageDto response) {
                 Platform.runLater(new Runnable() {
                     @Override
                     public void run() {
@@ -215,11 +216,11 @@ public class ChatController implements Initializable {
             }
 
             @Override
-            public void onError(String error) {
+            public void onError(ErrorMessageDto error) {
                 Platform.runLater(new Runnable() {
                     @Override
                     public void run() {
-                        setMessage(error);
+                        setMessage(error.getMessage());
                     }
                 });
             }

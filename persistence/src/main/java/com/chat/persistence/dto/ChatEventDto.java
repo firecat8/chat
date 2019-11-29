@@ -1,9 +1,5 @@
 package com.chat.persistence.dto;
 
-import com.chat.domain.Chat;
-import com.chat.domain.ChatEvent;
-import com.chat.domain.ChatEventType;
-import com.chat.domain.User;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
@@ -15,7 +11,7 @@ import javax.persistence.Table;
  */
 @Entity(name = "chat_events")
 @Table(name = "chat_events")
-public class ChatEventDto extends AbstractDto implements ChatEvent {
+public class ChatEventDto extends AbstractDto {
 
     public final static String EVENT_TIME_COLUMN = "event_time";
 
@@ -35,22 +31,22 @@ public class ChatEventDto extends AbstractDto implements ChatEvent {
     private String message;
 
     @Column(name = CHAT_EVENT_TYPE_COLUMN)
-    private ChatEventType chatEventType;
+    private ChatEventTypeDto chatEventType;
 
     @Column(name = EVENT_TIME_COLUMN)
     private Long eventTime;
 
     @ManyToOne(targetEntity = UserDto.class)
-    private User sender;
+    private UserDto sender;
 
     @ManyToOne(targetEntity = ChatDto.class)
-    private Chat chat;
+    private ChatDto chat;
 
     public ChatEventDto() {
         //Hibernate
     }
 
-    public ChatEventDto(String message, ChatEventType chatEventType, Long eventTime, User sender, Chat chat) {
+    public ChatEventDto(String message, ChatEventTypeDto chatEventType, Long eventTime, UserDto sender, ChatDto chat) {
         this.message = message;
         this.chatEventType = chatEventType;
         this.eventTime = eventTime;
@@ -58,7 +54,6 @@ public class ChatEventDto extends AbstractDto implements ChatEvent {
         this.chat = chat;
     }
 
-    @Override
     public Long getEventTime() {
         return eventTime;
     }
@@ -67,31 +62,27 @@ public class ChatEventDto extends AbstractDto implements ChatEvent {
         this.eventTime = sentTime;
     }
 
-    @Override
-    public User getSender() {
+    public UserDto getSender() {
         return sender;
     }
 
-    public void setSender(User sender) {
+    public void setSender(UserDto sender) {
         this.sender = sender;
     }
 
-    @Override
-    public Chat getChat() {
+    public ChatDto getChat() {
         return chat;
     }
 
-    public void setChat(Chat chat) {
+    public void setChat(ChatDto chat) {
         this.chat = chat;
     }
 
-    @Override
     public String getMessage() {
         return message;
     }
 
-    @Override
-    public ChatEventType getChatEventType() {
+    public ChatEventTypeDto getChatEventType() {
         return chatEventType;
     }
 
@@ -99,11 +90,10 @@ public class ChatEventDto extends AbstractDto implements ChatEvent {
         this.message = message;
     }
 
-    public void setChatEventType(ChatEventType chatEventType) {
+    public void setChatEventType(ChatEventTypeDto chatEventType) {
         this.chatEventType = chatEventType;
     }
 
-    @Override
     public String getStorageFileName() {
         return getId() + "_" + getMessage();
     }
