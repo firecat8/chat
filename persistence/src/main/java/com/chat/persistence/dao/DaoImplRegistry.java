@@ -3,6 +3,7 @@ package com.chat.persistence.dao;
 import com.chat.dao.ChatDao;
 import com.chat.dao.ChatEventDao;
 import com.chat.dao.DaoRegistry;
+import com.chat.dao.FriendRequestDao;
 import com.chat.dao.UserDao;
 import com.chat.dao.UserInfoDao;
 import javax.persistence.EntityManager;
@@ -23,12 +24,15 @@ public class DaoImplRegistry implements DaoRegistry {
 
     private final ChatEventDao chatEventDao;
 
+    private final FriendRequestDao friendRequestDao;
+
     public DaoImplRegistry(EntityManager em) {
         this.em = em;
         userDao = new UserDaoImpl(em);
         userInfoDao = new UserInfoDaoImpl(em);
         chatDao = new ChatDaoImpl(em);
         chatEventDao = new ChatEventDaoImpl(em);
+        friendRequestDao = new FriendRequestDaoImpl(em);
     }
 
     public DaoImplRegistry() {
@@ -56,6 +60,11 @@ public class DaoImplRegistry implements DaoRegistry {
     }
 
     @Override
+    public FriendRequestDao getFriendRequestDao() {
+        return friendRequestDao;
+    }
+
+    @Override
     public void beginTransaction() {
         if (!em.getTransaction().isActive()) {
             em.getTransaction().begin();
@@ -75,4 +84,5 @@ public class DaoImplRegistry implements DaoRegistry {
             em.getTransaction().commit();
         }
     }
+
 }

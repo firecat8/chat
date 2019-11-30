@@ -6,11 +6,11 @@ package com.chat.domain;
  */
 public class FriendRequest extends Entity {
 
-    private final User sender;
+    private User sender;
 
-    private final User receiver;
+    private User receiver;
 
-    private final FriendRequestStatus requestStatus;
+    private FriendRequestStatus requestStatus;
 
     public FriendRequest(User sender, User receiver, FriendRequestStatus requestStatus) {
         this.sender = sender;
@@ -28,6 +28,18 @@ public class FriendRequest extends Entity {
 
     public FriendRequestStatus getRequestStatus() {
         return requestStatus;
+    }
+
+    public void setSender(User sender) {
+        this.sender = sender;
+    }
+
+    public void setReceiver(User receiver) {
+        this.receiver = receiver;
+    }
+
+    public void setRequestStatus(FriendRequestStatus requestStatus) {
+        this.requestStatus = requestStatus;
     }
 
 }

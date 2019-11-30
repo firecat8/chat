@@ -27,6 +27,7 @@ public abstract class AbstractDtoEntityExchanger< D, E extends Entity> implement
 
     abstract protected D exchangeFrom(E e);
 
+    @Override
     public List<D> exchangeEntityList(List<E> list) {
         if (list.isEmpty()) {
             return new ArrayList<>();
@@ -34,6 +35,7 @@ public abstract class AbstractDtoEntityExchanger< D, E extends Entity> implement
         return list.stream().map(r -> this.exchange(r)).collect(Collectors.toList());
     }
 
+    @Override
     public List<E> exchangeDtoList(List<D> list) {
         if (list.isEmpty()) {
             return new ArrayList<>();

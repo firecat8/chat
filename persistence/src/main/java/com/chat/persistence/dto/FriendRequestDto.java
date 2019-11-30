@@ -23,7 +23,7 @@ public class FriendRequestDto extends AbstractDto {
 
     public final static String SENDER_COLUMN = "sender_id";
 
-    public final static String RECEIVER_COLUMN = "receiverr_id";
+    public final static String RECEIVER_COLUMN = "receiver_id";
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = SENDER_COLUMN)

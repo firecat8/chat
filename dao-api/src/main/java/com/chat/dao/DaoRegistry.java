@@ -14,6 +14,8 @@ public interface DaoRegistry {
 
     public ChatEventDao getChatEventDao();
 
+    public FriendRequestDao getFriendRequestDao();
+
     public void beginTransaction();
 
     public void rollbackTransaction();
