@@ -7,7 +7,7 @@ import com.chat.domain.ChatType;
  *
  * @author gdimitrova
  */
-public interface ChatDao {
+public interface ChatDao extends CrudDao<Chat> {
 
     public Chat save(String name, ChatType type);
 }

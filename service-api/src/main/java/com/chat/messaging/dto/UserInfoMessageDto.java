@@ -18,11 +18,8 @@ public class UserInfoMessageDto extends MessageDto {
 
     private UserMessageDto user;
 
-    public UserInfoMessageDto() {
-    }
-
-    public UserInfoMessageDto(String username, String password, String firstname, String lastname, String email, String phone, String city) {
-        this.user = new UserMessageDto(username, password, UserStatusMsgDto.INACTIVE);
+    public UserInfoMessageDto(UserMessageDto user, String firstname, String lastname, String email, String phone, String city) {
+        this.user = user;
         this.firstname = firstname;
         this.lastname = lastname;
         this.email = email;

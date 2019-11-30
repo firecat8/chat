@@ -37,4 +37,8 @@ public class ErrorMessageDto implements Serializable {
         this.message = message;
     }
 
+    public String getErrorMessage() {
+        return errorCode.name() + " : " + message;
+    }
+
 }

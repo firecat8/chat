@@ -36,10 +36,10 @@ public class ChatEventDto extends AbstractDto {
     @Column(name = EVENT_TIME_COLUMN)
     private Long eventTime;
 
-    @ManyToOne(targetEntity = UserDto.class)
+    @ManyToOne
     private UserDto sender;
 
-    @ManyToOne(targetEntity = ChatDto.class)
+    @ManyToOne
     private ChatDto chat;
 
     public ChatEventDto() {

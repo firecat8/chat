@@ -1,8 +1,11 @@
 package com.chat.persistence.dao;
 
 import com.chat.dao.UserInfoDao;
+import com.chat.domain.User;
 import com.chat.domain.UserInfo;
+import com.chat.persistence.dto.UserDto;
 import com.chat.persistence.dto.UserInfoDto;
+import com.chat.persistence.exchanger.UserDtoExchanger;
 import com.chat.persistence.exchanger.UserInfoDtoExchanger;
 import java.util.Map;
 import javax.persistence.EntityManager;
@@ -18,8 +21,9 @@ public class UserInfoDaoImpl extends AbstractCrudDao<UserInfoDto, UserInfo> impl
     }
 
     @Override
-    public UserInfo save(String username, String password, String firstname, String lastname, String email, String phone, String city) {
-        return save(new UserInfoDto(username, password, firstname, lastname, email, phone, city));
+    public UserInfo save(User e, String firstname, String lastname, String email, String phone, String city) {
+        UserDto user = UserDtoExchanger.INSTANCE.exchange(e);
+        return save(new UserInfoDto(user, firstname, lastname, email, phone, city));
     }
 
     @Override

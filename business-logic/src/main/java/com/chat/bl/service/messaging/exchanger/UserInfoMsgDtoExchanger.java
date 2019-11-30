@@ -16,16 +16,18 @@ public class UserInfoMsgDtoExchanger extends MessageDtoEntityExchanger<UserInfoM
 
     @Override
     public UserInfo exchangeFrom(UserInfoMessageDto dto) {
-        return new UserInfo(dto.getUser().getUsername(),
-                dto.getUser().getPassword(),
+        return new UserInfo(
+                UserMsgDtoExchanger.INSTANCE.exchangeFrom(dto.getUser()),
                 dto.getFirstname(), dto.getLastname(),
                 dto.getEmail(), dto.getPhone(), dto.getCity());
     }
 
     @Override
     public UserInfoMessageDto exchangeFrom(UserInfo e) {
-        return new UserInfoMessageDto(e.getUser().getUsername(), e.getUser().getPassword(),
-                e.getFirstname(), e.getLastname(), e.getEmail(), e.getPhone(), e.getCity());
+        return new UserInfoMessageDto(
+                UserMsgDtoExchanger.INSTANCE.exchangeFrom(e.getUser()),
+                e.getFirstname(), e.getLastname(), e.getEmail(), e.getPhone(), e.getCity()
+        );
     }
 
 }

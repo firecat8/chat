@@ -9,14 +9,9 @@
     <artifactId>business-logic</artifactId>
     <packaging>jar</packaging>
     <dependencies>
-<!--        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>domain</artifactId>
-            <version>${project.version}</version>
-        </dependency>-->
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>persistence</artifactId>
+            <artifactId>dao-api</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

@@ -1,6 +1,5 @@
 package com.chat.persistence.dto;
 
-import com.chat.persistence.dto.UserStatusDto;
 import java.util.HashSet;
 import java.util.Set;
 import javax.persistence.CascadeType;
@@ -24,11 +23,15 @@ public class UserDto extends AbstractDto {
 
     public final static String USER_NAME_COLUMN = "user_name";
 
+    public final static String STATUS_TIME_COLUMN = "status_time";
+
     public final static String USER_NAME = "username";
 
     public final static String PASSWORD = "password";
 
     public final static String STATUS = "status";
+
+    public final static String STATUS_TIME = "statusTime";
 
     @Column(name = USER_NAME_COLUMN, unique = true, nullable = false)
     private String username;
@@ -39,6 +42,9 @@ public class UserDto extends AbstractDto {
     @Enumerated(EnumType.STRING)
     @Column
     private UserStatusDto status;
+
+    @Column(name = STATUS_TIME_COLUMN, nullable = false)
+    private Long statusTime;
 
     @ManyToMany(cascade = {CascadeType.ALL}, fetch = FetchType.EAGER)
     @JoinTable(name = "friends",
@@ -55,10 +61,11 @@ public class UserDto extends AbstractDto {
         // Hibernate
     }
 
-    public UserDto(String username, String password, UserStatusDto status) {
+    public UserDto(String username, String password, UserStatusDto status, Long statusTime) {
         this.username = username;
         this.password = password;
         this.status = status;
+        this.statusTime = statusTime;
     }
 
     public String getUsername() {
@@ -95,6 +102,14 @@ public class UserDto extends AbstractDto {
 
     public void removeFriend(UserDto friend) {
         friends.remove(friend);
+    }
+
+    public Long getStatusTime() {
+        return statusTime;
+    }
+
+    public void setStatusTime(Long statusTime) {
+        this.statusTime = statusTime;
     }
 
 }

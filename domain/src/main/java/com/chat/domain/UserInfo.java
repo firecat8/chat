@@ -18,11 +18,8 @@ public class UserInfo extends Entity {
 
     private User user;
 
-    public UserInfo() {
-    }
-
-    public UserInfo(String username, String password, String firstname, String lastname, String email, String phone, String city) {
-        this.user = new User(username, password, UserStatus.INACTIVE);
+    public UserInfo(User user, String firstname, String lastname, String email, String phone, String city) {
+        this.user = user;
         this.firstname = firstname;
         this.lastname = lastname;
         this.email = email;

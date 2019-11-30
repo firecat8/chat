@@ -15,12 +15,15 @@ public class User extends Entity {
 
     private UserStatus status;
 
+    private Long statusTime;
+
     private final Set<User> friends = new HashSet<>();
 
-    public User(String username, String password, UserStatus status) {
+    public User(String username, String password, UserStatus status, Long statusTime) {
         this.username = username;
         this.password = password;
         this.status = status;
+        this.statusTime = statusTime;
     }
 
     public String getUsername() {
@@ -57,5 +60,13 @@ public class User extends Entity {
 
     public void removeFriend(User friend) {
         friends.remove(friend);
+    }
+
+    public Long getStatusTime() {
+        return statusTime;
+    }
+
+    public void setStatusTime(Long statusTime) {
+        this.statusTime = statusTime;
     }
 }

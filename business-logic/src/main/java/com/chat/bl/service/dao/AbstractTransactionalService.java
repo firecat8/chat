@@ -45,11 +45,4 @@ public class AbstractTransactionalService {
             listener.onError(new ErrorMessageDto(ResponseCode.SERVER_ERROR, ex.getMessage()));
         }
     }
-
-    protected <T, E extends Entity> List<T> exchangeResults(List<E> resultList, DtoEntityExchanger<T, E> exchanger) {
-        if (resultList.isEmpty()) {
-            return new ArrayList<>();
-        }
-        return resultList.stream().map(r -> exchanger.exchange(r)).collect(Collectors.toList());
-    }
 }

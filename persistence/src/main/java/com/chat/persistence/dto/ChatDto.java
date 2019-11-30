@@ -30,7 +30,7 @@ public class ChatDto extends AbstractDto {
     @Column
     private ChatTypeDto type;
 
-    @OneToMany(cascade = {CascadeType.ALL}, fetch = FetchType.EAGER, targetEntity = ParticipantDto.class, mappedBy = "chat")
+    @OneToMany(cascade = {CascadeType.ALL}, fetch = FetchType.EAGER, mappedBy = "chat")
     private Set<ParticipantDto> participants = new HashSet<>();
 
     public ChatDto() {

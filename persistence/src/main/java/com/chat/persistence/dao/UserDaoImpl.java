@@ -13,7 +13,7 @@ import javax.persistence.EntityManager;
  *
  * @author gdimitrova
  */
-public class UserDaoImpl extends AbstractDao<UserDto, User> implements UserDao {
+public class UserDaoImpl extends AbstractCrudDao<UserDto, User> implements UserDao {
 
     public UserDaoImpl(EntityManager em) {
         super(UserDto.class, em, UserDtoExchanger.INSTANCE);

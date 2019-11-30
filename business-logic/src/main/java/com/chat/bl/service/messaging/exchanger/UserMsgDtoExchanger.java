@@ -5,7 +5,6 @@ import com.chat.domain.UserStatus;
 import com.chat.messaging.dto.UserMessageDto;
 import com.chat.messaging.dto.UserStatusMsgDto;
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  *
@@ -20,23 +19,16 @@ public class UserMsgDtoExchanger extends MessageDtoEntityExchanger<UserMessageDt
 
     @Override
     public User exchangeFrom(UserMessageDto dto) {
-        User user = new User(dto.getUsername(), dto.getPassword(), UserStatus.valueOf(dto.getStatus().name()));
-        List<User> friends = new ArrayList<>();
-        dto.getFriends().forEach((friend) -> {
-            friends.add(exchangeFrom(friend));
-        });
-        user.getFriends().addAll(friends);
+        User user = new User(dto.getUsername(), dto.getPassword(), UserStatus.valueOf(dto.getStatus().name()), dto.getStatusTime());
+        user.getFriends().addAll(exchangeDtoList(new ArrayList<>(dto.getFriends())));
         return user;
     }
 
     @Override
     public UserMessageDto exchangeFrom(User entity) {
-        UserMessageDto user = new UserMessageDto(entity.getUsername(), entity.getPassword(), UserStatusMsgDto.valueOf(entity.getStatus().name()));
-        List<UserMessageDto> friends = new ArrayList<>();
-        entity.getFriends().forEach((friend) -> {
-            friends.add(exchangeFrom(friend));
-        });
-        user.getFriends().addAll(friends);
+        UserMessageDto user = new UserMessageDto(entity.getUsername(), entity.getPassword(),
+                UserStatusMsgDto.valueOf(entity.getStatus().name()), entity.getStatusTime());
+        user.getFriends().addAll(exchangeEntityList(new ArrayList<>(entity.getFriends())));
         return user;
     }
 

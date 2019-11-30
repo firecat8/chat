@@ -6,5 +6,7 @@ package com.chat.domain;
  */
 public enum UserStatus {
     ACTIVE, 
+    AWAY,
+    DO_NOT_DISTURB,
     INACTIVE
 }

@@ -7,6 +7,8 @@ import com.chat.persistence.dto.Dto;
 /**
  *
  * @author gdimitrova
+ * @param <D>
+ * @param <E>
  */
 public abstract class DtoEntityExchanger<D extends Dto, E extends Entity> extends AbstractDtoEntityExchanger<D, E> {
 

@@ -15,12 +15,15 @@ public class UserMessageDto extends MessageDto {
 
     private UserStatusMsgDto status;
 
+    private Long statusTime;
+
     private final Set<UserMessageDto> friends = new HashSet<>();
 
-    public UserMessageDto(String username, String password, UserStatusMsgDto status) {
+    public UserMessageDto(String username, String password, UserStatusMsgDto status, Long statusTime) {
         this.username = username;
         this.password = password;
         this.status = status;
+        this.statusTime = statusTime;
     }
 
     public String getUsername() {
@@ -45,6 +48,14 @@ public class UserMessageDto extends MessageDto {
 
     public void setStatus(UserStatusMsgDto status) {
         this.status = status;
+    }
+
+    public Long getStatusTime() {
+        return statusTime;
+    }
+
+    public void setStatusTime(Long statusTime) {
+        this.statusTime = statusTime;
     }
 
     public Set<UserMessageDto> getFriends() {

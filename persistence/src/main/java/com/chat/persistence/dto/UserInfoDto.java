@@ -36,7 +36,7 @@ public class UserInfoDto extends AbstractDto {
     @Column(nullable = false)
     private String city;
 
-    @OneToOne(cascade = CascadeType.ALL, targetEntity = UserDto.class)
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = USER_ID)
     private UserDto user;
 
@@ -44,8 +44,8 @@ public class UserInfoDto extends AbstractDto {
         //  hibernate
     }
 
-    public UserInfoDto(String username, String password, String firstname, String lastname, String email, String phone, String city) {
-        this.user = new UserDto(username, password, UserStatusDto.INACTIVE);
+    public UserInfoDto(UserDto user, String firstname, String lastname, String email, String phone, String city) {
+        this.user = user;
         this.firstname = firstname;
         this.lastname = lastname;
         this.email = email;

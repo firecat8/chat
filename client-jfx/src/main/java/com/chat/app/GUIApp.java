@@ -31,27 +31,34 @@ public class GUIApp extends Application {
         scene = new Scene(loadFXML("chat"));
         stage.setOnCloseRequest((WindowEvent event1) -> {
             pool.shutdownNow();
-            new LogoutTask(ChatController.currentUser.getUsername(), ChatController.currentUser.getPassword(), new ResponseListener<UserMessageDto>() {
-                @Override
-                public void onSuccess(UserMessageDto response) {
-
-                    try {
-                        registry.close();
-                        Platform.exit();
-                    } catch (Exception ex) {
-                        Logger.getLogger(GUIApp.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                }
-
-                @Override
-                public void onError(ErrorMessageDto error) {
-                    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-                }
-            }).run();
-
+            if (registry != null) {
+                logout();
+                return;
+            }
+            Platform.exit();
         });
         stage.setScene(scene);
         stage.show();
+    }
+
+    private void logout() {
+        new LogoutTask(ChatController.currentUser.getUsername(), ChatController.currentUser.getPassword(), new ResponseListener<UserMessageDto>() {
+            @Override
+            public void onSuccess(UserMessageDto response) {
+
+                try {
+                    registry.close();
+                    Platform.exit();
+                } catch (Exception ex) {
+                    Logger.getLogger(GUIApp.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+
+            @Override
+            public void onError(ErrorMessageDto error) {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+        }).run();
     }
 
     public static void setRoot(String fxml) throws IOException {

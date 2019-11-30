@@ -4,27 +4,23 @@ import com.chat.app.ChatApp;
 import com.chat.messaging.message.ResponseListener;
 import com.chat.messaging.message.user.UserRequest;
 import com.chat.messaging.dto.UserMessageDto;
-import javafx.concurrent.Task;
 
 /**
  *
  * @author gdimitrova
  */
-public class LoginTask extends Task<Void> {
-
+public class LoginTask extends ActionTask<UserMessageDto> {
+    
     private final UserRequest userRequest;
-
-    private final ResponseListener<UserMessageDto> listener;
-
+    
     public LoginTask(String username, String password, ResponseListener<UserMessageDto> listener) {
+        super(listener);
         userRequest = new UserRequest(username, password);
-        this.listener = listener;
     }
-
+    
     @Override
-    protected Void call() throws Exception {
+    protected void callAction() {
         ChatApp.registry.getUserService().login(userRequest, listener);
-        return null;
     }
-
+    
 }

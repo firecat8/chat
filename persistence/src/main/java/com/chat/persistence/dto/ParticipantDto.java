@@ -24,7 +24,7 @@ public class ParticipantDto extends AbstractDto {
 
     public final static String CHAT_COLUMN = "chat_id";
 
-    @OneToOne(cascade = CascadeType.ALL, targetEntity = UserDto.class)
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = USER_ID)
     private UserDto user;
 
@@ -32,7 +32,7 @@ public class ParticipantDto extends AbstractDto {
     @Column
     private ChatUserDto userType;
 
-    @ManyToOne(targetEntity = ChatDto.class)
+    @ManyToOne
     @JoinColumn(name = CHAT_COLUMN)
     private ChatDto chat;
 

@@ -1,5 +1,6 @@
 package com.chat.dao;
 
+import com.chat.domain.User;
 import com.chat.domain.UserInfo;
 
 /**
@@ -8,5 +9,5 @@ import com.chat.domain.UserInfo;
  */
 public interface UserInfoDao {
 
-    public UserInfo save(String username, String password, String firstname, String lastname, String email, String phone, String city);
+    public UserInfo save(User user, String firstname, String lastname, String email, String phone, String city);
 }
