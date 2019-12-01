@@ -35,7 +35,7 @@ import javafx.scene.layout.AnchorPane;
 /**
  * FXML Controller class
  *
- * @author gdimitrova
+ * @author preslava96, gdimitrova
  */
 public class ChatController implements Initializable {
 
