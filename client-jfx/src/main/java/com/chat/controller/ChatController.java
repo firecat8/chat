@@ -33,7 +33,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 
 /**
- * FXML Controller class
  *
  * @author preslava96, gdimitrova
  */
