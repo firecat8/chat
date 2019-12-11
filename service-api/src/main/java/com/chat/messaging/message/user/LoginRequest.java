@@ -6,13 +6,13 @@ import com.chat.messaging.message.AbstractRequest;
  *
  * @author gdimitrova
  */
-public class UserRequest extends AbstractRequest{
+public class LoginRequest extends AbstractRequest{
 
     private final String username;
 
     private final String password;
 
-    public UserRequest(String username, String password) {
+    public LoginRequest(String username, String password) {
         this.username = username;
         this.password = password;
     }

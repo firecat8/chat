@@ -22,19 +22,10 @@ public class UserInfoDto extends AbstractDto {
     public final static String USER_ID = "user_id";
 
     @Column(name = FIRST_NAME_COLUMN, nullable = false)
-    private String firstname;
+    private String firstName;
 
     @Column(name = LAST_NAME_COLUMN, nullable = false)
-    private String lastname;
-
-    @Column(nullable = false)
-    private String email;
-
-    @Column(nullable = false)
-    private String phone;
-
-    @Column(nullable = false)
-    private String city;
+    private String lastName;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = USER_ID)
@@ -44,13 +35,10 @@ public class UserInfoDto extends AbstractDto {
         //  hibernate
     }
 
-    public UserInfoDto(UserDto user, String firstname, String lastname, String email, String phone, String city) {
+    public UserInfoDto(UserDto user, String firstName, String lastName) {
         this.user = user;
-        this.firstname = firstname;
-        this.lastname = lastname;
-        this.email = email;
-        this.phone = phone;
-        this.city = city;
+        this.firstName = firstName;
+        this.lastName = lastName;
     }
 
     public UserDto getUser() {
@@ -62,43 +50,19 @@ public class UserInfoDto extends AbstractDto {
     }
 
     public String getFirstname() {
-        return firstname;
+        return firstName;
     }
 
-    public void setFirstname(String firstname) {
-        this.firstname = firstname;
+    public void setFirstname(String firstName) {
+        this.firstName = firstName;
     }
 
     public String getLastname() {
-        return lastname;
+        return lastName;
     }
 
-    public void setLastname(String lastname) {
-        this.lastname = lastname;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
-    public String getCity() {
-        return city;
-    }
-
-    public void setCity(String city) {
-        this.city = city;
+    public void setLastname(String lastName) {
+        this.lastName = lastName;
     }
 
 }

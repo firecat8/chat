@@ -6,25 +6,16 @@ package com.chat.messaging.dto;
  */
 public class UserInfoMessageDto extends MessageDto {
 
-    private String firstname;
+    private String firstName;
 
-    private String lastname;
-
-    private String email;
-
-    private String phone;
-
-    private String city;
+    private String lastName;
 
     private UserMessageDto user;
 
-    public UserInfoMessageDto(UserMessageDto user, String firstname, String lastname, String email, String phone, String city) {
+    public UserInfoMessageDto(UserMessageDto user, String firstName, String lastName) {
         this.user = user;
-        this.firstname = firstname;
-        this.lastname = lastname;
-        this.email = email;
-        this.phone = phone;
-        this.city = city;
+        this.firstName = firstName;
+        this.lastName = lastName;
     }
 
     public UserMessageDto getUser() {
@@ -36,43 +27,19 @@ public class UserInfoMessageDto extends MessageDto {
     }
 
     public String getFirstname() {
-        return firstname;
+        return firstName;
     }
 
-    public void setFirstname(String firstname) {
-        this.firstname = firstname;
+    public void setFirstname(String firstName) {
+        this.firstName = firstName;
     }
 
     public String getLastname() {
-        return lastname;
+        return lastName;
     }
 
-    public void setLastname(String lastname) {
-        this.lastname = lastname;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
-    public String getCity() {
-        return city;
-    }
-
-    public void setCity(String city) {
-        this.city = city;
+    public void setLastname(String lastName) {
+        this.lastName = lastName;
     }
 
 }

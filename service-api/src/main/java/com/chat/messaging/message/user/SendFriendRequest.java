@@ -1,6 +1,5 @@
 package com.chat.messaging.message.user;
 
-import com.chat.messaging.dto.UserMessageDto;
 import com.chat.messaging.message.AbstractRequest;
 
 /**
@@ -9,21 +8,22 @@ import com.chat.messaging.message.AbstractRequest;
  */
 public class SendFriendRequest extends AbstractRequest {
 
-    private final UserMessageDto sender;
+    private final Long senderId;
 
-    private final UserMessageDto receiver;
+    private final Long receiverId;
 
-    public SendFriendRequest(UserMessageDto sender, UserMessageDto receiver) {
-        this.sender = sender;
-        this.receiver = receiver;
+    public SendFriendRequest(Long senderId, Long receiverId) {
+        this.senderId = senderId;
+        this.receiverId = receiverId;
     }
 
-    public UserMessageDto getSender() {
-        return sender;
+    public Long getSenderId() {
+        return senderId;
     }
 
-    public UserMessageDto getReceiver() {
-        return receiver;
+    public Long getReceiverId() {
+        return receiverId;
     }
+
 
 }

@@ -9,5 +9,5 @@ import com.chat.domain.UserInfo;
  */
 public interface UserInfoDao {
 
-    public UserInfo save(User user, String firstname, String lastname, String email, String phone, String city);
+    public UserInfo save(User user, String firstName, String lastName);
 }

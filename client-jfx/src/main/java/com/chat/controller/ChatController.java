@@ -1,14 +1,14 @@
 package com.chat.controller;
 
-import com.chat.task.LogoutTask;
+import com.chat.task.user.LogoutTask;
 import com.chat.messaging.message.ResponseListener;
 import com.chat.messaging.dto.ChatEventMessageDto;
 import com.chat.messaging.dto.ChatMessageDto;
 import com.chat.messaging.dto.ErrorMessageDto;
 import com.chat.messaging.dto.UserMessageDto;
-import com.chat.task.LoginTask;
-import com.chat.task.RegisterTask;
-import com.chat.task.SendMessageTask;
+import com.chat.task.user.LoginTask;
+import com.chat.task.user.RegisterTask;
+import com.chat.task.chat.SendMessageTask;
 import com.chat.utils.ListViewUtils;
 import java.net.URL;
 import java.text.DateFormat;
@@ -147,24 +147,18 @@ public class ChatController implements Initializable {
         pool.execute(new LoginTask(usernameTxtF.getText(), passField.getText(), new ResponseListener<UserMessageDto>() {
             @Override
             public void onSuccess(UserMessageDto response) {
-                Platform.runLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        currentUser = response;
-                        addFriendList();
-                        setMessage("Sucessfully login " + response.getUsername());
-                        setPanesVisibility(false, false, true);
-                    }
+                Platform.runLater(() -> {
+                    currentUser = response;
+                    addFriendList();
+                    setMessage("Sucessfully login " + response.getUsername());
+                    setPanesVisibility(false, false, true);
                 });
             }
 
             @Override
             public void onError(ErrorMessageDto error) {
-                Platform.runLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        setMessage(error.getMessage());
-                    }
+                Platform.runLater(() -> {
+                    setMessage(error.getMessage());
                 });
             }
         }));
@@ -172,26 +166,20 @@ public class ChatController implements Initializable {
 
     @FXML
     private void logout(Event e) {
-        pool.execute(new LogoutTask(currentUser.getUsername(), currentUser.getPassword(), new ResponseListener<UserMessageDto>() {
+        pool.execute(new LogoutTask(currentUser.getId(), new ResponseListener<UserMessageDto>() {
             @Override
             public void onSuccess(UserMessageDto response) {
-                Platform.runLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        currentUser = null;
-                        setMessage("Sucessfully logout " + response.getUsername());
-                        setPanesVisibility(true, false, false);
-                    }
+                Platform.runLater(() -> {
+                    currentUser = null;
+                    setMessage("Sucessfully logout " + response.getUsername());
+                    setPanesVisibility(true, false, false);
                 });
             }
 
             @Override
             public void onError(ErrorMessageDto error) {
-                Platform.runLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        setMessage(error.getMessage());
-                    }
+                Platform.runLater(() -> {
+                    setMessage(error.getMessage());
                 });
             }
         }));
@@ -202,25 +190,19 @@ public class ChatController implements Initializable {
         String username = usernameTxtF1.getText();
         String pass = passField1.getText();
         // TODO
-        pool.execute(new RegisterTask(null, null, null, null, null, null, null, new ResponseListener<UserMessageDto>() {
+        pool.execute(new RegisterTask(null, null, null, null, new ResponseListener<UserMessageDto>() {
             @Override
             public void onSuccess(UserMessageDto response) {
-                Platform.runLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        setPanesVisibility(true, false, false);
-                        setMessage("Sucessfully registered " + response.getUsername());
-                    }
+                Platform.runLater(() -> {
+                    setPanesVisibility(true, false, false);
+                    setMessage("Sucessfully registered " + response.getUsername());
                 });
             }
 
             @Override
             public void onError(ErrorMessageDto error) {
-                Platform.runLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        setMessage(error.getMessage());
-                    }
+                Platform.runLater(() -> {
+                    setMessage(error.getMessage());
                 });
             }
         }));

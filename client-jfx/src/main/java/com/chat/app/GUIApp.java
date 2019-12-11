@@ -1,12 +1,11 @@
 package com.chat.app;
 
-import static com.chat.app.ChatApp.registry;
+import static com.chat.app.ClientApp.registry;
 import com.chat.messaging.message.ResponseListener;
-import com.chat.controller.ChatController;
-import static com.chat.controller.ChatController.pool;
+import com.chat.controller.LoginController;
 import com.chat.messaging.dto.ErrorMessageDto;
 import com.chat.messaging.dto.UserMessageDto;
-import com.chat.task.LogoutTask;
+import com.chat.task.user.LogoutTask;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -14,6 +13,8 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
@@ -24,12 +25,17 @@ import javafx.stage.WindowEvent;
  */
 public class GUIApp extends Application {
 
+    public static ExecutorService pool = Executors.newFixedThreadPool(30);
+
+    private static Stage stage;
+
     private static Scene scene;
 
     @Override
     public void start(Stage stage) throws IOException {
-        scene = new Scene(loadFXML("chat"));
-        stage.setOnCloseRequest((WindowEvent event1) -> {
+        GUIApp.stage = stage;
+        scene = new Scene(loadFXML("login"));
+        stage.setOnCloseRequest((WindowEvent event) -> {
             pool.shutdownNow();
             if (registry != null) {
                 logout();
@@ -41,8 +47,13 @@ public class GUIApp extends Application {
         stage.show();
     }
 
+    public static void changeScene(String controllerName) throws IOException {
+        scene = new Scene(loadFXML(controllerName));
+        stage.setScene(new Scene(loadFXML(controllerName)));
+    }
+
     private void logout() {
-        new LogoutTask(ChatController.currentUser.getUsername(), ChatController.currentUser.getPassword(), new ResponseListener<UserMessageDto>() {
+        new LogoutTask(LoginController.currentUser.getId(), new ResponseListener<UserMessageDto>() {
             @Override
             public void onSuccess(UserMessageDto response) {
 
@@ -61,16 +72,12 @@ public class GUIApp extends Application {
         }).run();
     }
 
-    public static void setRoot(String fxml) throws IOException {
-        scene.setRoot(loadFXML(fxml));
-    }
-
     private static Parent loadFXML(String fxml) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(GUIApp.class.getResource(fxml + ".fxml"));
         return fxmlLoader.load();
     }
 
-    public static void start(String[] args) {
+    public static void start() {
         System.out.println("Launch JFX App");
         launch();
     }

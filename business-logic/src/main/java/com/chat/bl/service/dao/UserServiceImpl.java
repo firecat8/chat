@@ -17,7 +17,8 @@ import com.chat.messaging.message.user.LoadFriendRequests;
 import com.chat.messaging.message.user.LoadedFriendRequests;
 import com.chat.messaging.message.user.RegistrationRequest;
 import com.chat.messaging.message.user.SendFriendRequest;
-import com.chat.messaging.message.user.UserRequest;
+import com.chat.messaging.message.user.LoginRequest;
+import com.chat.messaging.message.user.LogoutRequest;
 import com.chat.messaging.services.UserService;
 import java.util.Calendar;
 import java.util.List;
@@ -34,13 +35,16 @@ public class UserServiceImpl extends AbstractTransactionalService implements Use
     }
 
     @Override
-    public void login(UserRequest req, ResponseListener<UserMessageDto> listener) {
+    public void login(LoginRequest req, ResponseListener<UserMessageDto> listener) {
         changeStatus(req.getUsername(), req.getPassword(), UserStatus.ACTIVE, listener);
     }
 
     @Override
-    public void logout(UserRequest req, ResponseListener<UserMessageDto> listener) {
-        changeStatus(req.getUsername(), req.getPassword(), UserStatus.INACTIVE, listener);
+    public void logout(LogoutRequest req, ResponseListener<UserMessageDto> listener) {
+        doInTransaction((DaoRegistry registry) -> {
+            User user = registry.getUserDao().loadById(req.getId());
+            return new UpdateStatusFunction(user.getUsername(), user.getPassword(), UserStatus.INACTIVE).apply(registry);
+        }, listener);
     }
 
     @Override
@@ -57,7 +61,7 @@ public class UserServiceImpl extends AbstractTransactionalService implements Use
                 throw new MessageException("Already exist user with username: " + username);
             }
             UserInfo userInfo = registry.getUserInfoDao().save(new User(username, req.getPassword(), UserStatus.INACTIVE, Calendar.getInstance().getTimeInMillis()),
-                    req.getFirstname(), req.getLastname(), req.getEmail(), req.getPhone(), req.getCity());
+                    req.getFirstname(), req.getLastname());
             return UserMsgDtoExchanger.INSTANCE.exchange(userInfo.getUser());
         }, listener);
     }
@@ -67,10 +71,10 @@ public class UserServiceImpl extends AbstractTransactionalService implements Use
     }
 
     @Override
-    public void sendFriendRequest(SendFriendRequest request, ResponseListener<FriendRequestMessageDto> listener) {
+    public void sendFriendRequest(SendFriendRequest req, ResponseListener<FriendRequestMessageDto> listener) {
         doInTransaction((DaoRegistry registry) -> {
-            User sender = exchange(request.getSender());
-            User receiver = exchange(request.getReceiver());
+            User sender = registry.getUserDao().loadById(req.getSenderId());
+            User receiver = registry.getUserDao().loadById(req.getReceiverId());
             FriendRequest friendRequest = registry.getFriendRequestDao().find(sender, receiver);
             if (friendRequest == null) {
                 registry.getFriendRequestDao().save(new FriendRequest(sender, receiver, FriendRequestStatus.NEW));
@@ -80,36 +84,36 @@ public class UserServiceImpl extends AbstractTransactionalService implements Use
     }
 
     @Override
-    public void loadReceiverRequests(LoadFriendRequests request, ResponseListener<LoadedFriendRequests> listener) {
+    public void loadReceiverRequests(LoadFriendRequests req, ResponseListener<LoadedFriendRequests> listener) {
         doInTransaction((DaoRegistry registry) -> {
-            User user = exchange(request.getUser());
+            User user = exchange(req.getUser());
             List<FriendRequest> loaded = registry.getFriendRequestDao().loadReceiverRequests(user);
             return new LoadedFriendRequests(FriendRequestMsgDtoExchanger.INSTANCE.exchangeEntityList(loaded));
         }, listener);
     }
 
     @Override
-    public void loadSenderRequests(LoadFriendRequests request, ResponseListener<LoadedFriendRequests> listener) {
+    public void loadSenderRequests(LoadFriendRequests req, ResponseListener<LoadedFriendRequests> listener) {
         doInTransaction((DaoRegistry registry) -> {
-            User user = exchange(request.getUser());
+            User user = exchange(req.getUser());
             List<FriendRequest> loaded = registry.getFriendRequestDao().loadSenderRequests(user);
             return new LoadedFriendRequests(FriendRequestMsgDtoExchanger.INSTANCE.exchangeEntityList(loaded));
         }, listener);
     }
 
     @Override
-    public void loadFriendRequests(LoadFriendRequests request, ResponseListener<LoadedFriendRequests> listener) {
+    public void loadFriendRequests(LoadFriendRequests req, ResponseListener<LoadedFriendRequests> listener) {
         doInTransaction((DaoRegistry registry) -> {
-            User user = exchange(request.getUser());
+            User user = exchange(req.getUser());
             List<FriendRequest> loaded = registry.getFriendRequestDao().loadAllRequests(user);
             return new LoadedFriendRequests(FriendRequestMsgDtoExchanger.INSTANCE.exchangeEntityList(loaded));
         }, listener);
     }
 
     @Override
-    public void acceptFriendRequest(FriendRequestStatusRequest request, ResponseListener<FriendRequestMessageDto> listener) {
+    public void acceptFriendRequest(FriendRequestStatusRequest req, ResponseListener<FriendRequestMessageDto> listener) {
         doInTransaction((DaoRegistry registry) -> {
-            FriendRequest friendRequest = FriendRequestMsgDtoExchanger.INSTANCE.exchange(request.getFriendRequest());
+            FriendRequest friendRequest = FriendRequestMsgDtoExchanger.INSTANCE.exchange(req.getFriendRequest());
             User sender = registry.getUserDao().loadById(friendRequest.getSender().getId());
             User receiver = registry.getUserDao().loadById(friendRequest.getReceiver().getId());
             sender.getFriends().add(receiver);
@@ -122,9 +126,9 @@ public class UserServiceImpl extends AbstractTransactionalService implements Use
     }
 
     @Override
-    public void declineFriendRequest(FriendRequestStatusRequest request, ResponseListener<FriendRequestMessageDto> listener) {
+    public void declineFriendRequest(FriendRequestStatusRequest req, ResponseListener<FriendRequestMessageDto> listener) {
         doInTransaction((DaoRegistry registry) -> {
-            FriendRequest friendRequest = FriendRequestMsgDtoExchanger.INSTANCE.exchange(request.getFriendRequest());
+            FriendRequest friendRequest = FriendRequestMsgDtoExchanger.INSTANCE.exchange(req.getFriendRequest());
             friendRequest.setRequestStatus(FriendRequestStatus.DECLINED);
             registry.getFriendRequestDao().save(friendRequest);
             return FriendRequestMsgDtoExchanger.INSTANCE.exchange(friendRequest);

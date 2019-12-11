@@ -6,7 +6,7 @@ import com.chat.messaging.dto.UserStatusMsgDto;
  *
  * @author gdimitrova
  */
-public class ChangeStatusRequest extends UserRequest {
+public class ChangeStatusRequest extends LoginRequest {
 
     private final UserStatusMsgDto status;
 

@@ -21,9 +21,9 @@ public class UserInfoDaoImpl extends AbstractCrudDao<UserInfoDto, UserInfo> impl
     }
 
     @Override
-    public UserInfo save(User e, String firstname, String lastname, String email, String phone, String city) {
+    public UserInfo save(User e, String firstname, String lastname) {
         UserDto user = UserDtoExchanger.INSTANCE.exchange(e);
-        return save(new UserInfoDto(user, firstname, lastname, email, phone, city));
+        return save(new UserInfoDto(user, firstname, lastname));
     }
 
     @Override

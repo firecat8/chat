@@ -8,7 +8,8 @@ import java.util.List;
  *
  * @author gdimitrova
  */
-public class LoadedFriendRequests extends AbstractResponse{
+public class LoadedFriendRequests extends AbstractResponse {
+
     private final List<FriendRequestMessageDto> requests;
 
     public LoadedFriendRequests(List<FriendRequestMessageDto> requests) {
@@ -18,5 +19,5 @@ public class LoadedFriendRequests extends AbstractResponse{
     public List<FriendRequestMessageDto> getRequests() {
         return requests;
     }
-    
+
 }

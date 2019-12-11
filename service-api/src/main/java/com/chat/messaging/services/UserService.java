@@ -9,7 +9,8 @@ import com.chat.messaging.message.user.FriendRequestStatusRequest;
 import com.chat.messaging.message.user.LoadFriendRequests;
 import com.chat.messaging.message.user.LoadedFriendRequests;
 import com.chat.messaging.message.user.SendFriendRequest;
-import com.chat.messaging.message.user.UserRequest;
+import com.chat.messaging.message.user.LoginRequest;
+import com.chat.messaging.message.user.LogoutRequest;
 
 /**
  *
@@ -17,9 +18,9 @@ import com.chat.messaging.message.user.UserRequest;
  */
 public interface UserService {
 
-    public void login(UserRequest req, ResponseListener<UserMessageDto> listener);
+    public void login(LoginRequest req, ResponseListener<UserMessageDto> listener);
 
-    public void logout(UserRequest req, ResponseListener<UserMessageDto> listener);
+    public void logout(LogoutRequest req, ResponseListener<UserMessageDto> listener);
 
     public void changeStatus(ChangeStatusRequest req, ResponseListener<UserMessageDto> listener);
 

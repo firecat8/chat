@@ -1,7 +1,6 @@
 package com.chat.messaging;
 
 import com.chat.messaging.dto.ErrorMessageDto;
-import com.chat.messaging.message.CloseConnectionRequest;
 import com.chat.messaging.message.ResponseListener;
 import com.chat.messaging.message.Request;
 import com.chat.messaging.message.RequestWrapper;
@@ -25,7 +24,7 @@ public class Client {
 
     private final static Logger LOGGER = Logger.getLogger(Client.class.getName());
 
-    private DateFormat date_formater = new SimpleDateFormat("HH:mm:ss");
+    private DateFormat dateFormatter = new SimpleDateFormat("HH:mm:ss");
 
     public static String sessionId;
 
@@ -76,6 +75,6 @@ public class Client {
     }
 
     private void log(String message) {
-        LOGGER.log(Level.INFO, "{0} {1}", new Object[]{date_formater.format(Calendar.getInstance().getTime()), message});
+        LOGGER.log(Level.INFO, "{0} {1}", new Object[]{dateFormatter.format(Calendar.getInstance().getTime()), message});
     }
 }

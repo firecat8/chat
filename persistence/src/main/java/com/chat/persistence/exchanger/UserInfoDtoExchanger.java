@@ -19,8 +19,7 @@ public class UserInfoDtoExchanger extends DtoEntityExchanger<UserInfoDto, UserIn
     public UserInfo exchangeFrom(UserInfoDto dto) {
         return new UserInfo(
                 UserDtoExchanger.INSTANCE.exchange(dto.getUser()),
-                dto.getFirstname(), dto.getLastname(),
-                dto.getEmail(), dto.getPhone(), dto.getCity()
+                dto.getFirstname(), dto.getLastname()
         );
     }
 
@@ -28,7 +27,7 @@ public class UserInfoDtoExchanger extends DtoEntityExchanger<UserInfoDto, UserIn
     public UserInfoDto exchangeFrom(UserInfo e) {
         return new UserInfoDto(
                 UserDtoExchanger.INSTANCE.exchange(e.getUser()),
-                e.getFirstname(), e.getLastname(), e.getEmail(), e.getPhone(), e.getCity()
+                e.getFirstname(), e.getLastname()
         );
     }
 
