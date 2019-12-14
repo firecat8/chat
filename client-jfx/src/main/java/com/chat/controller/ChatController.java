@@ -2,10 +2,12 @@ package com.chat.controller;
 
 import com.chat.task.user.LogoutTask;
 import com.chat.messaging.message.ResponseListener;
-import com.chat.messaging.dto.ChatEventMessageDto;
 import com.chat.messaging.dto.ChatMessageDto;
 import com.chat.messaging.dto.ErrorMessageDto;
 import com.chat.messaging.dto.UserMessageDto;
+import com.chat.messaging.message.SuccessResponse;
+import com.chat.messaging.message.chat.ChatEventResponse;
+import com.chat.messaging.message.user.UserResponse;
 import com.chat.task.user.LoginTask;
 import com.chat.task.user.RegisterTask;
 import com.chat.task.chat.SendMessageTask;
@@ -105,9 +107,9 @@ public class ChatController implements Initializable {
 
     @FXML
     private void sendMessage() {
-        pool.execute(new SendMessageTask(messageBox.getText(), currentUser, currentChat, new ResponseListener<ChatEventMessageDto>() {
+        pool.execute(new SendMessageTask(messageBox.getText(), currentUser, currentChat, new ResponseListener<ChatEventResponse>() {
             @Override
-            public void onSuccess(ChatEventMessageDto response) {
+            public void onSuccess(ChatEventResponse response) {
                 //nothing
             }
 
@@ -144,13 +146,13 @@ public class ChatController implements Initializable {
 
     @FXML
     private void login(Event e) {
-        pool.execute(new LoginTask(usernameTxtF.getText(), passField.getText(), new ResponseListener<UserMessageDto>() {
+        pool.execute(new LoginTask(usernameTxtF.getText(), passField.getText(), new ResponseListener<UserResponse>() {
             @Override
-            public void onSuccess(UserMessageDto response) {
+            public void onSuccess(UserResponse response) {
                 Platform.runLater(() -> {
-                    currentUser = response;
+                    currentUser = response.getUser();
                     addFriendList();
-                    setMessage("Sucessfully login " + response.getUsername());
+                    setMessage("Sucessfully login " + currentUser.getUsername());
                     setPanesVisibility(false, false, true);
                 });
             }
@@ -166,12 +168,12 @@ public class ChatController implements Initializable {
 
     @FXML
     private void logout(Event e) {
-        pool.execute(new LogoutTask(currentUser.getId(), new ResponseListener<UserMessageDto>() {
+        pool.execute(new LogoutTask(currentUser.getId(), new ResponseListener<SuccessResponse>() {
             @Override
-            public void onSuccess(UserMessageDto response) {
+            public void onSuccess(SuccessResponse response) {
                 Platform.runLater(() -> {
+                    setMessage("Sucessfully logout " + currentUser.getUsername());
                     currentUser = null;
-                    setMessage("Sucessfully logout " + response.getUsername());
                     setPanesVisibility(true, false, false);
                 });
             }
@@ -190,12 +192,12 @@ public class ChatController implements Initializable {
         String username = usernameTxtF1.getText();
         String pass = passField1.getText();
         // TODO
-        pool.execute(new RegisterTask(null, null, null, null, new ResponseListener<UserMessageDto>() {
+        pool.execute(new RegisterTask(null, null, null, null, new ResponseListener<UserResponse>() {
             @Override
-            public void onSuccess(UserMessageDto response) {
+            public void onSuccess(UserResponse response) {
                 Platform.runLater(() -> {
                     setPanesVisibility(true, false, false);
-                    setMessage("Sucessfully registered " + response.getUsername());
+                    // setMessage("Sucessfully registered " + response.getUsername());
                 });
             }
 

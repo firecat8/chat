@@ -11,14 +11,17 @@ import com.chat.domain.UserStatus;
 import com.chat.messaging.dto.FriendRequestMessageDto;
 import com.chat.messaging.dto.UserMessageDto;
 import com.chat.messaging.message.ResponseListener;
+import com.chat.messaging.message.SuccessResponse;
 import com.chat.messaging.message.user.ChangeStatusRequest;
+import com.chat.messaging.message.user.FriendRequestResponse;
 import com.chat.messaging.message.user.FriendRequestStatusRequest;
 import com.chat.messaging.message.user.LoadFriendRequests;
-import com.chat.messaging.message.user.LoadedFriendRequests;
+import com.chat.messaging.message.user.FriendRequestsResponse;
 import com.chat.messaging.message.user.RegistrationRequest;
 import com.chat.messaging.message.user.SendFriendRequest;
 import com.chat.messaging.message.user.LoginRequest;
 import com.chat.messaging.message.user.LogoutRequest;
+import com.chat.messaging.message.user.UserResponse;
 import com.chat.messaging.services.UserService;
 import java.util.Calendar;
 import java.util.List;
@@ -35,12 +38,24 @@ public class UserServiceImpl extends AbstractTransactionalService implements Use
     }
 
     @Override
-    public void login(LoginRequest req, ResponseListener<UserMessageDto> listener) {
-        changeStatus(req.getUsername(), req.getPassword(), UserStatus.ACTIVE, listener);
+    public void login(LoginRequest req, ResponseListener<UserResponse> listener) {
+        doInTransaction((DaoRegistry registry) -> {
+            String username = req.getUsername();
+            User user = registry.getUserDao().find(username);
+            if (user == null) {
+                throw new MessageException("Not exist user with username: " + username);
+            }
+            if (!user.getPassword().equals(req.getPassword())) {
+                throw new MessageException("Not valid password!");
+            }
+            registry.getUserDao().updateStatus(user, UserStatus.ACTIVE);
+            user.setStatus(UserStatus.ACTIVE);
+            return new UserResponse(exchange(user));
+        }, listener);
     }
 
     @Override
-    public void logout(LogoutRequest req, ResponseListener<UserMessageDto> listener) {
+    public void logout(LogoutRequest req, ResponseListener<SuccessResponse> listener) {
         doInTransaction((DaoRegistry registry) -> {
             User user = registry.getUserDao().loadById(req.getId());
             return new UpdateStatusFunction(user.getUsername(), user.getPassword(), UserStatus.INACTIVE).apply(registry);
@@ -48,12 +63,16 @@ public class UserServiceImpl extends AbstractTransactionalService implements Use
     }
 
     @Override
-    public void changeStatus(ChangeStatusRequest req, ResponseListener<UserMessageDto> listener) {
-        changeStatus(req.getUsername(), req.getPassword(), UserStatus.valueOf(req.getStatus().name()), listener);
+    public void changeStatus(ChangeStatusRequest req, ResponseListener<SuccessResponse> listener) {
+        doInTransaction((DaoRegistry registry) -> {
+            User user = registry.getUserDao().find(req.getUsername());
+            return new UpdateStatusFunction(user.getUsername(), user.getPassword(),
+                    UserStatus.valueOf(req.getStatus().name())).apply(registry);
+        }, listener);
     }
 
     @Override
-    public synchronized void register(RegistrationRequest req, ResponseListener<UserMessageDto> listener) {
+    public synchronized void register(RegistrationRequest req, ResponseListener<UserResponse> listener) {
         doInTransaction((DaoRegistry registry) -> {
             String username = req.getUsername();
             User user = registry.getUserDao().find(username);
@@ -62,16 +81,12 @@ public class UserServiceImpl extends AbstractTransactionalService implements Use
             }
             UserInfo userInfo = registry.getUserInfoDao().save(new User(username, req.getPassword(), UserStatus.INACTIVE, Calendar.getInstance().getTimeInMillis()),
                     req.getFirstname(), req.getLastname());
-            return UserMsgDtoExchanger.INSTANCE.exchange(userInfo.getUser());
+            return new UserResponse(exchange(userInfo.getUser()));
         }, listener);
     }
 
-    public synchronized void changeStatus(String username, String password, UserStatus newStatus, ResponseListener<UserMessageDto> listener) {
-        doInTransaction(new UpdateStatusFunction(username, password, newStatus), listener);
-    }
-
     @Override
-    public void sendFriendRequest(SendFriendRequest req, ResponseListener<FriendRequestMessageDto> listener) {
+    public void sendFriendRequest(SendFriendRequest req, ResponseListener<FriendRequestResponse> listener) {
         doInTransaction((DaoRegistry registry) -> {
             User sender = registry.getUserDao().loadById(req.getSenderId());
             User receiver = registry.getUserDao().loadById(req.getReceiverId());
@@ -79,39 +94,39 @@ public class UserServiceImpl extends AbstractTransactionalService implements Use
             if (friendRequest == null) {
                 registry.getFriendRequestDao().save(new FriendRequest(sender, receiver, FriendRequestStatus.NEW));
             }
-            return FriendRequestMsgDtoExchanger.INSTANCE.exchange(friendRequest);
+            return new FriendRequestResponse(exchange(friendRequest));
         }, listener);
     }
 
     @Override
-    public void loadReceiverRequests(LoadFriendRequests req, ResponseListener<LoadedFriendRequests> listener) {
+    public void loadReceiverRequests(LoadFriendRequests req, ResponseListener<FriendRequestsResponse> listener) {
         doInTransaction((DaoRegistry registry) -> {
-            User user = exchange(req.getUser());
+            User user = registry.getUserDao().loadById(req.getId());
             List<FriendRequest> loaded = registry.getFriendRequestDao().loadReceiverRequests(user);
-            return new LoadedFriendRequests(FriendRequestMsgDtoExchanger.INSTANCE.exchangeEntityList(loaded));
+            return new FriendRequestsResponse(exchangeList(loaded));
         }, listener);
     }
 
     @Override
-    public void loadSenderRequests(LoadFriendRequests req, ResponseListener<LoadedFriendRequests> listener) {
+    public void loadSenderRequests(LoadFriendRequests req, ResponseListener<FriendRequestsResponse> listener) {
         doInTransaction((DaoRegistry registry) -> {
-            User user = exchange(req.getUser());
+            User user = registry.getUserDao().loadById(req.getId());
             List<FriendRequest> loaded = registry.getFriendRequestDao().loadSenderRequests(user);
-            return new LoadedFriendRequests(FriendRequestMsgDtoExchanger.INSTANCE.exchangeEntityList(loaded));
+            return new FriendRequestsResponse(exchangeList(loaded));
         }, listener);
     }
 
     @Override
-    public void loadFriendRequests(LoadFriendRequests req, ResponseListener<LoadedFriendRequests> listener) {
+    public void loadFriendRequests(LoadFriendRequests req, ResponseListener<FriendRequestsResponse> listener) {
         doInTransaction((DaoRegistry registry) -> {
-            User user = exchange(req.getUser());
+            User user = registry.getUserDao().loadById(req.getId());
             List<FriendRequest> loaded = registry.getFriendRequestDao().loadAllRequests(user);
-            return new LoadedFriendRequests(FriendRequestMsgDtoExchanger.INSTANCE.exchangeEntityList(loaded));
+            return new FriendRequestsResponse(exchangeList(loaded));
         }, listener);
     }
 
     @Override
-    public void acceptFriendRequest(FriendRequestStatusRequest req, ResponseListener<FriendRequestMessageDto> listener) {
+    public void acceptFriendRequest(FriendRequestStatusRequest req, ResponseListener<FriendRequestResponse> listener) {
         doInTransaction((DaoRegistry registry) -> {
             FriendRequest friendRequest = FriendRequestMsgDtoExchanger.INSTANCE.exchange(req.getFriendRequest());
             User sender = registry.getUserDao().loadById(friendRequest.getSender().getId());
@@ -121,21 +136,21 @@ public class UserServiceImpl extends AbstractTransactionalService implements Use
             registry.getUserDao().save(sender);
             registry.getUserDao().save(receiver);
             registry.getFriendRequestDao().delete(friendRequest.getId());
-            return FriendRequestMsgDtoExchanger.INSTANCE.exchange(friendRequest);
+            return new FriendRequestResponse(exchange(friendRequest));
         }, listener);
     }
 
     @Override
-    public void declineFriendRequest(FriendRequestStatusRequest req, ResponseListener<FriendRequestMessageDto> listener) {
+    public void declineFriendRequest(FriendRequestStatusRequest req, ResponseListener<FriendRequestResponse> listener) {
         doInTransaction((DaoRegistry registry) -> {
             FriendRequest friendRequest = FriendRequestMsgDtoExchanger.INSTANCE.exchange(req.getFriendRequest());
             friendRequest.setRequestStatus(FriendRequestStatus.DECLINED);
             registry.getFriendRequestDao().save(friendRequest);
-            return FriendRequestMsgDtoExchanger.INSTANCE.exchange(friendRequest);
+            return new FriendRequestResponse(exchange(friendRequest));
         }, listener);
     }
 
-    private static class UpdateStatusFunction implements Function<DaoRegistry, UserMessageDto> {
+    private static class UpdateStatusFunction implements Function<DaoRegistry, SuccessResponse> {
 
         private final String username;
 
@@ -150,7 +165,7 @@ public class UserServiceImpl extends AbstractTransactionalService implements Use
         }
 
         @Override
-        public UserMessageDto apply(DaoRegistry daoReg) {
+        public SuccessResponse apply(DaoRegistry daoReg) {
             User user = daoReg.getUserDao().find(username);
             if (user == null) {
                 throw new MessageException("Not exist user with username: " + username);
@@ -159,7 +174,7 @@ public class UserServiceImpl extends AbstractTransactionalService implements Use
                 throw new MessageException("Not valid password!");
             }
             daoReg.getUserDao().updateStatus(user, newStatus);
-            return UserMsgDtoExchanger.INSTANCE.exchange(user);
+            return new SuccessResponse();
         }
 
     }
@@ -168,4 +183,15 @@ public class UserServiceImpl extends AbstractTransactionalService implements Use
         return UserMsgDtoExchanger.INSTANCE.exchange(user);
     }
 
+    private UserMessageDto exchange(User user) {
+        return UserMsgDtoExchanger.INSTANCE.exchange(user);
+    }
+
+    private FriendRequestMessageDto exchange(FriendRequest friendRequest) {
+        return FriendRequestMsgDtoExchanger.INSTANCE.exchange(friendRequest);
+    }
+
+    private List<FriendRequestMessageDto> exchangeList(List<FriendRequest> list) {
+        return FriendRequestMsgDtoExchanger.INSTANCE.exchangeEntityList(list);
+    }
 }

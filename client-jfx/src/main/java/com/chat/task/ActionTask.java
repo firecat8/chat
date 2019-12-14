@@ -3,8 +3,8 @@ package com.chat.task;
 import com.chat.app.ClientApp;
 import static com.chat.app.ClientApp.registry;
 import com.chat.messaging.dto.ErrorMessageDto;
-import com.chat.messaging.dto.MessageDto;
 import com.chat.messaging.message.Request;
+import com.chat.messaging.message.Response;
 import com.chat.messaging.message.ResponseCode;
 import com.chat.messaging.message.ResponseListener;
 import java.util.logging.Level;
@@ -17,7 +17,7 @@ import javafx.concurrent.Task;
  * @param <Req>
  * @param <Resp>
  */
-public abstract class ActionTask<Req extends Request, Resp extends MessageDto> extends Task<Void> {
+public abstract class ActionTask<Req extends Request, Resp extends Response> extends Task<Void> {
 
     private final static Logger LOGGER = Logger.getLogger(ActionTask.class.getName());
 

@@ -36,7 +36,7 @@ public class ChatMessageDto extends MessageDto {
         return participants;
     }
 
-    public void addParticipant(ParticipantMessageDto participant) {
+    public void addFriend(ParticipantMessageDto participant) {
         this.participants.add(participant);
     }
 

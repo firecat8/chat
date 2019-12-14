@@ -3,8 +3,8 @@ package com.chat.controller;
 import com.chat.app.GUIApp;
 import static com.chat.app.GUIApp.pool;
 import com.chat.messaging.dto.ErrorMessageDto;
-import com.chat.messaging.dto.UserMessageDto;
 import com.chat.messaging.message.ResponseListener;
+import com.chat.messaging.message.user.UserResponse;
 import com.chat.task.user.RegisterTask;
 import java.io.IOException;
 import java.util.logging.Level;
@@ -33,9 +33,9 @@ public class RegisterController {
     private TextField txtConfPass;
 
     public void Create(ActionEvent event) throws Exception {
-        pool.execute(new RegisterTask(txtUserName.getText(), txtPass.getText(), txtName.getText(), txtFamilyName.getText(), new ResponseListener<UserMessageDto>() {
+        pool.execute(new RegisterTask(txtUserName.getText(), txtPass.getText(), txtName.getText(), txtFamilyName.getText(), new ResponseListener<UserResponse>() {
             @Override
-            public void onSuccess(UserMessageDto response) {
+            public void onSuccess(UserResponse response) {
                 Platform.runLater(() -> {
                     try {
                         GUIApp.changeScene("main");

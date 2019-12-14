@@ -1,17 +1,12 @@
 package com.chat.bl.service.dao;
 
 import com.chat.dao.DaoRegistry;
-import com.chat.domain.Entity;
-import com.chat.domain.exchanger.DtoEntityExchanger;
 import com.chat.messaging.dto.ErrorMessageDto;
 import com.chat.messaging.message.ResponseCode;
 import com.chat.messaging.message.ResponseListener;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 /**
  *

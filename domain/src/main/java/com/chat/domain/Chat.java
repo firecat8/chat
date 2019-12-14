@@ -36,7 +36,7 @@ public class Chat extends Entity {
         return participants;
     }
 
-    public void addParticipant(Participant participant) {
+    public void addFriend(Participant participant) {
         this.participants.add(participant);
     }
 

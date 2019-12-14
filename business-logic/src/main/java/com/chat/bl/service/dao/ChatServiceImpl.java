@@ -12,17 +12,20 @@ import com.chat.domain.ChatUser;
 import com.chat.domain.Participant;
 import com.chat.domain.User;
 import com.chat.messaging.dto.ChatEventMessageDto;
-import com.chat.messaging.dto.ChatHistoryMessageDto;
 import com.chat.messaging.dto.ChatMessageDto;
 import com.chat.messaging.dto.DownloadFile;
 import com.chat.messaging.dto.ErrorMessageDto;
 import com.chat.messaging.dto.UserMessageDto;
 import com.chat.messaging.message.ResponseCode;
 import com.chat.messaging.message.ResponseListener;
-import com.chat.messaging.message.chat.AddParticipantRequest;
+import com.chat.messaging.message.SuccessResponse;
+import com.chat.messaging.message.chat.AddFriendRequest;
+import com.chat.messaging.message.chat.ChatEventResponse;
+import com.chat.messaging.message.chat.ChatHistoryResponse;
+import com.chat.messaging.message.chat.ChatResponse;
 import com.chat.messaging.message.chat.CreateChatRequest;
 import com.chat.messaging.message.chat.DownloadFileRequest;
-import com.chat.messaging.message.chat.LeaveChatrRequest;
+import com.chat.messaging.message.chat.LeaveChatRequest;
 import com.chat.messaging.message.chat.LoadHistoryRequest;
 import com.chat.messaging.message.chat.SendFileRequest;
 import com.chat.messaging.message.chat.SendLogRequest;
@@ -51,19 +54,19 @@ public class ChatServiceImpl extends AbstractTransactionalService implements Cha
     }
 
     @Override
-    public void sendMessage(SendMessageRequest req, ResponseListener<ChatEventMessageDto> listener) {
+    public void sendMessage(SendMessageRequest req, ResponseListener<ChatEventResponse> listener) {
         saveEvent(req.getMessage(), ChatEventType.MESSAGE, req.getEventTime(), req.getSender(), req.getChat(), listener);
     }
 
     @Override
-    public void sendLog(SendLogRequest req, ResponseListener<ChatEventMessageDto> listener) {
+    public void sendLog(SendLogRequest req, ResponseListener<ChatEventResponse> listener) {
         saveEvent(req.getMessage(), ChatEventType.LOG, req.getEventTime(), req.getSender(), req.getChat(), listener);
     }
 
     @Override
-    public void sendFile(SendFileRequest req, ResponseListener<ChatEventMessageDto> listener) {
+    public void sendFile(SendFileRequest req, ResponseListener<ChatEventResponse> listener) {
         doInTransaction((DaoRegistry registry) -> {
-            ChatEventMessageDto ce = saveEvent(registry, req.getMessage(), ChatEventType.FILE_TRANSFER, req.getEventTime(), req.getSender(), req.getChat());
+            ChatEventResponse ce = saveEvent(registry, req.getMessage(), ChatEventType.FILE_TRANSFER, req.getEventTime(), req.getSender(), req.getChat());
             try {
                 saveFile(ce, req.getFile());
             } catch (IOException ex) {
@@ -75,7 +78,7 @@ public class ChatServiceImpl extends AbstractTransactionalService implements Cha
     }
 
     @Override
-    public synchronized void getFile(DownloadFileRequest req, ResponseListener<DownloadFile> listener) {
+    public synchronized void downloadFile(DownloadFileRequest req, ResponseListener<DownloadFile> listener) {
         try {
             DownloadFile downloadFile = new DownloadFile(Files.readAllBytes(Paths.get(req.getFileName())));
             listener.onSuccess(downloadFile);
@@ -86,16 +89,16 @@ public class ChatServiceImpl extends AbstractTransactionalService implements Cha
     }
 
     @Override
-    public synchronized void createChat(CreateChatRequest req, ResponseListener<ChatMessageDto> listener) {
+    public synchronized void createChat(CreateChatRequest req, ResponseListener<ChatResponse> listener) {
         doInTransaction((DaoRegistry registry) -> {
-            return ChatMsgDtoExchanger.INSTANCE.exchange(
-                    registry.getChatDao().save(req.getName(), ChatType.valueOf(req.getType().name()))
+            return new ChatResponse(ChatMsgDtoExchanger.INSTANCE.exchange(
+                    registry.getChatDao().save(req.getName(), ChatType.valueOf(req.getType().name())))
             );
         }, listener);
     }
 
     @Override
-    public void leaveChat(LeaveChatrRequest req, ResponseListener<Void> listener) {
+    public void leaveChat(LeaveChatRequest req, ResponseListener<SuccessResponse> listener) {
         doInTransaction((DaoRegistry registry) -> {
             Chat chat = registry.getChatDao().loadById(req.getId());
             if (chat == null) {
@@ -115,7 +118,7 @@ public class ChatServiceImpl extends AbstractTransactionalService implements Cha
     }
 
     @Override
-    public void addParticipant(AddParticipantRequest req, ResponseListener<Void> listener) {
+    public void addFriend(AddFriendRequest req, ResponseListener<SuccessResponse> listener) {
         doInTransaction((DaoRegistry registry) -> {
             Chat chat = registry.getChatDao().loadById(req.getChatId());
             if (chat == null) {
@@ -131,24 +134,25 @@ public class ChatServiceImpl extends AbstractTransactionalService implements Cha
     }
 
     @Override
-    public void loadLastTenEvents(LoadHistoryRequest req, ResponseListener<ChatHistoryMessageDto> listener) {
+    public void loadLastTenEvents(LoadHistoryRequest req, ResponseListener<ChatHistoryResponse> listener) {
         doInTransaction((DaoRegistry registry) -> {
             Chat chat = ChatMsgDtoExchanger.INSTANCE.exchange(req.getChat());
             List<ChatEvent> history = registry.getChatEventDao().loadTheLastTenEvents(chat);
-            return new ChatHistoryMessageDto(ChatEventMsgDtoExchanger.INSTANCE.exchangeEntityList(history));
+            return new ChatHistoryResponse(ChatEventMsgDtoExchanger.INSTANCE.exchangeEntityList(history));
+        
         }, listener);
     }
 
     private void saveEvent(
             String message, ChatEventType chatEventType,
             Long eventTime, UserMessageDto s, ChatMessageDto c,
-            ResponseListener<ChatEventMessageDto> listener) {
+            ResponseListener<ChatEventResponse> listener) {
         doInTransaction((DaoRegistry registry) -> {
             return saveEvent(registry, message, chatEventType, eventTime, s, c);
         }, listener);
     }
 
-    private ChatEventMessageDto saveEvent(DaoRegistry registry,
+    private ChatEventResponse saveEvent(DaoRegistry registry,
             String message, ChatEventType chatEventType,
             Long eventTime, UserMessageDto s, ChatMessageDto c) {
         User sender = UserMsgDtoExchanger.INSTANCE.exchangeFrom(s);
@@ -156,16 +160,17 @@ public class ChatServiceImpl extends AbstractTransactionalService implements Cha
         return saveEvent(registry, message, chatEventType, eventTime, sender, chat);
     }
 
-    private ChatEventMessageDto saveEvent(DaoRegistry registry,
+    private ChatEventResponse saveEvent(DaoRegistry registry,
             String message, ChatEventType chatEventType,
             Long eventTime, User s, Chat c) {
-        return ChatEventMsgDtoExchanger.INSTANCE.exchange(
+        ChatEventMessageDto chatEvent = ChatEventMsgDtoExchanger.INSTANCE.exchange(
                 registry.getChatEventDao().save(message, chatEventType, eventTime, s, c)
         );
+        return new ChatEventResponse(chatEvent);
     }
 
-    private void saveFile(ChatEventMessageDto c, byte[] file) throws FileNotFoundException, IOException {
-        Files.write(Paths.get(c.getStorageFileName()), file);
+    private void saveFile(ChatEventResponse c, byte[] file) throws FileNotFoundException, IOException {
+        Files.write(Paths.get(c.getChatEvent().getStorageFileName()), file);
     }
 
 }

@@ -58,7 +58,7 @@ public class ChatDto extends AbstractDto {
         return participants;
     }
 
-    public void addParticipant(ParticipantDto participant) {
+    public void addFriend(ParticipantDto participant) {
         this.participants.add(participant);
     }
 

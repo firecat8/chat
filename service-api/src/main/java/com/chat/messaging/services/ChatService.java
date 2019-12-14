@@ -1,14 +1,15 @@
 package com.chat.messaging.services;
 
 import com.chat.messaging.message.ResponseListener;
-import com.chat.messaging.dto.ChatEventMessageDto;
-import com.chat.messaging.dto.ChatHistoryMessageDto;
-import com.chat.messaging.dto.ChatMessageDto;
 import com.chat.messaging.dto.DownloadFile;
-import com.chat.messaging.message.chat.AddParticipantRequest;
+import com.chat.messaging.message.SuccessResponse;
+import com.chat.messaging.message.chat.AddFriendRequest;
+import com.chat.messaging.message.chat.ChatEventResponse;
+import com.chat.messaging.message.chat.ChatHistoryResponse;
+import com.chat.messaging.message.chat.ChatResponse;
 import com.chat.messaging.message.chat.CreateChatRequest;
 import com.chat.messaging.message.chat.DownloadFileRequest;
-import com.chat.messaging.message.chat.LeaveChatrRequest;
+import com.chat.messaging.message.chat.LeaveChatRequest;
 import com.chat.messaging.message.chat.LoadHistoryRequest;
 import com.chat.messaging.message.chat.SendFileRequest;
 import com.chat.messaging.message.chat.SendLogRequest;
@@ -20,19 +21,19 @@ import com.chat.messaging.message.chat.SendMessageRequest;
  */
 public interface ChatService {
 
-    public void sendMessage(SendMessageRequest req, ResponseListener<ChatEventMessageDto> listener);
+    public void sendMessage(SendMessageRequest req, ResponseListener<ChatEventResponse> listener);
 
-    public void sendLog(SendLogRequest req, ResponseListener<ChatEventMessageDto> listener);
+    public void sendLog(SendLogRequest req, ResponseListener<ChatEventResponse> listener);
 
-    public void sendFile(SendFileRequest req, ResponseListener<ChatEventMessageDto> listener);
+    public void sendFile(SendFileRequest req, ResponseListener<ChatEventResponse> listener);
 
-    public void getFile(DownloadFileRequest req, ResponseListener<DownloadFile> listener);
+    public void downloadFile(DownloadFileRequest req, ResponseListener<DownloadFile> listener);
 
-    public void createChat(CreateChatRequest req, ResponseListener<ChatMessageDto> listener);
+    public void createChat(CreateChatRequest req, ResponseListener<ChatResponse> listener);
 
-    public void leaveChat(LeaveChatrRequest req, ResponseListener<Void> listener);
+    public void leaveChat(LeaveChatRequest req, ResponseListener<SuccessResponse> listener);
 
-    public void addParticipant(AddParticipantRequest req, ResponseListener<Void> listener);
+    public void addFriend(AddFriendRequest req, ResponseListener<SuccessResponse> listener);
 
-    public void loadLastTenEvents(LoadHistoryRequest req, ResponseListener<ChatHistoryMessageDto> listener);
+    public void loadLastTenEvents(LoadHistoryRequest req, ResponseListener<ChatHistoryResponse> listener);
 }
