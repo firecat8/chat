@@ -7,9 +7,12 @@ import com.chat.messaging.message.chat.AddFriendRequest;
 import com.chat.messaging.message.chat.ChatEventResponse;
 import com.chat.messaging.message.chat.ChatHistoryResponse;
 import com.chat.messaging.message.chat.ChatResponse;
+import com.chat.messaging.message.chat.ChatsResponse;
 import com.chat.messaging.message.chat.CreateChatRequest;
 import com.chat.messaging.message.chat.DownloadFileRequest;
+import com.chat.messaging.message.chat.FindChatRequest;
 import com.chat.messaging.message.chat.LeaveChatRequest;
+import com.chat.messaging.message.chat.LoadChatsRequest;
 import com.chat.messaging.message.chat.LoadHistoryRequest;
 import com.chat.messaging.message.chat.SendFileRequest;
 import com.chat.messaging.message.chat.SendLogRequest;
@@ -30,6 +33,10 @@ public interface ChatService {
     public void downloadFile(DownloadFileRequest req, ResponseListener<DownloadFile> listener);
 
     public void createChat(CreateChatRequest req, ResponseListener<ChatResponse> listener);
+
+    public void loadChats(LoadChatsRequest req, ResponseListener<ChatsResponse> listener);
+
+    public void findChats(FindChatRequest req, ResponseListener<ChatsResponse> listener);
 
     public void leaveChat(LeaveChatRequest req, ResponseListener<SuccessResponse> listener);
 

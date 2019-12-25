@@ -23,7 +23,6 @@ public class AbstractTransactionalService {
     }
 
     protected final <T> void doInTransaction(Function<DaoRegistry, T> work, ResponseListener<T> listener) {
-
         try {
             daoRegistry.beginTransaction();
             T result = work.apply(daoRegistry);
@@ -34,7 +33,6 @@ public class AbstractTransactionalService {
             LOGGER.log(Level.SEVERE, ex.getMessage());
             listener.onError(new ErrorMessageDto(ResponseCode.ERROR, ex.getMessage()));
         } catch (Throwable ex) {
-
             daoRegistry.rollbackTransaction();
             LOGGER.log(Level.SEVERE, ex.getMessage(), ex);
             listener.onError(new ErrorMessageDto(ResponseCode.SERVER_ERROR, ex.getMessage()));

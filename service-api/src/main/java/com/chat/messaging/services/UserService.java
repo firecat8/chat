@@ -4,6 +4,7 @@ import com.chat.messaging.message.user.RegistrationRequest;
 import com.chat.messaging.message.ResponseListener;
 import com.chat.messaging.message.SuccessResponse;
 import com.chat.messaging.message.user.ChangeStatusRequest;
+import com.chat.messaging.message.user.FindFriendRequest;
 import com.chat.messaging.message.user.FriendRequestResponse;
 import com.chat.messaging.message.user.FriendRequestStatusRequest;
 import com.chat.messaging.message.user.LoadFriendRequests;
@@ -12,6 +13,7 @@ import com.chat.messaging.message.user.SendFriendRequest;
 import com.chat.messaging.message.user.LoginRequest;
 import com.chat.messaging.message.user.LogoutRequest;
 import com.chat.messaging.message.user.UserResponse;
+import com.chat.messaging.message.user.UsersResponse;
 
 /**
  *
@@ -26,6 +28,8 @@ public interface UserService {
     public void changeStatus(ChangeStatusRequest req, ResponseListener<SuccessResponse> listener);
 
     public void register(RegistrationRequest request, ResponseListener<UserResponse> listener);
+
+    public void findFriend(FindFriendRequest req, ResponseListener<UsersResponse> listener);
 
     public void sendFriendRequest(SendFriendRequest request, ResponseListener<FriendRequestResponse> listener);
 

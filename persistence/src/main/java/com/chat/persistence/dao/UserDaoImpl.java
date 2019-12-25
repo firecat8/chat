@@ -6,6 +6,7 @@ import com.chat.domain.UserStatus;
 import com.chat.persistence.dto.UserDto;
 import com.chat.persistence.exchanger.UserDtoExchanger;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.persistence.EntityManager;
 
@@ -25,6 +26,10 @@ public class UserDaoImpl extends AbstractCrudDao<UserDto, User> implements UserD
     }
 
     @Override
+    public List<User> findUsers(String username) {
+        return getResultsLikeExpr(UserDto.USER_NAME, username);
+    }
+    @Override
     public boolean updateStatus(User user, UserStatus status) {
         user.setStatus(status);
         UserDto dto = exchanger.exchange(user);
@@ -39,5 +44,6 @@ public class UserDaoImpl extends AbstractCrudDao<UserDto, User> implements UserD
         map.put(UserDto.STATUS, newOne.getStatus());
         return map;
     }
+
 
 }

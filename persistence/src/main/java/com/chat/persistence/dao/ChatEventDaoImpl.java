@@ -36,7 +36,7 @@ public class ChatEventDaoImpl extends AbstractCrudDao<ChatEventDto, ChatEvent> i
 
     @Override
     public List<ChatEvent> loadTheLastTenEvents(Chat chat) {
-        return new ArrayList<>(getResults("id", chat.getId(), ChatEventDto.EVENT_TIME_COLUMN, 10));
+        return getResults("id", chat.getId(), ChatEventDto.EVENT_TIME_COLUMN, 10);
     }
 
     @Override

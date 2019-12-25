@@ -13,6 +13,7 @@ import com.chat.messaging.dto.UserMessageDto;
 import com.chat.messaging.message.ResponseListener;
 import com.chat.messaging.message.SuccessResponse;
 import com.chat.messaging.message.user.ChangeStatusRequest;
+import com.chat.messaging.message.user.FindFriendRequest;
 import com.chat.messaging.message.user.FriendRequestResponse;
 import com.chat.messaging.message.user.FriendRequestStatusRequest;
 import com.chat.messaging.message.user.LoadFriendRequests;
@@ -22,6 +23,7 @@ import com.chat.messaging.message.user.SendFriendRequest;
 import com.chat.messaging.message.user.LoginRequest;
 import com.chat.messaging.message.user.LogoutRequest;
 import com.chat.messaging.message.user.UserResponse;
+import com.chat.messaging.message.user.UsersResponse;
 import com.chat.messaging.services.UserService;
 import java.util.Calendar;
 import java.util.List;
@@ -82,6 +84,13 @@ public class UserServiceImpl extends AbstractTransactionalService implements Use
             UserInfo userInfo = registry.getUserInfoDao().save(new User(username, req.getPassword(), UserStatus.INACTIVE, Calendar.getInstance().getTimeInMillis()),
                     req.getFirstname(), req.getLastname());
             return new UserResponse(exchange(userInfo.getUser()));
+        }, listener);
+    }
+
+    @Override
+    public void findFriend(FindFriendRequest req, ResponseListener<UsersResponse> listener) {
+        doInTransaction((DaoRegistry registry) -> {
+            return new UsersResponse(exchangeUserList(registry.getUserDao().findUsers(req.getFriendName())));
         }, listener);
     }
 
@@ -185,6 +194,9 @@ public class UserServiceImpl extends AbstractTransactionalService implements Use
 
     private UserMessageDto exchange(User user) {
         return UserMsgDtoExchanger.INSTANCE.exchange(user);
+    }
+    private List<UserMessageDto> exchangeUserList(List<User> list) {
+        return UserMsgDtoExchanger.INSTANCE.exchangeEntityList(list);
     }
 
     private FriendRequestMessageDto exchange(FriendRequest friendRequest) {

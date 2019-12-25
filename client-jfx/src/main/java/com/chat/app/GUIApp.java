@@ -1,6 +1,7 @@
 package com.chat.app;
 
 import static com.chat.app.ClientApp.registry;
+import com.chat.controller.ChatController;
 import com.chat.messaging.message.ResponseListener;
 import com.chat.controller.LoginController;
 import com.chat.messaging.dto.ErrorMessageDto;
@@ -34,8 +35,10 @@ public class GUIApp extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         GUIApp.stage = stage;
-        scene = new Scene(loadFXML("login"));
-       // scene = new Scene(loadFXML("chat"));
+        // Main line
+        // scene = new Scene(loadFXML("login"));
+        // For testing purpose
+        scene = new Scene(loadFXML("chat"));
         stage.setOnCloseRequest((WindowEvent event) -> {
             pool.shutdownNow();
             if (registry != null) {
@@ -54,10 +57,15 @@ public class GUIApp extends Application {
     }
 
     private void logout() {
-        new LogoutTask(LoginController.currentUser.getId(), new ResponseListener<SuccessResponse>() {
+        Long userId = LoginController.currentUser != null ? LoginController.currentUser.getId()
+                : ChatController.currentUser.getId();
+        if (userId == null) {
+            Platform.exit();
+            return;
+        }
+        new LogoutTask(userId, new ResponseListener<SuccessResponse>() {
             @Override
             public void onSuccess(SuccessResponse response) {
-
                 try {
                     registry.close();
                     Platform.exit();

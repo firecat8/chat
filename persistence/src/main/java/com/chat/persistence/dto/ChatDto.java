@@ -23,6 +23,8 @@ public class ChatDto extends AbstractDto {
 
     public final static String TYPE = "type";
 
+    public final static String PARTICIPANTS = "participants";
+
     @Column
     private String name;
 

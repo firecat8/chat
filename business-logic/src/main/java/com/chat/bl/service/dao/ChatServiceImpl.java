@@ -23,9 +23,12 @@ import com.chat.messaging.message.chat.AddFriendRequest;
 import com.chat.messaging.message.chat.ChatEventResponse;
 import com.chat.messaging.message.chat.ChatHistoryResponse;
 import com.chat.messaging.message.chat.ChatResponse;
+import com.chat.messaging.message.chat.ChatsResponse;
 import com.chat.messaging.message.chat.CreateChatRequest;
 import com.chat.messaging.message.chat.DownloadFileRequest;
+import com.chat.messaging.message.chat.FindChatRequest;
 import com.chat.messaging.message.chat.LeaveChatRequest;
+import com.chat.messaging.message.chat.LoadChatsRequest;
 import com.chat.messaging.message.chat.LoadHistoryRequest;
 import com.chat.messaging.message.chat.SendFileRequest;
 import com.chat.messaging.message.chat.SendLogRequest;
@@ -139,7 +142,7 @@ public class ChatServiceImpl extends AbstractTransactionalService implements Cha
             Chat chat = ChatMsgDtoExchanger.INSTANCE.exchange(req.getChat());
             List<ChatEvent> history = registry.getChatEventDao().loadTheLastTenEvents(chat);
             return new ChatHistoryResponse(ChatEventMsgDtoExchanger.INSTANCE.exchangeEntityList(history));
-        
+
         }, listener);
     }
 
@@ -171,6 +174,26 @@ public class ChatServiceImpl extends AbstractTransactionalService implements Cha
 
     private void saveFile(ChatEventResponse c, byte[] file) throws FileNotFoundException, IOException {
         Files.write(Paths.get(c.getChatEvent().getStorageFileName()), file);
+    }
+
+    @Override
+    public void loadChats(LoadChatsRequest req, ResponseListener<ChatsResponse> listener) {
+        doInTransaction((DaoRegistry registry) -> {
+            User user = registry.getUserDao().loadById(req.getUserId());
+            if (user == null) {
+                throw new MessageException("Not found chat!");
+            }
+            List<Chat> chats = registry.getChatDao().loadChats(user);
+            return new ChatsResponse(ChatMsgDtoExchanger.INSTANCE.exchangeEntityList(chats));
+        }, listener);
+    }
+
+    @Override
+    public void findChats(FindChatRequest req, ResponseListener<ChatsResponse> listener) {
+        doInTransaction((DaoRegistry registry) -> {
+            List<Chat> chats = registry.getChatDao().findChats(req.getChatNmae());
+            return new ChatsResponse(ChatMsgDtoExchanger.INSTANCE.exchangeEntityList(chats));
+        }, listener);
     }
 
 }

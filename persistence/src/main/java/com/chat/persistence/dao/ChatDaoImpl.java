@@ -3,11 +3,18 @@ package com.chat.persistence.dao;
 import com.chat.dao.ChatDao;
 import com.chat.domain.Chat;
 import com.chat.domain.ChatType;
+import com.chat.domain.User;
 import com.chat.persistence.dto.ChatDto;
 import com.chat.persistence.dto.ChatTypeDto;
+import com.chat.persistence.dto.ParticipantDto;
+import com.chat.persistence.dto.UserDto;
 import com.chat.persistence.exchanger.ChatDtoExchanger;
+import java.util.List;
 import java.util.Map;
 import javax.persistence.EntityManager;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 
 /**
  *
@@ -22,6 +29,21 @@ public class ChatDaoImpl extends AbstractCrudDao<ChatDto, Chat> implements ChatD
     @Override
     public Chat save(String name, ChatType type) {
         return save(new ChatDto(name, ChatTypeDto.valueOf(type.name())));
+    }
+
+    @Override
+    public List<Chat> findChats(String name) {
+        return getResultsLikeExpr(ChatDto.NAME, name);
+    }
+
+    @Override
+    public List<Chat> loadChats(User user) {
+        CriteriaBuilder cb = getCriteriaBuilder();
+        CriteriaQuery<ChatDto> query = cb.createQuery(dtoClassName);
+        Root<ParticipantDto> pRoot = query.from(ParticipantDto.class);
+        query.select(pRoot.get(ParticipantDto.USER));
+        query.where(cb.equal(pRoot.get(ParticipantDto.USER), user.getId()));
+        return exchangeResults(em.createQuery(query).getResultList());
     }
 
     @Override
