@@ -1,12 +1,12 @@
 package com.chat.task;
 
 import com.chat.app.ClientApp;
-import static com.chat.app.ClientApp.registry;
 import com.chat.messaging.dto.ErrorMessageDto;
 import com.chat.messaging.message.Request;
 import com.chat.messaging.message.Response;
 import com.chat.messaging.message.ResponseCode;
 import com.chat.messaging.message.ResponseListener;
+import java.util.function.BiConsumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.concurrent.Task;
@@ -17,22 +17,28 @@ import javafx.concurrent.Task;
  * @param <Req>
  * @param <Resp>
  */
-public abstract class ActionTask<Req extends Request, Resp extends Response> extends Task<Void> {
+public class TaskWorker<Req extends Request, Resp extends Response> extends Task<Void> {
 
-    private final static Logger LOGGER = Logger.getLogger(ActionTask.class.getName());
+    private final static Logger LOGGER = Logger.getLogger(TaskWorker.class.getName());
 
-    protected final ResponseListener<Resp> listener;
+    private final BiConsumer< Req, ResponseListener<Resp>> doWork;
 
-    protected final Req request;
+    private final ResponseListener<Resp> listener;
 
-    public ActionTask(Req request, ResponseListener<Resp> listener) {
+    private final Req request;
+
+    public TaskWorker(BiConsumer< Req, ResponseListener<Resp>> doWork, Req request, ResponseListener<Resp> listener) {
+        this.doWork = doWork;
         this.request = request;
         this.listener = listener;
     }
 
     @Override
     protected Void call() throws Exception {
-        if (registry == null) {
+        if (ClientApp.isDisconnectedMode()) {
+            return null;
+        }
+        if (ClientApp.getRegistry() == null) {
             try {
                 ClientApp.connectToServer();
             } catch (Exception ex) {
@@ -41,9 +47,8 @@ public abstract class ActionTask<Req extends Request, Resp extends Response> ext
                 return null;
             }
         }
-        callAction();
+        doWork.accept(request, listener);
         return null;
     }
 
-    abstract protected void callAction();
 }

@@ -60,7 +60,8 @@ public class UserServiceImpl extends AbstractTransactionalService implements Use
     public void logout(LogoutRequest req, ResponseListener<SuccessResponse> listener) {
         doInTransaction((DaoRegistry registry) -> {
             User user = registry.getUserDao().loadById(req.getId());
-            return new UpdateStatusFunction(user.getUsername(), user.getPassword(), UserStatus.INACTIVE).apply(registry);
+            registry.getUserDao().updateStatus(user, UserStatus.OFFLINE);
+            return new SuccessResponse();
         }, listener);
     }
 
@@ -68,8 +69,8 @@ public class UserServiceImpl extends AbstractTransactionalService implements Use
     public void changeStatus(ChangeStatusRequest req, ResponseListener<SuccessResponse> listener) {
         doInTransaction((DaoRegistry registry) -> {
             User user = registry.getUserDao().find(req.getUsername());
-            return new UpdateStatusFunction(user.getUsername(), user.getPassword(),
-                    UserStatus.valueOf(req.getStatus().name())).apply(registry);
+            registry.getUserDao().updateStatus(user, UserStatus.valueOf(req.getStatus().name()));
+            return new SuccessResponse();
         }, listener);
     }
 
@@ -81,7 +82,7 @@ public class UserServiceImpl extends AbstractTransactionalService implements Use
             if (user != null) {
                 throw new MessageException("Already exist user with username: " + username);
             }
-            UserInfo userInfo = registry.getUserInfoDao().save(new User(username, req.getPassword(), UserStatus.INACTIVE, Calendar.getInstance().getTimeInMillis()),
+            UserInfo userInfo = registry.getUserInfoDao().save(new User(username, req.getPassword(), UserStatus.ACTIVE, Calendar.getInstance().getTimeInMillis()),
                     req.getFirstname(), req.getLastname());
             return new UserResponse(exchange(userInfo.getUser()));
         }, listener);
@@ -159,35 +160,6 @@ public class UserServiceImpl extends AbstractTransactionalService implements Use
         }, listener);
     }
 
-    private static class UpdateStatusFunction implements Function<DaoRegistry, SuccessResponse> {
-
-        private final String username;
-
-        private final String password;
-
-        private final UserStatus newStatus;
-
-        public UpdateStatusFunction(String username, String password, UserStatus newStatus) {
-            this.username = username;
-            this.password = password;
-            this.newStatus = newStatus;
-        }
-
-        @Override
-        public SuccessResponse apply(DaoRegistry daoReg) {
-            User user = daoReg.getUserDao().find(username);
-            if (user == null) {
-                throw new MessageException("Not exist user with username: " + username);
-            }
-            if (!user.getPassword().equals(password)) {
-                throw new MessageException("Not valid password!");
-            }
-            daoReg.getUserDao().updateStatus(user, newStatus);
-            return new SuccessResponse();
-        }
-
-    }
-
     private User exchange(UserMessageDto user) {
         return UserMsgDtoExchanger.INSTANCE.exchange(user);
     }
@@ -195,6 +167,7 @@ public class UserServiceImpl extends AbstractTransactionalService implements Use
     private UserMessageDto exchange(User user) {
         return UserMsgDtoExchanger.INSTANCE.exchange(user);
     }
+
     private List<UserMessageDto> exchangeUserList(List<User> list) {
         return UserMsgDtoExchanger.INSTANCE.exchangeEntityList(list);
     }

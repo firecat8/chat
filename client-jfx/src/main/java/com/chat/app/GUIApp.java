@@ -2,10 +2,13 @@ package com.chat.app;
 
 import static com.chat.app.ClientApp.registry;
 import com.chat.controller.ChatController;
+import static com.chat.controller.ChatController.currentUser;
 import com.chat.messaging.message.ResponseListener;
 import com.chat.controller.LoginController;
 import com.chat.messaging.dto.ErrorMessageDto;
+import com.chat.messaging.dto.UserMessageDto;
 import com.chat.messaging.message.SuccessResponse;
+import com.chat.task.TaskManager;
 import com.chat.task.user.LogoutTask;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -26,8 +29,6 @@ import javafx.stage.WindowEvent;
  */
 public class GUIApp extends Application {
 
-    public static ExecutorService pool = Executors.newFixedThreadPool(30);
-
     private static Stage stage;
 
     private static Scene scene;
@@ -40,8 +41,7 @@ public class GUIApp extends Application {
         // For testing purpose
         scene = new Scene(loadFXML("chat"));
         stage.setOnCloseRequest((WindowEvent event) -> {
-            pool.shutdownNow();
-            if (registry != null) {
+            if (!ClientApp.isConnected()) {
                 logout();
                 return;
             }
@@ -57,28 +57,29 @@ public class GUIApp extends Application {
     }
 
     private void logout() {
-        Long userId = LoginController.currentUser != null ? LoginController.currentUser.getId()
-                : ChatController.currentUser.getId();
-        if (userId == null) {
-            Platform.exit();
+        UserMessageDto currentUser = LoginController.currentUser != null
+                ? LoginController.currentUser
+                : ChatController.currentUser;
+        if (currentUser == null) {
+            closeApps();
             return;
         }
-        new LogoutTask(userId, new ResponseListener<SuccessResponse>() {
-            @Override
-            public void onSuccess(SuccessResponse response) {
-                try {
-                    registry.close();
-                    Platform.exit();
-                } catch (Exception ex) {
-                    Logger.getLogger(GUIApp.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
+        TaskManager.logout(currentUser,
+                (success) -> {
+                    closeApps();
+                },
+                (errorResponse) -> {
+                    closeApps();
+                });
+    }
 
-            @Override
-            public void onError(ErrorMessageDto error) {
-                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-            }
-        }).run();
+    private void closeApps() {
+        try {
+            ClientApp.getRegistry().close();
+            Platform.exit();
+        } catch (Exception ex) {
+            Logger.getLogger(GUIApp.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     private static Parent loadFXML(String fxml) throws IOException {

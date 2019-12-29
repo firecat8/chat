@@ -6,13 +6,13 @@ import com.chat.messaging.dto.UserMessageDto;
 import com.chat.messaging.message.ResponseListener;
 import com.chat.messaging.message.chat.ChatEventResponse;
 import com.chat.messaging.message.chat.SendFileRequest;
-import com.chat.task.ActionTask;
+import com.chat.task.WorkerTask;
 
 /**
  *
  * @author gdimitrova
  */
-public class SendFileTask extends ActionTask<SendFileRequest, ChatEventResponse> {
+public class SendFileTask extends WorkerTask<SendFileRequest, ChatEventResponse> {
     
     public SendFileTask(String filename, byte[] file, UserMessageDto sender, ChatMessageDto chat,
             ResponseListener<ChatEventResponse> listener) {
@@ -20,8 +20,8 @@ public class SendFileTask extends ActionTask<SendFileRequest, ChatEventResponse>
     }
     
     @Override
-    protected void callAction() {
-        ClientApp.registry.getChatService().sendFile(request, listener);
+    protected void doWork() {
+        ClientApp.getRegistry().getChatService().sendFile(request, listener);
     }
     
 }

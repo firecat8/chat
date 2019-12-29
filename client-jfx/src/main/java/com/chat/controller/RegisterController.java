@@ -1,15 +1,11 @@
 package com.chat.controller;
 
 import com.chat.app.GUIApp;
-import static com.chat.app.GUIApp.pool;
-import com.chat.messaging.dto.ErrorMessageDto;
-import com.chat.messaging.message.ResponseListener;
 import com.chat.messaging.message.user.UserResponse;
-import com.chat.task.user.RegisterTask;
+import com.chat.task.TaskManager;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.application.Platform;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -33,24 +29,16 @@ public class RegisterController {
     private TextField txtConfPass;
 
     public void Create(ActionEvent event) throws Exception {
-        pool.execute(new RegisterTask(txtUserName.getText(), txtPass.getText(), txtName.getText(), txtFamilyName.getText(), new ResponseListener<UserResponse>() {
-            @Override
-            public void onSuccess(UserResponse response) {
-                Platform.runLater(() -> {
+        TaskManager.register(txtUserName.getText(), txtPass.getText(), txtName.getText(), txtFamilyName.getText(),
+                (UserResponse rsp) -> {
                     try {
                         GUIApp.changeScene("main");
                     } catch (IOException ex) {
                         Logger.getLogger(RegisterController.class.getName()).log(Level.SEVERE, null, ex);
                     }
+                },
+                (errorResponse) -> {
                 });
-            }
-
-            @Override
-            public void onError(ErrorMessageDto error) {
-                Platform.runLater(() -> {
-                });
-            }
-        }));
 
     }
 

@@ -77,7 +77,11 @@ public abstract class AbstractCrudDao<D extends Dto, E extends Entity> extends A
     }
 
     protected void saveOrUpdate(D entity) {
-        if (entity.getId() == null || entity.getId() > 0) {
+        if (entity.getId() == null) {
+            persistEntity(entity);
+            return;
+        }
+        if (entity.getId() != null || entity.getId() > 0) {
             mergeEntity(entity);
             return;
         }

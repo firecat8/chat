@@ -16,7 +16,9 @@ public class ClientApp {
 
     private final static Logger LOGGER = Logger.getLogger(ClientApp.class.getName());
 
-    public static ServicePointRegistry registry;
+    private static ServicePointRegistry registry;
+
+    private static boolean isDisconnectedMode = false;
 
     public static void start() {
         connectToServer();
@@ -34,6 +36,30 @@ public class ClientApp {
                 LOGGER.log(Level.SEVERE, ex.getMessage(), ex1);
             }
         }
+    }
+
+    public static void disconnect() {
+        try {
+            registry.close();
+        } catch (Exception ex) {
+            LOGGER.log(Level.SEVERE, ex.getMessage(), ex);
+        }
+    }
+
+    public static ServicePointRegistry getRegistry() {
+        return registry;
+    }
+
+    public static boolean isDisconnectedMode() {
+        return isDisconnectedMode;
+    }
+
+    public static void setDisconnectedMode(boolean isDisconnectedMode) {
+        ClientApp.isDisconnectedMode = isDisconnectedMode;
+    }
+
+    public static boolean isConnected() {
+        return registry == null;
     }
 
     private static Properties loadProperties() {

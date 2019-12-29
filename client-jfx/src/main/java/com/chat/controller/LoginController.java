@@ -1,16 +1,12 @@
 package com.chat.controller;
 
 import com.chat.app.GUIApp;
-import static com.chat.app.GUIApp.pool;
-import com.chat.messaging.dto.ErrorMessageDto;
 import com.chat.messaging.dto.UserMessageDto;
-import com.chat.messaging.message.ResponseListener;
 import com.chat.messaging.message.user.UserResponse;
-import com.chat.task.user.LoginTask;
+import com.chat.task.TaskManager;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.application.Platform;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -33,25 +29,18 @@ public class LoginController {
     public void Login(ActionEvent event) throws Exception {
         if (txtUserName.getText().equals("user") && txtPass.getText().equals("pass")) {
             lblSign.setText("Login success!");
-            pool.execute(new LoginTask(txtUserName.getText(), txtPass.getText(), new ResponseListener<UserResponse>() {
-                @Override
-                public void onSuccess(UserResponse response) {
-                    Platform.runLater(() -> {
+            TaskManager.login(txtUserName.getText(), txtPass.getText(),
+                    (UserResponse rsp) -> {
+                        currentUser = rsp.getUser();
                         try {
-                            currentUser = response.getUser();
                             GUIApp.changeScene("main");
                         } catch (IOException ex) {
                             Logger.getLogger(LoginController.class.getName()).log(Level.SEVERE, null, ex);
                         }
+                    },
+                    (errorResponse) -> {
                     });
-                }
 
-                @Override
-                public void onError(ErrorMessageDto error) {
-                    Platform.runLater(() -> {
-                    });
-                }
-            }));
 //		Stage primaryStage=new Stage();
 //		Parent root=FXMLLoader.load(GUIApp.class.getResource("main.fxml"));
 //		Scene scene = new Scene(root,800,700);

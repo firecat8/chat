@@ -15,8 +15,8 @@ public class LoadFriendRequestsTask extends AbstractFriendRequestsTask{
     }
 
     @Override
-    protected void callAction() {
-        ClientApp.registry.getUserService().loadFriendRequests(request, listener);
+    protected void doWork() {
+        ClientApp.getRegistry().getUserService().loadFriendRequests(request, listener);
     }
     
 }

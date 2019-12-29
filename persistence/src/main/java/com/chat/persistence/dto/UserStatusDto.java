@@ -8,5 +8,5 @@ public enum UserStatusDto {
     ACTIVE,
     AWAY,
     DO_NOT_DISTURB,
-    INACTIVE
+    OFFLINE
 }

@@ -95,7 +95,7 @@ public class ChatServiceImpl extends AbstractTransactionalService implements Cha
     public synchronized void createChat(CreateChatRequest req, ResponseListener<ChatResponse> listener) {
         doInTransaction((DaoRegistry registry) -> {
             return new ChatResponse(ChatMsgDtoExchanger.INSTANCE.exchange(
-                    registry.getChatDao().save(req.getName(), ChatType.valueOf(req.getType().name())))
+                    registry.getChatDao().save(req.getName(), ChatType.GROUP))
             );
         }, listener);
     }
@@ -181,7 +181,7 @@ public class ChatServiceImpl extends AbstractTransactionalService implements Cha
         doInTransaction((DaoRegistry registry) -> {
             User user = registry.getUserDao().loadById(req.getUserId());
             if (user == null) {
-                throw new MessageException("Not found chat!");
+                throw new MessageException("Not found user!");
             }
             List<Chat> chats = registry.getChatDao().loadChats(user);
             return new ChatsResponse(ChatMsgDtoExchanger.INSTANCE.exchangeEntityList(chats));

@@ -14,6 +14,7 @@ import com.chat.messaging.message.chat.ChatResponse;
 import com.chat.messaging.message.chat.ChatsResponse;
 import com.chat.messaging.message.user.UserResponse;
 import com.chat.messaging.message.user.UsersResponse;
+import com.chat.task.TaskManager;
 import com.chat.task.chat.CreateChatTask;
 import com.chat.task.chat.FindChatTask;
 import com.chat.task.chat.LoadChatsTask;
@@ -23,6 +24,7 @@ import com.chat.task.chat.SendMessageTask;
 import com.chat.task.user.ChangeStatusTask;
 import com.chat.task.user.FindFriendTask;
 import com.chat.utils.ListViewUtils;
+import com.chat.utils.ResolveUtils;
 import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -122,10 +124,7 @@ public class ChatController implements Initializable {
         ListViewUtils.initChatList(groupChatsList, chatSearchList);
         //
         // USER STATUS
-        for (UserStatusMsgDto st : UserStatusMsgDto.values()) {
-            statuses.put(st.name(), st);
-        }
-        statusBar.setItems(FXCollections.observableArrayList(new ArrayList<>(statuses.keySet())));
+        statusBar.setItems(FXCollections.observableArrayList(new ArrayList<>(ResolveUtils.STATUSES.keySet())));
         statusBar.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
             @Override
             public void changed(ObservableValue<? extends String> ov, String oldValue, String newValue) {
@@ -133,19 +132,16 @@ public class ChatController implements Initializable {
             }
         });
         // tabs
-        tabPane.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Tab>() {
-            @Override
-            public void changed(ObservableValue<? extends Tab> ov, Tab oldValue, Tab newValue) {
-                if (newValue.equals(friendsTab)) {
-                    friendsTabVisibility();
-                    return;
-                }
-                if (newValue.equals(groupChatsTab)) {
-                    groupChatsTabVisibility();
-                    return;
-                }
-                searchTabVisibility();
+        tabPane.getSelectionModel().selectedItemProperty().addListener((ObservableValue<? extends Tab> ov, Tab oldValue, Tab newValue) -> {
+            if (newValue.equals(friendsTab)) {
+                friendsTabVisibility();
+                return;
             }
+            if (newValue.equals(groupChatsTab)) {
+                groupChatsTabVisibility();
+                return;
+            }
+            searchTabVisibility();
         });
         friendsTabVisibility();
         // TODO
@@ -201,156 +197,95 @@ public class ChatController implements Initializable {
 
     // Service task methods
     private void login() {
-        pool.execute(new LoginTask(usernameTextField.getText(), passField.getText(), new ResponseListener<UserResponse>() {
-            @Override
-            public void onSuccess(UserResponse rsp) {
-                Platform.runLater(() -> {
+        TaskManager.login(usernameTextField.getText(), passField.getText(),
+                (UserResponse rsp) -> {
                     onLoadedUser(rsp);
-                });
-            }
-
-            @Override
-            public void onError(ErrorMessageDto error) {
-                Platform.runLater(() -> {
-                    if (error.getErrorMessage().contains("Not exist user")) {
+                },
+                (errorResponse) -> {
+                    if (errorResponse.getErrorMessage().contains("Not exist user")) {
                         register();
                         return;
                     }
-                    setMessage(error.getMessage());
+                    setMessage(errorResponse.getMessage());
                 });
-            }
-        }));
     }
 
     private void logout() {
-        pool.execute(new LogoutTask(currentUser.getId(), new ResponseListener<SuccessResponse>() {
-            @Override
-            public void onSuccess(SuccessResponse rsp) {
-                Platform.runLater(() -> {
+        TaskManager.logout(currentUser,
+                (success) -> {
                     setMessage("Sucessfully logout " + currentUser.getUsername());
                     currentUser = null;
                     setPanesVisibility(true, false);
+                },
+                (errorResponse) -> {
+                    setMessage(errorResponse.getMessage());
                 });
-            }
-
-            @Override
-            public void onError(ErrorMessageDto error) {
-                Platform.runLater(() -> {
-                    setMessage(error.getMessage());
-                });
-            }
-        }));
     }
 
     private void register() {
         String username = usernameTextField.getText();
-        pool.execute(new RegisterTask(username, passField.getText(), username, username, new ResponseListener<UserResponse>() {
-            @Override
-            public void onSuccess(UserResponse rsp) {
-                Platform.runLater(() -> {
+        TaskManager.register(username, passField.getText(), username, username,
+                (UserResponse rsp) -> {
                     onLoadedUser(rsp);
+                },
+                (errorResponse) -> {
+                    setMessage(errorResponse.getMessage());
                 });
-            }
-
-            @Override
-            public void onError(ErrorMessageDto error) {
-                Platform.runLater(() -> {
-                    setMessage(error.getMessage());
-                });
-            }
-        }));
     }
 
     private void changeStatus() {
-        pool.execute(new ChangeStatusTask(UserStatusMsgDto.valueOf(statusBar.getValue().toString()), currentUser.getUsername(), new ResponseListener<SuccessResponse>() {
-            @Override
-            public void onSuccess(SuccessResponse response) {
-            }
-
-            @Override
-            public void onError(ErrorMessageDto error) {
-                Platform.runLater(() -> {
-                    setMessage(error.getMessage());
+        TaskManager.changeStatus(ResolveUtils.resolveStatus(statusBar.getValue().toString()), currentUser,
+                (success) -> {
+                },
+                (errorResponse) -> {
+                    setMessage(errorResponse.getMessage());
                 });
-            }
-        }));
     }
 
     private void loadChats() {
-        pool.execute(new LoadChatsTask(currentUser, new ResponseListener<ChatsResponse>() {
-            @Override
-            public void onSuccess(ChatsResponse rsp) {
-                Platform.runLater(() -> {
+        TaskManager.loadChats(currentUser,
+                (ChatsResponse rsp) -> {
                     addChats(rsp.getList());
+                },
+                (errorResponse) -> {
+                    setMessage(errorResponse.getMessage());
                 });
-            }
-
-            @Override
-            public void onError(ErrorMessageDto error) {
-                Platform.runLater(() -> {
-                    setMessage(error.getMessage());
-                });
-            }
-        }));
     }
 
     private void createChat() {
-        pool.execute(new CreateChatTask(groupChatName.getText(), new ResponseListener<ChatResponse>() {
-            @Override
-            public void onSuccess(ChatResponse response) {
-                ChatMessageDto chat = response.getChat();
-                chats.put(chat.getId(), chat);
-                groupChatsList.getItems().add(0, chat);
-            }
-
-            @Override
-            public void onError(ErrorMessageDto error) {
-                Platform.runLater(() -> {
-                    setMessage(error.getMessage());
+        TaskManager.createChat(groupChatName.getText(),
+                (ChatResponse rsp) -> {
+                    ChatMessageDto chat = rsp.getChat();
+                    chats.put(chat.getId(), chat);
+                    groupChatsList.getItems().add(0, chat);
+                },
+                (errorResponse) -> {
+                    setMessage(errorResponse.getMessage());
                 });
-            }
-        }));
     }
 
     private void findFriend() {
-        pool.execute(new FindFriendTask(searchBar.getText(), new ResponseListener<UsersResponse>() {
-            @Override
-            public void onSuccess(UsersResponse response) {
-                Platform.runLater(() -> {
-                    userSearchList.setItems(FXCollections.observableArrayList(response.getList()));
+        TaskManager.findFriend(searchBar.getText(),
+                (UsersResponse rsp) -> {
+                    userSearchList.setItems(FXCollections.observableArrayList(rsp.getList()));
                     userSearchList.setVisible(true);
                     chatSearchList.setVisible(false);
+                },
+                (errorResponse) -> {
+                    setMessage(errorResponse.getMessage());
                 });
-            }
-
-            @Override
-            public void onError(ErrorMessageDto error) {
-                Platform.runLater(() -> {
-                    setMessage(error.getMessage());
-                });
-            }
-        }));
     }
 
     private void findChat() {
-        pool.execute(new FindChatTask(searchBar.getText(), new ResponseListener<ChatsResponse>() {
-            @Override
-            public void onSuccess(ChatsResponse response) {
-                Platform.runLater(() -> {
-                    chatSearchList.setItems(FXCollections.observableArrayList(response.getList()));
+        TaskManager.findChats(searchBar.getText(),
+                (ChatsResponse rsp) -> {
+                    chatSearchList.setItems(FXCollections.observableArrayList(rsp.getList()));
                     chatSearchList.setVisible(true);
                     userSearchList.setVisible(false);
+                },
+                (errorResponse) -> {
+                    setMessage(errorResponse.getMessage());
                 });
-            }
-
-            @Override
-            public void onError(ErrorMessageDto error) {
-                Platform.runLater(() -> {
-                    setMessage(error.getMessage());
-                });
-            }
-        }
-        ));
     }
 
     // Help methods
@@ -370,7 +305,7 @@ public class ChatController implements Initializable {
         addFriendList();
         setMessage("Sucessfully login " + currentUser.getUsername());
         userName.setText(currentUser.getUsername());
-        statusBar.setValue(currentUser.getStatus().name());
+        statusBar.setValue(ResolveUtils.resolveStatus(currentUser.getStatus()));
         tabVisibility(false);
         setPanesVisibility(false, true);
     }

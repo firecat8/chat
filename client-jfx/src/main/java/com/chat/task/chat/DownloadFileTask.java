@@ -5,21 +5,21 @@ import com.chat.messaging.dto.ChatEventMessageDto;
 import com.chat.messaging.dto.DownloadFile;
 import com.chat.messaging.message.ResponseListener;
 import com.chat.messaging.message.chat.DownloadFileRequest;
-import com.chat.task.ActionTask;
+import com.chat.task.WorkerTask;
 
 /**
  *
  * @author gdimitrova
  */
-public class DownloadFileTask extends ActionTask<DownloadFileRequest, DownloadFile>{
+public class DownloadFileTask extends WorkerTask<DownloadFileRequest, DownloadFile>{
 
     public DownloadFileTask(ChatEventMessageDto event, ResponseListener<DownloadFile> listener) {
         super(new DownloadFileRequest(event), listener);
     }
 
     @Override
-    protected void callAction() {
-        ClientApp.registry.getChatService().downloadFile(request, listener);
+    protected void doWork() {
+        ClientApp.getRegistry().getChatService().downloadFile(request, listener);
     }
     
 }
