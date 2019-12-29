@@ -6,11 +6,11 @@ import com.chat.messaging.message.AbstractResponse;
  *
  * @author gdimitrova
  */
-public class DownloadFile extends AbstractResponse {
+public class DownloadedFile extends AbstractResponse {
 
     private final byte[] file;
 
-    public DownloadFile(byte[] file) {
+    public DownloadedFile(byte[] file) {
         this.file = file;
     }
 

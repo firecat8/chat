@@ -1,31 +1,23 @@
 package com.chat.controller;
 
-import com.chat.task.user.LogoutTask;
-import com.chat.messaging.message.ResponseListener;
+import com.chat.app.GUIApp;
 import com.chat.messaging.dto.ChatMessageDto;
 import com.chat.messaging.dto.ChatTypeMsgDto;
-import com.chat.messaging.dto.ErrorMessageDto;
 import com.chat.messaging.dto.ParticipantMessageDto;
 import com.chat.messaging.dto.UserMessageDto;
 import com.chat.messaging.dto.UserStatusMsgDto;
-import com.chat.messaging.message.SuccessResponse;
 import com.chat.messaging.message.chat.ChatEventResponse;
 import com.chat.messaging.message.chat.ChatResponse;
 import com.chat.messaging.message.chat.ChatsResponse;
 import com.chat.messaging.message.user.UserResponse;
 import com.chat.messaging.message.user.UsersResponse;
 import com.chat.task.TaskManager;
-import com.chat.task.chat.CreateChatTask;
-import com.chat.task.chat.FindChatTask;
-import com.chat.task.chat.LoadChatsTask;
-import com.chat.task.user.LoginTask;
-import com.chat.task.user.RegisterTask;
-import com.chat.task.chat.SendMessageTask;
-import com.chat.task.user.ChangeStatusTask;
-import com.chat.task.user.FindFriendTask;
 import com.chat.utils.ListViewUtils;
 import com.chat.utils.ResolveUtils;
+import java.io.File;
+import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Files;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -37,7 +29,8 @@ import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import javafx.application.Platform;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -54,6 +47,7 @@ import javafx.scene.control.TabPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
+import javafx.stage.FileChooser;
 
 /**
  * Controller for testing
@@ -61,6 +55,8 @@ import javafx.scene.layout.AnchorPane;
  * @author gdimitrova
  */
 public class ChatController implements Initializable {
+
+    private static final Logger LOGGER = Logger.getLogger(ChatController.class.getName());
 
     public static UserMessageDto currentUser = null;
 
@@ -111,6 +107,8 @@ public class ChatController implements Initializable {
     private final Map<String, UserStatusMsgDto> statuses = new HashMap<>();
 
     private ChatMessageDto currentChat;
+
+    private final FileChooser fileChooser = new FileChooser();
 
     /**
      * Initializes the controller class.
@@ -164,25 +162,16 @@ public class ChatController implements Initializable {
     }
 
     @FXML
-    private void sendMessage() {
-        pool.execute(new SendMessageTask(messageBox.getText(), currentUser, currentChat, new ResponseListener<ChatEventResponse>() {
-            @Override
-            public void onSuccess(ChatEventResponse rsp) {
-                //nothing
-            }
-
-            @Override
-            public void onError(ErrorMessageDto error) {
-                Platform.runLater(() -> {
-                    setMessage(error.getMessage());
-                });
-            }
-        }));
+    private void sendMessage(Event e) {
+        sendMessage();
     }
 
     @FXML
-    private void sendFile() {
-        // TODO
+    private void sendFile(Event e) {
+        File file = fileChooser.showOpenDialog(GUIApp.stage);
+        if (file != null) {
+            sendFile(file);
+        }
     }
 
     @FXML
@@ -286,6 +275,30 @@ public class ChatController implements Initializable {
                 (errorResponse) -> {
                     setMessage(errorResponse.getMessage());
                 });
+    }
+
+    private void sendMessage() {
+        TaskManager.sendMessage(messageBox.getText(), currentUser, currentChat,
+                (ChatEventResponse rsp) -> {
+                    // nothing for now
+                },
+                (errorResponse) -> {
+                    setMessage(errorResponse.getMessage());
+                });
+    }
+
+    private void sendFile(File file) {
+        try {
+            TaskManager.sendFile(file.getName(), Files.readAllBytes(file.toPath()), currentUser, currentChat,
+                    (ChatEventResponse rsp) -> {
+                        
+                    },
+                    (errorResponse) -> {
+                        setMessage(errorResponse.getMessage());
+                    });
+        } catch (IOException ex) {
+            LOGGER.log(Level.SEVERE, ex.getMessage(), ex);
+        }
     }
 
     // Help methods

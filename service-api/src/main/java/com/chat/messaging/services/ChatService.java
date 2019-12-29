@@ -1,7 +1,7 @@
 package com.chat.messaging.services;
 
 import com.chat.messaging.message.ResponseListener;
-import com.chat.messaging.dto.DownloadFile;
+import com.chat.messaging.dto.DownloadedFile;
 import com.chat.messaging.message.SuccessResponse;
 import com.chat.messaging.message.chat.AddFriendRequest;
 import com.chat.messaging.message.chat.ChatEventResponse;
@@ -30,7 +30,7 @@ public interface ChatService {
 
     public void sendFile(SendFileRequest req, ResponseListener<ChatEventResponse> listener);
 
-    public void downloadFile(DownloadFileRequest req, ResponseListener<DownloadFile> listener);
+    public void downloadFile(DownloadFileRequest req, ResponseListener<DownloadedFile> listener);
 
     public void createChat(CreateChatRequest req, ResponseListener<ChatResponse> listener);
 

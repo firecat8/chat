@@ -13,7 +13,7 @@ import com.chat.domain.Participant;
 import com.chat.domain.User;
 import com.chat.messaging.dto.ChatEventMessageDto;
 import com.chat.messaging.dto.ChatMessageDto;
-import com.chat.messaging.dto.DownloadFile;
+import com.chat.messaging.dto.DownloadedFile;
 import com.chat.messaging.dto.ErrorMessageDto;
 import com.chat.messaging.dto.UserMessageDto;
 import com.chat.messaging.message.ResponseCode;
@@ -81,9 +81,9 @@ public class ChatServiceImpl extends AbstractTransactionalService implements Cha
     }
 
     @Override
-    public synchronized void downloadFile(DownloadFileRequest req, ResponseListener<DownloadFile> listener) {
+    public synchronized void downloadFile(DownloadFileRequest req, ResponseListener<DownloadedFile> listener) {
         try {
-            DownloadFile downloadFile = new DownloadFile(Files.readAllBytes(Paths.get(req.getFileName())));
+            DownloadedFile downloadFile = new DownloadedFile(Files.readAllBytes(Paths.get(req.getFileName())));
             listener.onSuccess(downloadFile);
         } catch (IOException ex) {
             LOGGER.log(Level.SEVERE, ex.getMessage(), ex);
