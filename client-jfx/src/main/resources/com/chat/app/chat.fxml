@@ -18,7 +18,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="main" prefHeight="835.0" prefWidth="1151.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.chat.controller.ChatController">
+<AnchorPane fx:id="main" prefHeight="835.0" prefWidth="1151.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.chat.controller.chat.ChatController">
     <stylesheets>
         <URL value="@../styles/chat.css" />
     </stylesheets> 
@@ -93,22 +93,22 @@
                                         </AnchorPane>
                                     </content>
                                 </Tab>
-                        <Tab fx:id="searchTab" text="      SearchBar     ">
-                           <content>
-                              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="200.0">
-                                 <children>
-                                    <ListView fx:id="userSearchList" prefHeight="583.0" prefWidth="273.0" stylesheets="@../styles/chat.css" />
-                                    <ListView fx:id="chatSearchList" prefHeight="583.0" prefWidth="273.0" stylesheets="@../styles/chat.css" visible="false" />
-                                 </children>
-                              </AnchorPane>
-                           </content>
-                        </Tab>
+                                <Tab fx:id="searchTab" text="      SearchBar     ">
+                                    <content>
+                                        <VBox minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="200.0">
+                                            <children> 
+                                                <ListView fx:id="userSearchList" stylesheets="@../styles/chat.css" />
+                                                <ListView fx:id="chatSearchList" stylesheets="@../styles/chat.css" />
+                                            </children>
+                                        </VBox>
+                                    </content>
+                                </Tab>
                             </tabs>
                         </TabPane>
                         <Button fx:id="createChatButton" layoutX="123.0" layoutY="138.0" mnemonicParsing="false" onAction="#createGroupChat" prefHeight="26.0" prefWidth="139.0" text="Create group chat" />
                         <Button fx:id="searchChatBtn" layoutX="156.0" layoutY="106.0" mnemonicParsing="false" onAction="#searchChat" prefHeight="26.0" prefWidth="106.0" text="Search chat" />
                         <Button fx:id="searchFriendBtn" layoutX="156.0" layoutY="138.0" mnemonicParsing="false" onAction="#searchFriend" prefHeight="26.0" prefWidth="120.0" text="Search friend" visible="false" />
-                  <TextField fx:id="groupChatName" layoutX="10.0" layoutY="138.0" prefHeight="26.0" prefWidth="106.0" promptText="Chat name:" stylesheets="@../styles/chat.css" />
+                        <TextField fx:id="groupChatName" layoutX="10.0" layoutY="138.0" prefHeight="26.0" prefWidth="106.0" promptText="Chat name:" stylesheets="@../styles/chat.css" />
                     </children>
                 </AnchorPane>
                 <VBox fx:id="chatWindow" layoutX="272.0" layoutY="79.0" prefHeight="757.0" prefWidth="649.0">
@@ -140,26 +140,26 @@
                         <Font size="16.0" />
                     </font>
                 </Button>
-            <VBox fx:id="participantsVbox" layoutX="919.0" layoutY="79.0" prefHeight="757.0" prefWidth="234.0">
-               <children>
-                  <ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" pannable="true" prefHeight="807.0" prefWidth="87.0" vbarPolicy="NEVER" vmin="1.0" vvalue="1.0">
-                     <content>
-                        <ListView fx:id="chatPanel1" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="605.0" prefWidth="163.0" />
-                     </content>
-                  </ScrollPane>
-               </children>
-            </VBox>
-            <Button fx:id="leaveChatBtn" layoutX="272.0" layoutY="47.0" mnemonicParsing="false" onMouseClicked="#logout" prefHeight="32.0" prefWidth="120.0" style="-fx-background-color: #993333;" text="Leave chat" textAlignment="CENTER" textFill="WHITE">
-               <font>
-                  <Font size="16.0" />
-               </font>
-            </Button>
-            <TextField fx:id="addFriendTextField" layoutX="399.0" layoutY="50.0" prefHeight="26.0" prefWidth="130.0" promptText="Friend name:" stylesheets="@../styles/chat.css" />
-            <Button fx:id="leaveChatBtn1" layoutX="537.0" layoutY="47.0" mnemonicParsing="false" onMouseClicked="#logout" prefHeight="32.0" prefWidth="120.0" style="-fx-background-color: #993333;" text="Add friend" textAlignment="CENTER" textFill="WHITE">
-               <font>
-                  <Font size="16.0" />
-               </font>
-            </Button>
+                <VBox fx:id="participantsVbox" layoutX="919.0" layoutY="79.0" prefHeight="757.0" prefWidth="234.0">
+                    <children>
+                        <ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" pannable="true" prefHeight="807.0" prefWidth="87.0" vbarPolicy="NEVER" vmin="1.0" vvalue="1.0">
+                            <content>
+                                <ListView fx:id="chatPanel1" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="605.0" prefWidth="163.0" />
+                            </content>
+                        </ScrollPane>
+                    </children>
+                </VBox>
+                <Button fx:id="leaveChatBtn" layoutX="272.0" layoutY="47.0" mnemonicParsing="false" onMouseClicked="#logout" prefHeight="32.0" prefWidth="120.0" style="-fx-background-color: #993333;" text="Leave chat" textAlignment="CENTER" textFill="WHITE">
+                    <font>
+                        <Font size="16.0" />
+                    </font>
+                </Button>
+                <TextField fx:id="addFriendTextField" layoutX="399.0" layoutY="50.0" prefHeight="26.0" prefWidth="130.0" promptText="Friend name:" stylesheets="@../styles/chat.css" />
+                <Button fx:id="leaveChatBtn1" layoutX="537.0" layoutY="47.0" mnemonicParsing="false" onMouseClicked="#logout" prefHeight="32.0" prefWidth="120.0" style="-fx-background-color: #993333;" text="Add friend" textAlignment="CENTER" textFill="WHITE">
+                    <font>
+                        <Font size="16.0" />
+                    </font>
+                </Button>
             </children>
         </AnchorPane>
     </children>

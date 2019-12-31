@@ -1,4 +1,4 @@
-package com.chat.controller;
+package com.chat.controller.chat;
 
 import com.chat.app.GUIApp;
 import com.chat.messaging.dto.ChatMessageDto;
@@ -11,9 +11,9 @@ import com.chat.messaging.message.chat.ChatResponse;
 import com.chat.messaging.message.chat.ChatsResponse;
 import com.chat.messaging.message.user.UserResponse;
 import com.chat.messaging.message.user.UsersResponse;
+import com.chat.task.TaskFactory;
 import com.chat.task.TaskManager;
 import com.chat.utils.ListViewUtils;
-import com.chat.utils.ResolveUtils;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -27,8 +27,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.beans.value.ChangeListener;
@@ -48,6 +46,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.FileChooser;
+import javafx.util.StringConverter;
 
 /**
  * Controller for testing
@@ -70,7 +69,7 @@ public class ChatController implements Initializable {
     private Tab friendsTab, groupChatsTab, searchTab;
 
     @FXML
-    private ChoiceBox statusBar;
+    private ChoiceBox<UserStatusSelectionItem> statusBar;
 
     @FXML
     private PasswordField passField;
@@ -91,20 +90,16 @@ public class ChatController implements Initializable {
     private ListView<UserMessageDto> friendsList, userSearchList;
 
     @FXML
-    private TextField searchBar, serverChat, groupChatName;
+    private TextField searchBar, groupChatName;
 
     @FXML
     private TextArea messageBox;
-
-    public static ExecutorService pool = Executors.newFixedThreadPool(30);
 
     private final DateFormat dateFormater = new SimpleDateFormat("HH:mm:ss");
 
     private final Map<Long, ChatMessageDto> chats = new HashMap<>();
 
     private final Map<String, ChatMessageDto> friendChats = new HashMap<>();
-
-    private final Map<String, UserStatusMsgDto> statuses = new HashMap<>();
 
     private ChatMessageDto currentChat;
 
@@ -118,16 +113,24 @@ public class ChatController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        ListViewUtils.initUserList(userSearchList, friendsList);
+        ListViewUtils.initUserLists(userSearchList, friendsList);
         ListViewUtils.initChatList(groupChatsList, chatSearchList);
         //
         // USER STATUS
-        statusBar.setItems(FXCollections.observableArrayList(new ArrayList<>(ResolveUtils.STATUSES.keySet())));
-        statusBar.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
+        statusBar.setItems(FXCollections.observableArrayList(UserStatusSelectionItemRegistry.INSTANCE.getAllItems()));
+        statusBar.setConverter(new StringConverter<UserStatusSelectionItem>() {
             @Override
-            public void changed(ObservableValue<? extends String> ov, String oldValue, String newValue) {
-                changeStatus();
+            public String toString(UserStatusSelectionItem t) {
+                return t.getStatusLabel();
             }
+
+            @Override
+            public UserStatusSelectionItem fromString(String string) {
+                return UserStatusSelectionItemRegistry.INSTANCE.getItem(string);
+            }
+        });
+        statusBar.getSelectionModel().selectedItemProperty().addListener((ObservableValue<? extends UserStatusSelectionItem> ov, UserStatusSelectionItem oldValue, UserStatusSelectionItem newValue) -> {
+            changeStatus(newValue.getUserStatus());
         });
         // tabs
         tabPane.getSelectionModel().selectedItemProperty().addListener((ObservableValue<? extends Tab> ov, Tab oldValue, Tab newValue) -> {
@@ -186,7 +189,8 @@ public class ChatController implements Initializable {
 
     // Service task methods
     private void login() {
-        TaskManager.login(usernameTextField.getText(), passField.getText(),
+        TaskManager.executeTask(TaskFactory.createLoginTask(
+                usernameTextField.getText(), passField.getText(),
                 (UserResponse rsp) -> {
                     onLoadedUser(rsp);
                 },
@@ -196,11 +200,11 @@ public class ChatController implements Initializable {
                         return;
                     }
                     setMessage(errorResponse.getMessage());
-                });
+                }));
     }
 
     private void logout() {
-        TaskManager.logout(currentUser,
+        TaskManager.executeTask(TaskFactory.createLogoutTask(currentUser,
                 (success) -> {
                     setMessage("Sucessfully logout " + currentUser.getUsername());
                     currentUser = null;
@@ -208,41 +212,44 @@ public class ChatController implements Initializable {
                 },
                 (errorResponse) -> {
                     setMessage(errorResponse.getMessage());
-                });
+                }));
     }
 
     private void register() {
         String username = usernameTextField.getText();
-        TaskManager.register(username, passField.getText(), username, username,
+        TaskManager.executeTask(TaskFactory.createRegisterTask(
+                username, passField.getText(), username, username,
                 (UserResponse rsp) -> {
                     onLoadedUser(rsp);
                 },
                 (errorResponse) -> {
                     setMessage(errorResponse.getMessage());
-                });
+                }));
     }
 
-    private void changeStatus() {
-        TaskManager.changeStatus(ResolveUtils.resolveStatus(statusBar.getValue().toString()), currentUser,
+    private void changeStatus(UserStatusMsgDto newStatus) {
+        TaskManager.executeTask(TaskFactory.createChangeStatusTask(
+                newStatus, currentUser,
                 (success) -> {
                 },
                 (errorResponse) -> {
                     setMessage(errorResponse.getMessage());
-                });
+                }));
     }
 
     private void loadChats() {
-        TaskManager.loadChats(currentUser,
+        TaskManager.executeTask(TaskFactory.createLoadChatsTask(
+                currentUser,
                 (ChatsResponse rsp) -> {
                     addChats(rsp.getList());
                 },
                 (errorResponse) -> {
                     setMessage(errorResponse.getMessage());
-                });
+                }));
     }
 
     private void createChat() {
-        TaskManager.createChat(groupChatName.getText(),
+        TaskManager.executeTask(TaskFactory.createCreateChatTask(groupChatName.getText(),
                 (ChatResponse rsp) -> {
                     ChatMessageDto chat = rsp.getChat();
                     chats.put(chat.getId(), chat);
@@ -250,52 +257,49 @@ public class ChatController implements Initializable {
                 },
                 (errorResponse) -> {
                     setMessage(errorResponse.getMessage());
-                });
+                }));
     }
 
     private void findFriend() {
-        TaskManager.findFriend(searchBar.getText(),
+        TaskManager.executeTask(TaskFactory.createFindFriendTask(searchBar.getText(),
                 (UsersResponse rsp) -> {
                     userSearchList.setItems(FXCollections.observableArrayList(rsp.getList()));
-                    userSearchList.setVisible(true);
-                    chatSearchList.setVisible(false);
                 },
                 (errorResponse) -> {
                     setMessage(errorResponse.getMessage());
-                });
+                }));
     }
 
     private void findChat() {
-        TaskManager.findChats(searchBar.getText(),
+        TaskManager.executeTask(TaskFactory.createFindChatsTask(searchBar.getText(),
                 (ChatsResponse rsp) -> {
                     chatSearchList.setItems(FXCollections.observableArrayList(rsp.getList()));
-                    chatSearchList.setVisible(true);
-                    userSearchList.setVisible(false);
                 },
                 (errorResponse) -> {
                     setMessage(errorResponse.getMessage());
-                });
+                }));
     }
 
     private void sendMessage() {
-        TaskManager.sendMessage(messageBox.getText(), currentUser, currentChat,
+        TaskManager.executeTask(TaskFactory.createSendMessageTask(messageBox.getText(), currentUser, currentChat,
                 (ChatEventResponse rsp) -> {
                     // nothing for now
                 },
                 (errorResponse) -> {
                     setMessage(errorResponse.getMessage());
-                });
+                }));
     }
 
     private void sendFile(File file) {
         try {
-            TaskManager.sendFile(file.getName(), Files.readAllBytes(file.toPath()), currentUser, currentChat,
+            TaskManager.executeTask(TaskFactory.createSendFileTask(
+                    file.getName(), Files.readAllBytes(file.toPath()), currentUser, currentChat,
                     (ChatEventResponse rsp) -> {
-                        
+
                     },
                     (errorResponse) -> {
                         setMessage(errorResponse.getMessage());
-                    });
+                    }));
         } catch (IOException ex) {
             LOGGER.log(Level.SEVERE, ex.getMessage(), ex);
         }
@@ -318,7 +322,7 @@ public class ChatController implements Initializable {
         addFriendList();
         setMessage("Sucessfully login " + currentUser.getUsername());
         userName.setText(currentUser.getUsername());
-        statusBar.setValue(ResolveUtils.resolveStatus(currentUser.getStatus()));
+        statusBar.setValue(UserStatusSelectionItemRegistry.INSTANCE.getItem(currentUser.getStatus()));
         tabVisibility(false);
         setPanesVisibility(false, true);
     }
@@ -343,7 +347,7 @@ public class ChatController implements Initializable {
     private void addFriendList() {
         Set<UserMessageDto> friends = currentUser.getFriends();
         if (friends.isEmpty()) {
-            System.out.println("NO FRIENDS");
+            System.out.println("NO FRIENDS ;(");
             return;
         }
         friendsList.getItems().addAll(friends);

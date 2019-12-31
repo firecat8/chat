@@ -1,6 +1,6 @@
 package com.chat.app;
 
-import com.chat.controller.ChatController;
+import com.chat.controller.chat.ChatController;
 import com.chat.controller.LoginController;
 import com.chat.messaging.dto.UserMessageDto;
 import com.chat.task.TaskManager;
@@ -29,9 +29,9 @@ public class GUIApp extends Application {
     public void start(Stage stage) throws IOException {
         GUIApp.stage = stage;
         // Main line
-        scene = new Scene(loadFXML("login"));
+//        scene = new Scene(loadFXML("login"));
         // For testing purpose
-       // scene = new Scene(loadFXML("chat"));
+        scene = new Scene(loadFXML("chat"));
         stage.setOnCloseRequest((WindowEvent event) -> {
             if (!ClientApp.isConnected()) {
                 logout();
