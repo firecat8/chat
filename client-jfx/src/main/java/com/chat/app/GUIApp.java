@@ -21,7 +21,7 @@ import javafx.stage.WindowEvent;
  */
 public class GUIApp extends Application {
 
-    private static Stage stage;
+    public static Stage stage;
 
     private static Scene scene;
 
@@ -29,9 +29,9 @@ public class GUIApp extends Application {
     public void start(Stage stage) throws IOException {
         GUIApp.stage = stage;
         // Main line
-         scene = new Scene(loadFXML("login"));
+        scene = new Scene(loadFXML("login"));
         // For testing purpose
-//        scene = new Scene(loadFXML("chat"));
+       // scene = new Scene(loadFXML("chat"));
         stage.setOnCloseRequest((WindowEvent event) -> {
             if (!ClientApp.isConnected()) {
                 logout();
