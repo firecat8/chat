@@ -3,6 +3,7 @@ package com.chat.controller;
 import com.chat.app.GUIApp;
 import com.chat.messaging.dto.UserMessageDto;
 import com.chat.messaging.message.user.UserResponse;
+import com.chat.task.TaskFactory;
 import com.chat.task.TaskManager;
 import java.io.IOException;
 import java.util.logging.Level;
@@ -29,7 +30,7 @@ public class LoginController {
     public void Login(ActionEvent event) throws Exception {
         if (txtUserName.getText().equals("user") && txtPass.getText().equals("pass")) {
             lblSign.setText("Login success!");
-            TaskManager.login(txtUserName.getText(), txtPass.getText(),
+            TaskManager.executeTask(TaskFactory.createLoginTask(txtUserName.getText(), txtPass.getText(),
                     (UserResponse rsp) -> {
                         currentUser = rsp.getUser();
                         try {
@@ -39,7 +40,7 @@ public class LoginController {
                         }
                     },
                     (errorResponse) -> {
-                    });
+                    }));
 
 //		Stage primaryStage=new Stage();
 //		Parent root=FXMLLoader.load(GUIApp.class.getResource("main.fxml"));

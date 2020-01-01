@@ -3,6 +3,7 @@ package com.chat.app;
 import com.chat.controller.chat.ChatController;
 import com.chat.controller.LoginController;
 import com.chat.messaging.dto.UserMessageDto;
+import com.chat.task.TaskFactory;
 import com.chat.task.TaskManager;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -56,13 +57,13 @@ public class GUIApp extends Application {
             closeApps();
             return;
         }
-        TaskManager.logout(currentUser,
+        TaskManager.executeTask(TaskFactory.createLogoutTask(currentUser,
                 (success) -> {
                     closeApps();
                 },
                 (errorResponse) -> {
                     closeApps();
-                });
+                }));
     }
 
     private void closeApps() {

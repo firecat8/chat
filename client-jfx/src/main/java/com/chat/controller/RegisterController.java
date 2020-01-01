@@ -2,6 +2,7 @@ package com.chat.controller;
 
 import com.chat.app.GUIApp;
 import com.chat.messaging.message.user.UserResponse;
+import com.chat.task.TaskFactory;
 import com.chat.task.TaskManager;
 import java.io.IOException;
 import java.util.logging.Level;
@@ -29,7 +30,7 @@ public class RegisterController {
     private TextField txtConfPass;
 
     public void Create(ActionEvent event) throws Exception {
-        TaskManager.register(txtUserName.getText(), txtPass.getText(), txtName.getText(), txtFamilyName.getText(),
+        TaskManager.executeTask(TaskFactory.createRegisterTask(txtUserName.getText(), txtPass.getText(), txtName.getText(), txtFamilyName.getText(),
                 (UserResponse rsp) -> {
                     try {
                         GUIApp.changeScene("main");
@@ -38,7 +39,7 @@ public class RegisterController {
                     }
                 },
                 (errorResponse) -> {
-                });
+                }));
 
     }
 
