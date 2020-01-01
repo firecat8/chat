@@ -1,28 +1,28 @@
-package com.chat.messaging.dto;
+package com.chat.messaging.vo;
 
 /**
  *
  * @author gdimitrova
  */
-public class UserInfoMessageDto extends MessageDto {
+public class UserInfoVo extends EntityVo {
 
     private String firstName;
 
     private String lastName;
 
-    private UserMessageDto user;
+    private UserVo user;
 
-    public UserInfoMessageDto(UserMessageDto user, String firstName, String lastName) {
+    public UserInfoVo(UserVo user, String firstName, String lastName) {
         this.user = user;
         this.firstName = firstName;
         this.lastName = lastName;
     }
 
-    public UserMessageDto getUser() {
+    public UserVo getUser() {
         return user;
     }
 
-    public void setUser(UserMessageDto user) {
+    public void setUser(UserVo user) {
         this.user = user;
     }
 

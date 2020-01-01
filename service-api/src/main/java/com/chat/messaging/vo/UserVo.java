@@ -1,4 +1,4 @@
-package com.chat.messaging.dto;
+package com.chat.messaging.vo;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -7,19 +7,19 @@ import java.util.Set;
  *
  * @author gdimitrova
  */
-public class UserMessageDto extends MessageDto {
+public class UserVo extends EntityVo {
 
     private String username;
 
     private String password;
 
-    private UserStatusMsgDto status;
+    private UserStatusVo status;
 
     private Long statusTime;
 
-    private final Set<UserMessageDto> friends = new HashSet<>();
+    private final Set<UserVo> friends = new HashSet<>();
 
-    public UserMessageDto(String username, String password, UserStatusMsgDto status, Long statusTime) {
+    public UserVo(String username, String password, UserStatusVo status, Long statusTime) {
         this.username = username;
         this.password = password;
         this.status = status;
@@ -42,11 +42,11 @@ public class UserMessageDto extends MessageDto {
         this.password = password;
     }
 
-    public UserStatusMsgDto getStatus() {
+    public UserStatusVo getStatus() {
         return status;
     }
 
-    public void setStatus(UserStatusMsgDto status) {
+    public void setStatus(UserStatusVo status) {
         this.status = status;
     }
 
@@ -58,15 +58,15 @@ public class UserMessageDto extends MessageDto {
         this.statusTime = statusTime;
     }
 
-    public Set<UserMessageDto> getFriends() {
+    public Set<UserVo> getFriends() {
         return friends;
     }
 
-    public void addFriend(UserMessageDto friend) {
+    public void addFriend(UserVo friend) {
         friends.add(friend);
     }
 
-    public void removeFriend(UserMessageDto friend) {
+    public void removeFriend(UserVo friend) {
         friends.remove(friend);
     }
 

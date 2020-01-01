@@ -2,7 +2,7 @@ package com.chat.bl.service.messaging.exchanger;
 
 import com.chat.domain.Entity;
 import com.chat.domain.exchanger.AbstractDtoEntityExchanger;
-import com.chat.messaging.dto.MessageDto;
+import com.chat.messaging.vo.EntityVo;
 
 /**
  *
@@ -10,7 +10,7 @@ import com.chat.messaging.dto.MessageDto;
  * @param <D>
  * @param <E>
  */
-public abstract class MessageDtoEntityExchanger<D extends MessageDto, E extends Entity> extends AbstractDtoEntityExchanger<D, E> {
+public abstract class VoEntityExchanger<D extends EntityVo, E extends Entity> extends AbstractDtoEntityExchanger<D, E> {
 
     @Override
     public E exchangeId(D from, E to) {

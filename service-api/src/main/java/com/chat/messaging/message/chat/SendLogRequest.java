@@ -1,7 +1,7 @@
 package com.chat.messaging.message.chat;
 
-import com.chat.messaging.dto.ChatMessageDto;
-import com.chat.messaging.dto.UserMessageDto;
+import com.chat.messaging.vo.ChatVo;
+import com.chat.messaging.vo.UserVo;
 
 /**
  *
@@ -9,7 +9,7 @@ import com.chat.messaging.dto.UserMessageDto;
  */
 public class SendLogRequest extends AbstractChatEventRequest {
 
-    public SendLogRequest(String message,UserMessageDto sender, ChatMessageDto chat) {
+    public SendLogRequest(String message,UserVo sender, ChatVo chat) {
         super(message, sender, chat);
     }
 

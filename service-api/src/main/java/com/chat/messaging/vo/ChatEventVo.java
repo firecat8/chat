@@ -1,22 +1,22 @@
-package com.chat.messaging.dto;
+package com.chat.messaging.vo;
 
 /**
  *
  * @author gdimitrova
  */
-public class ChatEventMessageDto extends MessageDto {
+public class ChatEventVo extends EntityVo {
 
     private String message;
 
-    private ChatEventTypeMsgDto chatEventType;
+    private ChatEventTypeVo chatEventType;
 
     private Long eventTime;
 
-    private UserMessageDto sender;
+    private UserVo sender;
 
-    private ChatMessageDto chat;
+    private ChatVo chat;
 
-    public ChatEventMessageDto(String message, ChatEventTypeMsgDto chatEventType, Long eventTime, UserMessageDto sender, ChatMessageDto chat) {
+    public ChatEventVo(String message, ChatEventTypeVo chatEventType, Long eventTime, UserVo sender, ChatVo chat) {
         this.message = message;
         this.chatEventType = chatEventType;
         this.eventTime = eventTime;
@@ -32,19 +32,19 @@ public class ChatEventMessageDto extends MessageDto {
         this.eventTime = sentTime;
     }
 
-    public UserMessageDto getSender() {
+    public UserVo getSender() {
         return sender;
     }
 
-    public void setSender(UserMessageDto sender) {
+    public void setSender(UserVo sender) {
         this.sender = sender;
     }
 
-    public ChatMessageDto getChat() {
+    public ChatVo getChat() {
         return chat;
     }
 
-    public void setChat(ChatMessageDto chat) {
+    public void setChat(ChatVo chat) {
         this.chat = chat;
     }
 
@@ -52,7 +52,7 @@ public class ChatEventMessageDto extends MessageDto {
         return message;
     }
 
-    public ChatEventTypeMsgDto getChatEventType() {
+    public ChatEventTypeVo getChatEventType() {
         return chatEventType;
     }
 
@@ -60,7 +60,7 @@ public class ChatEventMessageDto extends MessageDto {
         this.message = message;
     }
 
-    public void setChatEventType(ChatEventTypeMsgDto chatEventType) {
+    public void setChatEventType(ChatEventTypeVo chatEventType) {
         this.chatEventType = chatEventType;
     }
 

@@ -1,6 +1,6 @@
 package com.chat.messaging.message.user;
 
-import com.chat.messaging.dto.FriendRequestMessageDto;
+import com.chat.messaging.vo.FriendRequestVo;
 import com.chat.messaging.message.AbstractResponse;
 
 /**
@@ -8,13 +8,13 @@ import com.chat.messaging.message.AbstractResponse;
  * @author gdimitrova
  */
 public class FriendRequestResponse  extends AbstractResponse{
-    private final FriendRequestMessageDto friendRequest;
+    private final FriendRequestVo friendRequest;
 
-    public FriendRequestResponse(FriendRequestMessageDto friendRequest) {
+    public FriendRequestResponse(FriendRequestVo friendRequest) {
         this.friendRequest = friendRequest;
     }
 
-    public FriendRequestMessageDto getFriendRequest() {
+    public FriendRequestVo getFriendRequest() {
         return friendRequest;
     }
     

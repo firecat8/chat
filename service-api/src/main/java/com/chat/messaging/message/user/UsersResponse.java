@@ -1,6 +1,6 @@
 package com.chat.messaging.message.user;
 
-import com.chat.messaging.dto.UserMessageDto;
+import com.chat.messaging.vo.UserVo;
 import com.chat.messaging.message.AbstractCollectionResponse;
 import java.util.List;
 
@@ -8,9 +8,9 @@ import java.util.List;
  *
  * @author gdimitrova
  */
-public class UsersResponse extends AbstractCollectionResponse<UserMessageDto> {
+public class UsersResponse extends AbstractCollectionResponse<UserVo> {
 
-    public UsersResponse(List<UserMessageDto> users) {
+    public UsersResponse(List<UserVo> users) {
         super(users);
     }
 

@@ -36,6 +36,20 @@ public class ParticipantDto extends AbstractDto {
     @JoinColumn(name = CHAT_COLUMN)
     private ChatDto chat;
 
+    public ParticipantDto() {
+        //Hibernate
+    }
+
+    public ParticipantDto(UserDto user) {
+        this.user = user;
+        this.userType = ChatUserDto.OWNER;
+    }
+
+    public ParticipantDto(UserDto user, ChatUserDto userType) {
+        this.user = user;
+        this.userType = userType;
+    }
+
     public UserDto getUser() {
         return user;
     }

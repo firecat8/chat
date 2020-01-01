@@ -1,7 +1,7 @@
 package com.chat.task;
 
 import com.chat.app.ClientApp;
-import com.chat.messaging.dto.ErrorMessageDto;
+import com.chat.messaging.vo.ErrorVo;
 import com.chat.messaging.message.Request;
 import com.chat.messaging.message.Response;
 import com.chat.messaging.message.ResponseCode;
@@ -26,11 +26,11 @@ public class Task<Req extends Request, Resp extends Response> implements Runnabl
 
     private final Consumer<Resp> onSuccess;
 
-    private final Consumer<ErrorMessageDto> onError;
+    private final Consumer<ErrorVo> onError;
 
     private final Req request;
 
-    public Task(BiConsumer< Req, ResponseListener<Resp>> work, Req request, Consumer<Resp> onSuccess, Consumer<ErrorMessageDto> onError) {
+    public Task(BiConsumer< Req, ResponseListener<Resp>> work, Req request, Consumer<Resp> onSuccess, Consumer<ErrorVo> onError) {
         this.doWork = work;
         this.request = request;
         this.onSuccess = onSuccess;
@@ -47,7 +47,7 @@ public class Task<Req extends Request, Resp extends Response> implements Runnabl
                 ClientApp.connectToServer();
             } catch (Exception ex) {
                 LOGGER.log(Level.SEVERE, ex.getMessage(), ex);
-                createListener().onError(new ErrorMessageDto(ResponseCode.SERVER_ERROR, ex.getMessage()));
+                createListener().onError(new ErrorVo(ResponseCode.SERVER_ERROR, ex.getMessage()));
                 return;
             }
         }
@@ -64,7 +64,7 @@ public class Task<Req extends Request, Resp extends Response> implements Runnabl
             }
 
             @Override
-            public void onError(ErrorMessageDto error) {
+            public void onError(ErrorVo error) {
                 Platform.runLater(() -> {
                     onError.accept(error);
                 });

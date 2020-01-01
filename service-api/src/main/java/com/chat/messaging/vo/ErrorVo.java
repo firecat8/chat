@@ -1,4 +1,4 @@
-package com.chat.messaging.dto;
+package com.chat.messaging.vo;
 
 import com.chat.messaging.message.ResponseCode;
 import java.io.Serializable;
@@ -7,16 +7,16 @@ import java.io.Serializable;
  *
  * @author gdimitrova
  */
-public class ErrorMessageDto implements Serializable {
+public class ErrorVo implements Serializable {
 
     private ResponseCode errorCode;
 
     private String message;
 
-    public ErrorMessageDto() {
+    public ErrorVo() {
     }
 
-    public ErrorMessageDto(ResponseCode errorCode, String message) {
+    public ErrorVo(ResponseCode errorCode, String message) {
         this.errorCode = errorCode;
         this.message = message;
     }

@@ -1,4 +1,4 @@
-package com.chat.messaging.dto;
+package com.chat.messaging.vo;
 
 import java.io.Serializable;
 
@@ -6,7 +6,7 @@ import java.io.Serializable;
  *
  * @author gdimitrova
  */
-public abstract class MessageDto implements Serializable {
+public abstract class EntityVo implements Serializable {
 
     protected Long id;
 

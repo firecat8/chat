@@ -20,6 +20,7 @@ public class Chat extends Entity {
         this.type = type;
     }
 
+
     public String getName() {
         return name;
     }
@@ -36,8 +37,11 @@ public class Chat extends Entity {
         return participants;
     }
 
-    public void addFriend(Participant participant) {
+    public void addParticipant(Participant participant) {
         this.participants.add(participant);
+    }
+    public void addParticipants(Set<Participant> participants) {
+        this.participants.addAll(participants);
     }
 
     public void removeParticipant(Participant participant) {

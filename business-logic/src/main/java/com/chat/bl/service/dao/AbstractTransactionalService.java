@@ -1,7 +1,7 @@
 package com.chat.bl.service.dao;
 
 import com.chat.dao.DaoRegistry;
-import com.chat.messaging.dto.ErrorMessageDto;
+import com.chat.messaging.vo.ErrorVo;
 import com.chat.messaging.message.ResponseCode;
 import com.chat.messaging.message.ResponseListener;
 import java.util.function.Function;
@@ -31,11 +31,11 @@ public class AbstractTransactionalService {
         } catch (MessageException ex) {
             daoRegistry.rollbackTransaction();
             LOGGER.log(Level.SEVERE, ex.getMessage());
-            listener.onError(new ErrorMessageDto(ResponseCode.ERROR, ex.getMessage()));
+            listener.onError(new ErrorVo(ResponseCode.ERROR, ex.getMessage()));
         } catch (Throwable ex) {
             daoRegistry.rollbackTransaction();
             LOGGER.log(Level.SEVERE, ex.getMessage(), ex);
-            listener.onError(new ErrorMessageDto(ResponseCode.SERVER_ERROR, ex.getMessage()));
+            listener.onError(new ErrorVo(ResponseCode.SERVER_ERROR, ex.getMessage()));
         }
     }
 }

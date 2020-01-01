@@ -1,6 +1,6 @@
 package com.chat.messaging.message.user;
 
-import com.chat.messaging.dto.UserStatusMsgDto;
+import com.chat.messaging.vo.UserStatusVo;
 import com.chat.messaging.message.AbstractRequest;
 
 /**
@@ -11,9 +11,9 @@ public class ChangeStatusRequest extends AbstractRequest {
 
     private final String username;
 
-    private final UserStatusMsgDto status;
+    private final UserStatusVo status;
 
-    public ChangeStatusRequest(UserStatusMsgDto status, String username) {
+    public ChangeStatusRequest(UserStatusVo status, String username) {
         this.username = username;
         this.status = status;
     }
@@ -22,7 +22,7 @@ public class ChangeStatusRequest extends AbstractRequest {
         return username;
     }
 
-    public UserStatusMsgDto getStatus() {
+    public UserStatusVo getStatus() {
         return status;
     }
 

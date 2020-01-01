@@ -4,7 +4,7 @@ import com.chat.bl.service.messaging.EndPoint;
 import com.chat.messaging.message.RequestWrapper;
 import com.chat.messaging.message.ResponseCode;
 import com.chat.messaging.message.ResponseWrapper;
-import com.chat.messaging.dto.ErrorMessageDto;
+import com.chat.messaging.vo.ErrorVo;
 import com.chat.messaging.message.ResponseListener;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -65,7 +65,7 @@ public class ClientHandler implements Runnable {
             Method method = rqWrapper.getServiceClass().getMethod(rqWrapper.getMethod(), rqWrapper.getReqClass(), ResponseListener.class);
             method.invoke(svc, rqWrapper.getRequest(), listener);
         } catch (IllegalAccessException | IllegalArgumentException | NoSuchMethodException | SecurityException | InvocationTargetException e) {
-            listener.onError(new ErrorMessageDto(ResponseCode.SERVER_ERROR, e.getMessage()));
+            listener.onError(new ErrorVo(ResponseCode.SERVER_ERROR, e.getMessage()));
         }
     }
 
@@ -87,7 +87,7 @@ public class ClientHandler implements Runnable {
         }
 
         @Override
-        public void onError(ErrorMessageDto error) {
+        public void onError(ErrorVo error) {
             writeResponse(new ResponseWrapper(error.getErrorCode(), error.getMessage()));
         }
 

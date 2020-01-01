@@ -1,6 +1,6 @@
 package com.chat.messaging.message.chat;
 
-import com.chat.messaging.dto.ChatMessageDto;
+import com.chat.messaging.vo.ChatVo;
 import com.chat.messaging.message.AbstractCollectionResponse;
 import java.util.List;
 
@@ -8,9 +8,9 @@ import java.util.List;
  *
  * @author gdimitrova
  */
-public class ChatsResponse extends AbstractCollectionResponse<ChatMessageDto>{
+public class ChatsResponse extends AbstractCollectionResponse<ChatVo>{
     
-    public ChatsResponse(List<ChatMessageDto> entities) {
+    public ChatsResponse(List<ChatVo> entities) {
         super(entities);
     }
     

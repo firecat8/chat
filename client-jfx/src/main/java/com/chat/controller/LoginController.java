@@ -1,7 +1,7 @@
 package com.chat.controller;
 
 import com.chat.app.GUIApp;
-import com.chat.messaging.dto.UserMessageDto;
+import com.chat.messaging.vo.UserVo;
 import com.chat.messaging.message.user.UserResponse;
 import com.chat.task.TaskFactory;
 import com.chat.task.TaskManager;
@@ -25,7 +25,7 @@ public class LoginController {
     @FXML
     private TextField txtPass;
 
-    public static UserMessageDto currentUser = null;
+    public static UserVo currentUser = null;
 
     public void Login(ActionEvent event) throws Exception {
         if (txtUserName.getText().equals("user") && txtPass.getText().equals("pass")) {

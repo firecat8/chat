@@ -1,6 +1,6 @@
 package com.chat.controller.chat;
 
-import com.chat.messaging.dto.UserStatusMsgDto;
+import com.chat.messaging.vo.UserStatusVo;
 
 /**
  *
@@ -8,11 +8,11 @@ import com.chat.messaging.dto.UserStatusMsgDto;
  */
 class UserStatusSelectionItem {
 
-    private final UserStatusMsgDto userStatus;
+    private final UserStatusVo userStatus;
 
     private final String statusLabel;
 
-    public UserStatusSelectionItem(UserStatusMsgDto userStatus, String statusLabel) {
+    public UserStatusSelectionItem(UserStatusVo userStatus, String statusLabel) {
         this.userStatus = userStatus;
         this.statusLabel = statusLabel;
     }
@@ -21,7 +21,7 @@ class UserStatusSelectionItem {
         return statusLabel;
     }
 
-    public UserStatusMsgDto getUserStatus() {
+    public UserStatusVo getUserStatus() {
         return userStatus;
     }
 

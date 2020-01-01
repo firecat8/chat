@@ -1,6 +1,6 @@
 package com.chat.utils;
 
-import com.chat.messaging.dto.UserStatusMsgDto;
+import com.chat.messaging.vo.UserStatusVo;
 import java.util.HashMap;
 import java.util.Map;
 import javafx.scene.image.Image;
@@ -14,17 +14,17 @@ import javafx.scene.shape.Circle;
  */
 public class ResolveUtils {
 
-    private static final Map<UserStatusMsgDto, Color> STATUS_COLORS = new HashMap<>() {
+    private static final Map<UserStatusVo, Color> STATUS_COLORS = new HashMap<>() {
         {
-            put(UserStatusMsgDto.ACTIVE, Color.GREEN);
-            put(UserStatusMsgDto.AWAY, Color.YELLOW);
-            put(UserStatusMsgDto.DO_NOT_DISTURB, Color.RED);
-            put(UserStatusMsgDto.OFFLINE, Color.DARKGRAY);
+            put(UserStatusVo.ACTIVE, Color.GREEN);
+            put(UserStatusVo.AWAY, Color.YELLOW);
+            put(UserStatusVo.DO_NOT_DISTURB, Color.RED);
+            put(UserStatusVo.OFFLINE, Color.DARKGRAY);
         }
 
     };
 
-    public static Color resolveStatusColor(UserStatusMsgDto status) {
+    public static Color resolveStatusColor(UserStatusVo status) {
         return STATUS_COLORS.get(status);
     }
 

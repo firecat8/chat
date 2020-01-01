@@ -1,6 +1,6 @@
 package com.chat.messaging;
 
-import com.chat.messaging.dto.ErrorMessageDto;
+import com.chat.messaging.vo.ErrorVo;
 import com.chat.messaging.message.ResponseListener;
 import com.chat.messaging.message.Request;
 import com.chat.messaging.message.RequestWrapper;
@@ -62,10 +62,10 @@ public class Client {
             if (respWrapper.getCode() == ResponseCode.OK) {
                 listener.onSuccess(respWrapper.getResponse());
             } else {
-                listener.onError(new ErrorMessageDto(respWrapper.getCode(), respWrapper.getError()));
+                listener.onError(new ErrorVo(respWrapper.getCode(), respWrapper.getError()));
             }
         } catch (IOException | ClassNotFoundException ex) {
-            listener.onError(new ErrorMessageDto(ResponseCode.SERVER_ERROR, ex.getMessage()));
+            listener.onError(new ErrorVo(ResponseCode.SERVER_ERROR, ex.getMessage()));
         }
     }
 

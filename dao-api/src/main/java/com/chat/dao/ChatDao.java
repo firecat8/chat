@@ -11,7 +11,7 @@ import java.util.List;
  */
 public interface ChatDao extends CrudDao<Chat> {
 
-    public Chat save(String name, ChatType type);
+    public Chat save(String name, ChatType type, User user);
 
     public List<Chat> loadChats(User user);
 

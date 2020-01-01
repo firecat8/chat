@@ -43,6 +43,13 @@ public class ChatDto extends AbstractDto {
         this.name = name;
         this.type = type;
     }
+    
+    public ChatDto(String name, ChatTypeDto type, ParticipantDto owner) {
+        this.name = name;
+        this.type = type;
+        this.participants.add(owner);
+    }
+
 
     public String getName() {
         return name;
@@ -60,8 +67,11 @@ public class ChatDto extends AbstractDto {
         return participants;
     }
 
-    public void addFriend(ParticipantDto participant) {
+    public void addParticipant(ParticipantDto participant) {
         this.participants.add(participant);
+    }
+    public void addParticipants( Set<ParticipantDto> participants) {
+        this.participants.addAll(participants);
     }
 
     public void removeParticipant(ParticipantDto participant) {

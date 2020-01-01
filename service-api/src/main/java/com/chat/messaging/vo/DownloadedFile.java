@@ -1,4 +1,4 @@
-package com.chat.messaging.dto;
+package com.chat.messaging.vo;
 
 import com.chat.messaging.message.AbstractResponse;
 

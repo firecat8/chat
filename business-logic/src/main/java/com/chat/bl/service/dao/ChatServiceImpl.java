@@ -1,8 +1,8 @@
 package com.chat.bl.service.dao;
 
-import com.chat.bl.service.messaging.exchanger.ChatEventMsgDtoExchanger;
-import com.chat.bl.service.messaging.exchanger.ChatMsgDtoExchanger;
-import com.chat.bl.service.messaging.exchanger.UserMsgDtoExchanger;
+import com.chat.bl.service.messaging.exchanger.ChatEventVoExchanger;
+import com.chat.bl.service.messaging.exchanger.ChatVoExchanger;
+import com.chat.bl.service.messaging.exchanger.UserVoExchanger;
 import com.chat.dao.DaoRegistry;
 import com.chat.domain.Chat;
 import com.chat.domain.ChatEvent;
@@ -11,11 +11,11 @@ import com.chat.domain.ChatType;
 import com.chat.domain.ChatUser;
 import com.chat.domain.Participant;
 import com.chat.domain.User;
-import com.chat.messaging.dto.ChatEventMessageDto;
-import com.chat.messaging.dto.ChatMessageDto;
-import com.chat.messaging.dto.DownloadedFile;
-import com.chat.messaging.dto.ErrorMessageDto;
-import com.chat.messaging.dto.UserMessageDto;
+import com.chat.messaging.vo.ChatEventVo;
+import com.chat.messaging.vo.ChatVo;
+import com.chat.messaging.vo.DownloadedFile;
+import com.chat.messaging.vo.ErrorVo;
+import com.chat.messaging.vo.UserVo;
 import com.chat.messaging.message.ResponseCode;
 import com.chat.messaging.message.ResponseListener;
 import com.chat.messaging.message.SuccessResponse;
@@ -74,7 +74,7 @@ public class ChatServiceImpl extends AbstractTransactionalService implements Cha
                 saveFile(ce, req.getFile());
             } catch (IOException ex) {
                 LOGGER.log(Level.SEVERE, ex.getMessage(), ex);
-                listener.onError(new ErrorMessageDto(ResponseCode.SERVER_ERROR, ex.getMessage()));
+                listener.onError(new ErrorVo(ResponseCode.SERVER_ERROR, ex.getMessage()));
             }
             return ce;
         }, listener);
@@ -87,15 +87,15 @@ public class ChatServiceImpl extends AbstractTransactionalService implements Cha
             listener.onSuccess(downloadFile);
         } catch (IOException ex) {
             LOGGER.log(Level.SEVERE, ex.getMessage(), ex);
-            listener.onError(new ErrorMessageDto(ResponseCode.SERVER_ERROR, ex.getMessage()));
+            listener.onError(new ErrorVo(ResponseCode.SERVER_ERROR, ex.getMessage()));
         }
     }
 
     @Override
     public synchronized void createChat(CreateChatRequest req, ResponseListener<ChatResponse> listener) {
         doInTransaction((DaoRegistry registry) -> {
-            return new ChatResponse(ChatMsgDtoExchanger.INSTANCE.exchange(
-                    registry.getChatDao().save(req.getName(), ChatType.GROUP))
+            return new ChatResponse(ChatVoExchanger.INSTANCE.exchange(
+                    registry.getChatDao().save(req.getName(), ChatType.GROUP, UserVoExchanger.INSTANCE.exchange(req.getOwner())))
             );
         }, listener);
     }
@@ -139,16 +139,16 @@ public class ChatServiceImpl extends AbstractTransactionalService implements Cha
     @Override
     public void loadLastTenEvents(LoadHistoryRequest req, ResponseListener<ChatHistoryResponse> listener) {
         doInTransaction((DaoRegistry registry) -> {
-            Chat chat = ChatMsgDtoExchanger.INSTANCE.exchange(req.getChat());
+            Chat chat = ChatVoExchanger.INSTANCE.exchange(req.getChat());
             List<ChatEvent> history = registry.getChatEventDao().loadTheLastTenEvents(chat);
-            return new ChatHistoryResponse(ChatEventMsgDtoExchanger.INSTANCE.exchangeEntityList(history));
+            return new ChatHistoryResponse(ChatEventVoExchanger.INSTANCE.exchangeEntityList(history));
 
         }, listener);
     }
 
     private void saveEvent(
             String message, ChatEventType chatEventType,
-            Long eventTime, UserMessageDto s, ChatMessageDto c,
+            Long eventTime, UserVo s, ChatVo c,
             ResponseListener<ChatEventResponse> listener) {
         doInTransaction((DaoRegistry registry) -> {
             return saveEvent(registry, message, chatEventType, eventTime, s, c);
@@ -157,16 +157,16 @@ public class ChatServiceImpl extends AbstractTransactionalService implements Cha
 
     private ChatEventResponse saveEvent(DaoRegistry registry,
             String message, ChatEventType chatEventType,
-            Long eventTime, UserMessageDto s, ChatMessageDto c) {
-        User sender = UserMsgDtoExchanger.INSTANCE.exchangeFrom(s);
-        Chat chat = ChatMsgDtoExchanger.INSTANCE.exchangeFrom(c);
+            Long eventTime, UserVo s, ChatVo c) {
+        User sender = UserVoExchanger.INSTANCE.exchangeFrom(s);
+        Chat chat = ChatVoExchanger.INSTANCE.exchangeFrom(c);
         return saveEvent(registry, message, chatEventType, eventTime, sender, chat);
     }
 
     private ChatEventResponse saveEvent(DaoRegistry registry,
             String message, ChatEventType chatEventType,
             Long eventTime, User s, Chat c) {
-        ChatEventMessageDto chatEvent = ChatEventMsgDtoExchanger.INSTANCE.exchange(
+        ChatEventVo chatEvent = ChatEventVoExchanger.INSTANCE.exchange(
                 registry.getChatEventDao().save(message, chatEventType, eventTime, s, c)
         );
         return new ChatEventResponse(chatEvent);
@@ -184,7 +184,7 @@ public class ChatServiceImpl extends AbstractTransactionalService implements Cha
                 throw new MessageException("Not found user!");
             }
             List<Chat> chats = registry.getChatDao().loadChats(user);
-            return new ChatsResponse(ChatMsgDtoExchanger.INSTANCE.exchangeEntityList(chats));
+            return new ChatsResponse(ChatVoExchanger.INSTANCE.exchangeEntityList(chats));
         }, listener);
     }
 
@@ -192,7 +192,7 @@ public class ChatServiceImpl extends AbstractTransactionalService implements Cha
     public void findChats(FindChatRequest req, ResponseListener<ChatsResponse> listener) {
         doInTransaction((DaoRegistry registry) -> {
             List<Chat> chats = registry.getChatDao().findChats(req.getChatNmae());
-            return new ChatsResponse(ChatMsgDtoExchanger.INSTANCE.exchangeEntityList(chats));
+            return new ChatsResponse(ChatVoExchanger.INSTANCE.exchangeEntityList(chats));
         }, listener);
     }
 

@@ -1,7 +1,7 @@
 package com.chat.messaging.services;
 
 import com.chat.messaging.message.ResponseListener;
-import com.chat.messaging.dto.DownloadedFile;
+import com.chat.messaging.vo.DownloadedFile;
 import com.chat.messaging.message.SuccessResponse;
 import com.chat.messaging.message.chat.AddFriendRequest;
 import com.chat.messaging.message.chat.ChatEventResponse;

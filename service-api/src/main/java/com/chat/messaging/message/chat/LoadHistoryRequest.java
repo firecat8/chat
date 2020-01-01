@@ -1,7 +1,7 @@
 package com.chat.messaging.message.chat;
 
 import com.chat.messaging.message.AbstractRequest;
-import com.chat.messaging.dto.ChatMessageDto;
+import com.chat.messaging.vo.ChatVo;
 
 /**
  *
@@ -9,13 +9,13 @@ import com.chat.messaging.dto.ChatMessageDto;
  */
 public class LoadHistoryRequest extends AbstractRequest {
 
-    private final ChatMessageDto chat;
+    private final ChatVo chat;
 
-    public LoadHistoryRequest(ChatMessageDto chat) {
+    public LoadHistoryRequest(ChatVo chat) {
         this.chat = chat;
     }
 
-    public ChatMessageDto getChat() {
+    public ChatVo getChat() {
         return chat;
     }
 

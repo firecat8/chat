@@ -1,6 +1,6 @@
 package com.chat.messaging.message.chat;
 
-import com.chat.messaging.dto.ChatEventMessageDto;
+import com.chat.messaging.vo.ChatEventVo;
 import com.chat.messaging.message.AbstractResponse;
 
 /**
@@ -8,13 +8,13 @@ import com.chat.messaging.message.AbstractResponse;
  * @author gdimitrova
  */
 public class ChatEventResponse extends AbstractResponse{
-    private final ChatEventMessageDto chatEvent;
+    private final ChatEventVo chatEvent;
 
-    public ChatEventResponse(ChatEventMessageDto chatEvent) {
+    public ChatEventResponse(ChatEventVo chatEvent) {
         this.chatEvent = chatEvent;
     }
 
-    public ChatEventMessageDto getChatEvent() {
+    public ChatEventVo getChatEvent() {
         return chatEvent;
     }
     

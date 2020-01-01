@@ -1,4 +1,4 @@
-package com.chat.messaging.dto;
+package com.chat.messaging.vo;
 
 import java.io.Serializable;
 
@@ -6,7 +6,7 @@ import java.io.Serializable;
  *
  * @author gdimitrova
  */
-public enum UserStatusMsgDto implements Serializable{
+public enum UserStatusVo implements Serializable{
     ACTIVE,
     AWAY,
     DO_NOT_DISTURB,

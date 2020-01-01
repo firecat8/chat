@@ -1,6 +1,6 @@
 package com.chat.messaging.message.user;
 
-import com.chat.messaging.dto.UserMessageDto;
+import com.chat.messaging.vo.UserVo;
 import com.chat.messaging.message.AbstractResponse;
 
 /**
@@ -8,13 +8,13 @@ import com.chat.messaging.message.AbstractResponse;
  * @author gdimitrova
  */
 public class UserResponse extends AbstractResponse{
-    private final UserMessageDto user;
+    private final UserVo user;
 
-    public UserResponse(UserMessageDto user) {
+    public UserResponse(UserVo user) {
         this.user = user;
     }
 
-    public UserMessageDto getUser() {
+    public UserVo getUser() {
         return user;
     }
     

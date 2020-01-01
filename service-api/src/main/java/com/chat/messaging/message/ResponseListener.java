@@ -1,6 +1,6 @@
 package com.chat.messaging.message;
 
-import com.chat.messaging.dto.ErrorMessageDto;
+import com.chat.messaging.vo.ErrorVo;
 
 /**
  *
@@ -10,6 +10,6 @@ public interface ResponseListener<T> {
 
     public void onSuccess(T response);
 
-    public void onError(ErrorMessageDto error);
+    public void onError(ErrorVo error);
 
 }

@@ -1,6 +1,6 @@
 package com.chat.utils;
 
-import com.chat.messaging.dto.UserMessageDto;
+import com.chat.messaging.vo.UserVo;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +21,7 @@ public class TableViewUtils {
 
     public static SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
 
-    public static void initTables(ListView<UserMessageDto> friendsList) {
+    public static void initTables(ListView<UserVo> friendsList) {
 
     }
 

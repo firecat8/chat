@@ -1,12 +1,12 @@
 package com.chat.task;
 
 import com.chat.app.ClientApp;
-import com.chat.messaging.dto.ChatEventMessageDto;
-import com.chat.messaging.dto.ChatMessageDto;
-import com.chat.messaging.dto.DownloadedFile;
-import com.chat.messaging.dto.ErrorMessageDto;
-import com.chat.messaging.dto.UserMessageDto;
-import com.chat.messaging.dto.UserStatusMsgDto;
+import com.chat.messaging.vo.ChatEventVo;
+import com.chat.messaging.vo.ChatVo;
+import com.chat.messaging.vo.DownloadedFile;
+import com.chat.messaging.vo.ErrorVo;
+import com.chat.messaging.vo.UserVo;
+import com.chat.messaging.vo.UserStatusVo;
 import com.chat.messaging.message.Request;
 import com.chat.messaging.message.Response;
 import com.chat.messaging.message.ResponseListener;
@@ -47,76 +47,76 @@ import javafx.application.Platform;
  */
 public class TaskFactory {
 
-    public static Task createLoginTask(String username, String password, Consumer<UserResponse> onSuccess, Consumer<ErrorMessageDto> onError) {
+    public static Task createLoginTask(String username, String password, Consumer<UserResponse> onSuccess, Consumer<ErrorVo> onError) {
         return createTask(ClientApp.getRegistry().getUserService()::login, new LoginRequest(username, password), onSuccess, onError);
     }
 
-    public static Task createLogoutTask(UserMessageDto currentUser, Consumer<SuccessResponse> onSuccess, Consumer<ErrorMessageDto> onError) {
+    public static Task createLogoutTask(UserVo currentUser, Consumer<SuccessResponse> onSuccess, Consumer<ErrorVo> onError) {
         return createTask(ClientApp.getRegistry().getUserService()::logout, new LogoutRequest(currentUser.getId()), onSuccess, onError);
     }
 
-    public static Task createRegisterTask(String username, String password, String firstName, String lastName, Consumer<UserResponse> onSuccess, Consumer<ErrorMessageDto> onError) {
+    public static Task createRegisterTask(String username, String password, String firstName, String lastName, Consumer<UserResponse> onSuccess, Consumer<ErrorVo> onError) {
         return createTask(ClientApp.getRegistry().getUserService()::register, new RegistrationRequest(username, password, firstName, lastName), onSuccess, onError);
     }
 
-    public static Task createChangeStatusTask(UserStatusMsgDto status, UserMessageDto currentUser, Consumer<SuccessResponse> onSuccess, Consumer<ErrorMessageDto> onError) {
+    public static Task createChangeStatusTask(UserStatusVo status, UserVo currentUser, Consumer<SuccessResponse> onSuccess, Consumer<ErrorVo> onError) {
         return createTask(ClientApp.getRegistry().getUserService()::changeStatus, new ChangeStatusRequest(status, currentUser.getUsername()), onSuccess, onError);
     }
 
-    public static Task createFindFriendTask(String friendName, Consumer<UsersResponse> onSuccess, Consumer<ErrorMessageDto> onError) {
+    public static Task createFindFriendTask(String friendName, Consumer<UsersResponse> onSuccess, Consumer<ErrorVo> onError) {
         return createTask(ClientApp.getRegistry().getUserService()::findFriend, new FindFriendRequest(friendName), onSuccess, onError);
     }
     //
 
-    public static Task createLoadFriendRequestsTask(UserMessageDto currentUser, Consumer<FriendRequestsResponse> onSuccess, Consumer<ErrorMessageDto> onError) {
+    public static Task createLoadFriendRequestsTask(UserVo currentUser, Consumer<FriendRequestsResponse> onSuccess, Consumer<ErrorVo> onError) {
         return createTask(ClientApp.getRegistry().getUserService()::loadFriendRequests, new LoadFriendRequests(currentUser.getId()), onSuccess, onError);
     }
 
-    public static Task createSendFriendRequestTask(Long userId, Long friendId, Consumer<FriendRequestResponse> onSuccess, Consumer<ErrorMessageDto> onError) {
+    public static Task createSendFriendRequestTask(Long userId, Long friendId, Consumer<FriendRequestResponse> onSuccess, Consumer<ErrorVo> onError) {
         return createTask(ClientApp.getRegistry().getUserService()::sendFriendRequest, new SendFriendRequest(userId, friendId), onSuccess, onError);
     }
 
     // Chat service methods
-    public static Task createAddFriendTask(Long chatId, Long userId, Long friendId, Consumer<SuccessResponse> onSuccess, Consumer<ErrorMessageDto> onError) {
+    public static Task createAddFriendTask(Long chatId, Long userId, Long friendId, Consumer<SuccessResponse> onSuccess, Consumer<ErrorVo> onError) {
         return createTask(ClientApp.getRegistry().getChatService()::addFriend, new AddFriendRequest(chatId, userId, friendId), onSuccess, onError);
     }
 
-    public static Task createDownloadFileTask(ChatEventMessageDto event, Consumer<DownloadedFile> onSuccess, Consumer<ErrorMessageDto> onError) {
+    public static Task createDownloadFileTask(ChatEventVo event, Consumer<DownloadedFile> onSuccess, Consumer<ErrorVo> onError) {
         return createTask(ClientApp.getRegistry().getChatService()::downloadFile, new DownloadFileRequest(event), onSuccess, onError);
     }
 
-    public static Task createLeaveChatTask(Long chatId, Long userId, Consumer<SuccessResponse> onSuccess, Consumer<ErrorMessageDto> onError) {
+    public static Task createLeaveChatTask(Long chatId, Long userId, Consumer<SuccessResponse> onSuccess, Consumer<ErrorVo> onError) {
         return createTask(ClientApp.getRegistry().getChatService()::leaveChat, new LeaveChatRequest(chatId, userId), onSuccess, onError);
     }
 
-    public static Task createLoadLastTenEventsTask(ChatMessageDto chat, Consumer<ChatHistoryResponse> onSuccess, Consumer<ErrorMessageDto> onError) {
+    public static Task createLoadLastTenEventsTask(ChatVo chat, Consumer<ChatHistoryResponse> onSuccess, Consumer<ErrorVo> onError) {
         return createTask(ClientApp.getRegistry().getChatService()::loadLastTenEvents, new LoadHistoryRequest(chat), onSuccess, onError);
     }
     //
 
-    public static Task createSendFileTask(String filename, byte[] file, UserMessageDto sender, ChatMessageDto chat, Consumer<ChatEventResponse> onSuccess, Consumer<ErrorMessageDto> onError) {
+    public static Task createSendFileTask(String filename, byte[] file, UserVo sender, ChatVo chat, Consumer<ChatEventResponse> onSuccess, Consumer<ErrorVo> onError) {
         return createTask(ClientApp.getRegistry().getChatService()::sendFile, new SendFileRequest(filename, file, sender, chat), onSuccess, onError);
     }
 
-    public static Task createSendMessageTask(String message, UserMessageDto sender, ChatMessageDto chat, Consumer<ChatEventResponse> onSuccess, Consumer<ErrorMessageDto> onError) {
+    public static Task createSendMessageTask(String message, UserVo sender, ChatVo chat, Consumer<ChatEventResponse> onSuccess, Consumer<ErrorVo> onError) {
         return createTask(ClientApp.getRegistry().getChatService()::sendMessage, new SendMessageRequest(message, sender, chat), onSuccess, onError);
     }
 
-    public static Task createFindChatsTask(String chatName, Consumer<ChatsResponse> onSuccess, Consumer<ErrorMessageDto> onError) {
+    public static Task createFindChatsTask(String chatName, Consumer<ChatsResponse> onSuccess, Consumer<ErrorVo> onError) {
         return createTask(ClientApp.getRegistry().getChatService()::findChats, new FindChatRequest(chatName), onSuccess, onError);
     }
 
-    public static Task createLoadChatsTask(UserMessageDto user, Consumer<ChatsResponse> onSuccess, Consumer<ErrorMessageDto> onError) {
+    public static Task createLoadChatsTask(UserVo user, Consumer<ChatsResponse> onSuccess, Consumer<ErrorVo> onError) {
         return createTask(ClientApp.getRegistry().getChatService()::loadChats, new LoadChatsRequest(user.getId()), onSuccess, onError);
     }
 
-    public static Task createCreateChatTask(String name, Consumer<ChatResponse> onSuccess, Consumer<ErrorMessageDto> onError) {
-        return createTask(ClientApp.getRegistry().getChatService()::createChat, new CreateChatRequest(name), onSuccess, onError);
+    public static Task createCreateGroupChatTask(String name, UserVo owner, Consumer<ChatResponse> onSuccess, Consumer<ErrorVo> onError) {
+        return createTask(ClientApp.getRegistry().getChatService()::createChat, new CreateChatRequest(name, owner), onSuccess, onError);
     }
 
     private static <Req extends Request, Resp extends Response> Task createTask(
             BiConsumer< Req, ResponseListener<Resp>> doWork,
-            Req request, Consumer<Resp> onSuccess, Consumer<ErrorMessageDto> onError) {
+            Req request, Consumer<Resp> onSuccess, Consumer<ErrorVo> onError) {
         return new Task(doWork, request, onSuccess, onError);
     }
 

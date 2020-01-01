@@ -1,15 +1,15 @@
 package com.chat.bl.service.dao;
 
-import com.chat.bl.service.messaging.exchanger.FriendRequestMsgDtoExchanger;
-import com.chat.bl.service.messaging.exchanger.UserMsgDtoExchanger;
+import com.chat.bl.service.messaging.exchanger.FriendRequestVoExchanger;
+import com.chat.bl.service.messaging.exchanger.UserVoExchanger;
 import com.chat.dao.DaoRegistry;
 import com.chat.domain.FriendRequest;
 import com.chat.domain.FriendRequestStatus;
 import com.chat.domain.User;
 import com.chat.domain.UserInfo;
 import com.chat.domain.UserStatus;
-import com.chat.messaging.dto.FriendRequestMessageDto;
-import com.chat.messaging.dto.UserMessageDto;
+import com.chat.messaging.vo.FriendRequestVo;
+import com.chat.messaging.vo.UserVo;
 import com.chat.messaging.message.ResponseListener;
 import com.chat.messaging.message.SuccessResponse;
 import com.chat.messaging.message.user.ChangeStatusRequest;
@@ -138,7 +138,7 @@ public class UserServiceImpl extends AbstractTransactionalService implements Use
     @Override
     public void acceptFriendRequest(FriendRequestStatusRequest req, ResponseListener<FriendRequestResponse> listener) {
         doInTransaction((DaoRegistry registry) -> {
-            FriendRequest friendRequest = FriendRequestMsgDtoExchanger.INSTANCE.exchange(req.getFriendRequest());
+            FriendRequest friendRequest = FriendRequestVoExchanger.INSTANCE.exchange(req.getFriendRequest());
             User sender = registry.getUserDao().loadById(friendRequest.getSender().getId());
             User receiver = registry.getUserDao().loadById(friendRequest.getReceiver().getId());
             sender.getFriends().add(receiver);
@@ -153,30 +153,30 @@ public class UserServiceImpl extends AbstractTransactionalService implements Use
     @Override
     public void declineFriendRequest(FriendRequestStatusRequest req, ResponseListener<FriendRequestResponse> listener) {
         doInTransaction((DaoRegistry registry) -> {
-            FriendRequest friendRequest = FriendRequestMsgDtoExchanger.INSTANCE.exchange(req.getFriendRequest());
+            FriendRequest friendRequest = FriendRequestVoExchanger.INSTANCE.exchange(req.getFriendRequest());
             friendRequest.setRequestStatus(FriendRequestStatus.DECLINED);
             registry.getFriendRequestDao().save(friendRequest);
             return new FriendRequestResponse(exchange(friendRequest));
         }, listener);
     }
 
-    private User exchange(UserMessageDto user) {
-        return UserMsgDtoExchanger.INSTANCE.exchange(user);
+    private User exchange(UserVo user) {
+        return UserVoExchanger.INSTANCE.exchange(user);
     }
 
-    private UserMessageDto exchange(User user) {
-        return UserMsgDtoExchanger.INSTANCE.exchange(user);
+    private UserVo exchange(User user) {
+        return UserVoExchanger.INSTANCE.exchange(user);
     }
 
-    private List<UserMessageDto> exchangeUserList(List<User> list) {
-        return UserMsgDtoExchanger.INSTANCE.exchangeEntityList(list);
+    private List<UserVo> exchangeUserList(List<User> list) {
+        return UserVoExchanger.INSTANCE.exchangeEntityList(list);
     }
 
-    private FriendRequestMessageDto exchange(FriendRequest friendRequest) {
-        return FriendRequestMsgDtoExchanger.INSTANCE.exchange(friendRequest);
+    private FriendRequestVo exchange(FriendRequest friendRequest) {
+        return FriendRequestVoExchanger.INSTANCE.exchange(friendRequest);
     }
 
-    private List<FriendRequestMessageDto> exchangeList(List<FriendRequest> list) {
-        return FriendRequestMsgDtoExchanger.INSTANCE.exchangeEntityList(list);
+    private List<FriendRequestVo> exchangeList(List<FriendRequest> list) {
+        return FriendRequestVoExchanger.INSTANCE.exchangeEntityList(list);
     }
 }

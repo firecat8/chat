@@ -2,12 +2,11 @@ package com.chat.app;
 
 import com.chat.controller.chat.ChatController;
 import com.chat.controller.LoginController;
-import com.chat.messaging.dto.UserMessageDto;
+import com.chat.messaging.vo.UserVo;
 import com.chat.task.TaskFactory;
 import com.chat.task.TaskManager;
+import com.chat.utils.FXMLUtils;
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
@@ -32,7 +31,7 @@ public class GUIApp extends Application {
         // Main line
 //        scene = new Scene(loadFXML("login"));
         // For testing purpose
-        scene = new Scene(loadFXML("chat"));
+        scene = new Scene(FXMLUtils.loadFXML("chat"));
         stage.setOnCloseRequest((WindowEvent event) -> {
             if (!ClientApp.isConnected()) {
                 logout();
@@ -45,12 +44,12 @@ public class GUIApp extends Application {
     }
 
     public static void changeScene(String controllerName) throws IOException {
-        scene = new Scene(loadFXML(controllerName));
-        stage.setScene(new Scene(loadFXML(controllerName)));
+        scene = new Scene(FXMLUtils.loadFXML(controllerName));
+        stage.setScene(scene);
     }
 
     private void logout() {
-        UserMessageDto currentUser = LoginController.currentUser != null
+        UserVo currentUser = LoginController.currentUser != null
                 ? LoginController.currentUser
                 : ChatController.currentUser;
         if (currentUser == null) {
@@ -73,11 +72,6 @@ public class GUIApp extends Application {
         } catch (Exception ex) {
             Logger.getLogger(GUIApp.class.getName()).log(Level.SEVERE, null, ex);
         }
-    }
-
-    private static Parent loadFXML(String fxml) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(GUIApp.class.getResource(fxml + ".fxml"));
-        return fxmlLoader.load();
     }
 
     public static void start() {

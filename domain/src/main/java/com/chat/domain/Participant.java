@@ -4,7 +4,7 @@ package com.chat.domain;
  *
  * @author gdimitrova
  */
-public class Participant {
+public class Participant extends Entity {
 
     private User user;
 
@@ -15,6 +15,10 @@ public class Participant {
     public Participant() {
     }
 
+    public Participant(User user, ChatUser userType) {
+        this.user = user;
+        this.userType = userType;
+    }
     public Participant(User user, ChatUser userType, Chat chat) {
         this.user = user;
         this.userType = userType;

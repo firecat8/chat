@@ -1,7 +1,7 @@
 package com.chat.messaging.message.chat;
 
 import com.chat.messaging.message.AbstractRequest;
-import com.chat.messaging.dto.ChatEventMessageDto;
+import com.chat.messaging.vo.ChatEventVo;
 
 /**
  *
@@ -11,7 +11,7 @@ public class DownloadFileRequest extends AbstractRequest {
 
     private final String fileName;
 
-    public DownloadFileRequest(ChatEventMessageDto event) {
+    public DownloadFileRequest(ChatEventVo event) {
         this.fileName = event.getStorageFileName();
     }
 
