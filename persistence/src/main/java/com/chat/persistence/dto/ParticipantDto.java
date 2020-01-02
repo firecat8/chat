@@ -24,7 +24,7 @@ public class ParticipantDto extends AbstractDto {
 
     public final static String CHAT_COLUMN = "chat_id";
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne()
     @JoinColumn(name = USER_ID)
     private UserDto user;
 

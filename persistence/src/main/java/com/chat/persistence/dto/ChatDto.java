@@ -47,6 +47,7 @@ public class ChatDto extends AbstractDto {
     public ChatDto(String name, ChatTypeDto type, ParticipantDto owner) {
         this.name = name;
         this.type = type;
+        owner.setChat(this);
         this.participants.add(owner);
     }
 
