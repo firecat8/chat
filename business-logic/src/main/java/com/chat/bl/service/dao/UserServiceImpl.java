@@ -1,10 +1,15 @@
 package com.chat.bl.service.dao;
 
+import com.chat.bl.service.messaging.exchanger.ChatVoExchanger;
 import com.chat.bl.service.messaging.exchanger.FriendRequestVoExchanger;
 import com.chat.bl.service.messaging.exchanger.UserVoExchanger;
 import com.chat.dao.DaoRegistry;
+import com.chat.domain.Chat;
+import com.chat.domain.ChatType;
+import com.chat.domain.ChatUser;
 import com.chat.domain.FriendRequest;
 import com.chat.domain.FriendRequestStatus;
+import com.chat.domain.Participant;
 import com.chat.domain.User;
 import com.chat.domain.UserInfo;
 import com.chat.domain.UserStatus;
@@ -12,6 +17,7 @@ import com.chat.messaging.vo.FriendRequestVo;
 import com.chat.messaging.vo.UserVo;
 import com.chat.messaging.message.ResponseListener;
 import com.chat.messaging.message.SuccessResponse;
+import com.chat.messaging.message.chat.ChatResponse;
 import com.chat.messaging.message.user.ChangeStatusRequest;
 import com.chat.messaging.message.user.FindFriendRequest;
 import com.chat.messaging.message.user.FriendRequestResponse;
@@ -27,7 +33,6 @@ import com.chat.messaging.message.user.UsersResponse;
 import com.chat.messaging.services.UserService;
 import java.util.Calendar;
 import java.util.List;
-import java.util.function.Function;
 
 /**
  *
@@ -91,7 +96,7 @@ public class UserServiceImpl extends AbstractTransactionalService implements Use
     @Override
     public void findFriend(FindFriendRequest req, ResponseListener<UsersResponse> listener) {
         doInTransaction((DaoRegistry registry) -> {
-            return new UsersResponse(exchangeUserList(registry.getUserDao().findUsers(req.getFriendName())));
+            return new UsersResponse(exchangeUserList(registry.getUserDao().findUsers(req.getFriendName(), req.getSearcherId())));
         }, listener);
     }
 
@@ -102,8 +107,11 @@ public class UserServiceImpl extends AbstractTransactionalService implements Use
             User receiver = registry.getUserDao().loadById(req.getReceiverId());
             FriendRequest friendRequest = registry.getFriendRequestDao().find(sender, receiver);
             if (friendRequest == null) {
-                registry.getFriendRequestDao().save(new FriendRequest(sender, receiver, FriendRequestStatus.NEW));
+                friendRequest = new FriendRequest(sender, receiver, FriendRequestStatus.NEW);
+            } else {
+                friendRequest.setRequestStatus(FriendRequestStatus.NEW);
             }
+            registry.getFriendRequestDao().save(friendRequest);
             return new FriendRequestResponse(exchange(friendRequest));
         }, listener);
     }
@@ -136,7 +144,7 @@ public class UserServiceImpl extends AbstractTransactionalService implements Use
     }
 
     @Override
-    public void acceptFriendRequest(FriendRequestStatusRequest req, ResponseListener<FriendRequestResponse> listener) {
+    public void acceptFriendRequest(FriendRequestStatusRequest req, ResponseListener<ChatResponse> listener) {
         doInTransaction((DaoRegistry registry) -> {
             FriendRequest friendRequest = FriendRequestVoExchanger.INSTANCE.exchange(req.getFriendRequest());
             User sender = registry.getUserDao().loadById(friendRequest.getSender().getId());
@@ -145,8 +153,12 @@ public class UserServiceImpl extends AbstractTransactionalService implements Use
             receiver.getFriends().add(sender);
             registry.getUserDao().save(sender);
             registry.getUserDao().save(receiver);
+            Chat chat = new Chat("", ChatType.PRIVATE);
+            chat.addParticipant(new Participant(sender, ChatUser.PARTICIPANT, chat));
+            chat.addParticipant(new Participant(receiver, ChatUser.PARTICIPANT, chat));
+            registry.getChatDao().save(chat);
             registry.getFriendRequestDao().delete(friendRequest.getId());
-            return new FriendRequestResponse(exchange(friendRequest));
+            return new ChatResponse(ChatVoExchanger.INSTANCE.exchange(chat));
         }, listener);
     }
 

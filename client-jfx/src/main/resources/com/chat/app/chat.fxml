@@ -74,7 +74,7 @@
                         </HBox>
                         <TabPane fx:id="tabPane" layoutY="82.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="725.0" prefWidth="273.0" tabClosingPolicy="UNAVAILABLE">
                             <tabs>
-                                <Tab fx:id="friendsTab" text="     Friends     ">
+                                <Tab fx:id="friendsTab" text="  Friends   ">
                                     <content>
                                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                                             <children>
@@ -83,7 +83,7 @@
                                         </AnchorPane>
                                     </content>
                                 </Tab>
-                                <Tab fx:id="groupChatsTab" text="   Group chats   ">
+                                <Tab fx:id="groupChatsTab" text="   Group chats    ">
                                     <content>
                                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="574.0" prefWidth="354.0">
                                             <children>   
@@ -95,7 +95,7 @@
                                         </AnchorPane>
                                     </content>
                                 </Tab>
-                                <Tab fx:id="searchTab" text="      SearchBar     ">
+                                <Tab fx:id="searchTab" text="   SearchBar  ">
                                     <content>   
                                         <VBox minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="200.0">
                                             <children>
@@ -107,6 +107,16 @@
                                                 </HBox>
                                                 <ListView fx:id="userSearchList" stylesheets="@../styles/chat.css" />
                                                 <ListView fx:id="chatSearchList" stylesheets="@../styles/chat.css" />
+                                            </children>
+                                        </VBox>
+                                    </content>
+                                </Tab>
+                                <Tab fx:id="requestsTab" text=" Friend Requests  ">
+                                    <content>   
+                                        <VBox minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="200.0">
+                                            <children>
+                                                <ListView fx:id="myRequestsList" stylesheets="@../styles/chat.css" />
+                                                <ListView fx:id="sendRequestsList" stylesheets="@../styles/chat.css" />
                                             </children>
                                         </VBox>
                                     </content>

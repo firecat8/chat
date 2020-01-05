@@ -26,9 +26,10 @@ public class UserDaoImpl extends AbstractCrudDao<UserDto, User> implements UserD
     }
 
     @Override
-    public List<User> findUsers(String username) {
-        return getResultsLikeExpr(UserDto.USER_NAME, username);
+    public List<User> findUsers(String username, Long searcherId) {
+        return getResultsLikeExpr(UserDto.USER_NAME, username, "id", searcherId);
     }
+
     @Override
     public boolean updateStatus(User user, UserStatus status) {
         user.setStatus(status);
@@ -44,6 +45,5 @@ public class UserDaoImpl extends AbstractCrudDao<UserDto, User> implements UserD
         map.put(UserDto.STATUS, newOne.getStatus());
         return map;
     }
-
 
 }

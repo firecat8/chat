@@ -9,8 +9,13 @@ import com.chat.messaging.vo.UserStatusVo;
 import com.chat.messaging.message.chat.ChatEventResponse;
 import com.chat.messaging.message.chat.ChatResponse;
 import com.chat.messaging.message.chat.ChatsResponse;
+import com.chat.messaging.message.user.FriendRequestResponse;
+import com.chat.messaging.message.user.FriendRequestsResponse;
 import com.chat.messaging.message.user.UserResponse;
 import com.chat.messaging.message.user.UsersResponse;
+import com.chat.messaging.vo.EntityVo;
+import com.chat.messaging.vo.FriendRequestStatusVo;
+import com.chat.messaging.vo.FriendRequestVo;
 import com.chat.task.TaskFactory;
 import com.chat.task.TaskManager;
 import java.io.File;
@@ -20,6 +25,7 @@ import java.nio.file.Files;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
@@ -27,6 +33,7 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.beans.value.ObservableValue;
@@ -93,6 +100,12 @@ public class ChatController implements Initializable {
     private ListView<UserVo> userSearchList;
 
     @FXML
+    private ListView<FriendRequestVo> myRequestsList;
+
+    @FXML
+    private ListView<FriendRequestVo> sendRequestsList;
+
+    @FXML
     private TextField searchBar;
 
     @FXML
@@ -110,6 +123,24 @@ public class ChatController implements Initializable {
     private ChatVo currentChat;
 
     private final FileChooser fileChooser = new FileChooser();
+
+    private final Map<UserStatusVo, Color> statusColorsMap = new HashMap<>() {
+        {
+            put(UserStatusVo.ACTIVE, Color.GREEN);
+            put(UserStatusVo.AWAY, Color.YELLOW);
+            put(UserStatusVo.DO_NOT_DISTURB, Color.RED);
+            put(UserStatusVo.OFFLINE, Color.DARKGRAY);
+        }
+
+    };
+
+    private final Map<FriendRequestStatusVo, Color> requestStatusColorsMap = new HashMap<>() {
+        {
+            put(FriendRequestStatusVo.NEW, Color.GREEN);
+            put(FriendRequestStatusVo.DECLINED, Color.RED);
+        }
+
+    };
 
     /**
      * Initializes the controller class.
@@ -197,6 +228,7 @@ public class ChatController implements Initializable {
                     setMessage("Sucessfully logout " + currentUser.getUsername());
                     currentUser = null;
                     setLoginPaneVisible();
+                    clearLists();
                 },
                 (errorResponse) -> {
                     setMessage(errorResponse.getMessage());
@@ -249,7 +281,7 @@ public class ChatController implements Initializable {
     }
 
     private void findFriend() {
-        TaskManager.executeTask(TaskFactory.createFindFriendTask(searchBar.getText(),
+        TaskManager.executeTask(TaskFactory.createFindFriendTask(searchBar.getText(), currentUser.getId(),
                 (UsersResponse rsp) -> {
                     userSearchList.setItems(FXCollections.observableArrayList(rsp.getList()));
                 },
@@ -293,6 +325,63 @@ public class ChatController implements Initializable {
         }
     }
 
+    private void sendFriendRequest(UserVo friend) {
+        sendFriendRequest(friend, (frRequest) -> myRequestsList.getItems().add(frRequest));
+    }
+
+    private void sendFriendRequest(UserVo friend, Consumer<FriendRequestVo> listener) {
+        TaskManager.executeTask(TaskFactory.createSendFriendRequestTask(
+                currentUser.getId(), friend.getId(),
+                (FriendRequestResponse rsp) -> {
+                    listener.accept(rsp.getFriendRequest());
+                },
+                (errorResponse) -> {
+                    setMessage(errorResponse.getMessage());
+                }));
+    }
+
+    private void loadFriendRequests() {
+        TaskManager.executeTask(TaskFactory.createLoadFriendRequestsTask(
+                currentUser,
+                (FriendRequestsResponse rsp) -> {
+                    myRequestsList.getItems().clear();
+                    sendRequestsList.getItems().clear();
+                    rsp.getList().forEach((friendRequestVo) -> {
+                        if (friendRequestVo.getSender().getId().equals(currentUser.getId())) {
+                            myRequestsList.getItems().add(friendRequestVo);
+                        } else {
+                            sendRequestsList.getItems().add(friendRequestVo);
+                        }
+                    });
+                },
+                (errorResponse) -> {
+                    setMessage(errorResponse.getMessage());
+                }));
+    }
+
+    private void acceptFriendRequest(FriendRequestVo friendRequest) {
+        TaskManager.executeTask(TaskFactory.createAcceptFriendRequestTask(
+                friendRequest,
+                (ChatResponse rsp) -> {
+                    friendChats.put(friendRequest.getReceiver().getUsername(), rsp.getChat());
+                    friendsList.getItems().add(friendRequest.getReceiver());
+                },
+                (errorResponse) -> {
+                    setMessage(errorResponse.getMessage());
+                }));
+    }
+
+    private void declineFriendRequest(FriendRequestVo friendRequest, Consumer<FriendRequestVo> listener) {
+        TaskManager.executeTask(TaskFactory.createDeclineFriendRequestTask(
+                friendRequest,
+                (FriendRequestResponse rsp) -> {
+                    listener.accept(rsp.getFriendRequest());
+                },
+                (errorResponse) -> {
+                    setMessage(errorResponse.getMessage());
+                }));
+    }
+
     // Help methods
     private void setLoginPaneVisible() {
         setPaneVisibility(loginPane, true);
@@ -313,6 +402,7 @@ public class ChatController implements Initializable {
         currentUser = rsp.getUser();
         loadChats();
         addFriendList();
+        loadFriendRequests();
         setMessage("Sucessfully login " + currentUser.getUsername());
         userName.setText(currentUser.getUsername());
         statusBar.setValue(UserStatusSelectionItemRegistry.INSTANCE.getItem(currentUser.getStatus()));
@@ -339,10 +429,11 @@ public class ChatController implements Initializable {
     private void addFriendList() {
         Set<UserVo> friends = currentUser.getFriends();
         if (friends.isEmpty()) {
+            friendsList.getItems().clear();
             LOGGER.info("NO FRIENDS ;(");
             return;
         }
-        friendsList.getItems().addAll(friends);
+        friendsList.setItems(FXCollections.observableArrayList(friends));
     }
 
     public void setMessage(String msg) {
@@ -353,14 +444,106 @@ public class ChatController implements Initializable {
         return chat.getParticipants().stream().filter(c -> !c.getUser().getId().equals(currentUserId)).findFirst().get();
     }
 
-    private void initLists() {
-        initUserList(userSearchList, new ArrayList<>());
-        initUserList(friendsList, new ArrayList<>());
-        initChatList(groupChatsList, chatSearchList);
+    private <T extends EntityVo> void clearLists() {
+        userSearchList.getItems().clear();
+        friendsList.getItems().clear();
+        groupChatsList.getItems().clear();
+        chatSearchList.getItems().clear();
+        myRequestsList.getItems().clear();
+        sendRequestsList.getItems().clear();
     }
 
-    private void initUserList(ListView<UserVo> userList, List<String> menuItemsNames, final Consumer<UserVo>... actions) {
-        userList.setCellFactory(param -> {
+    private void initLists() {
+        initUserSearchList();
+        initFriendList();
+        initChatList(groupChatsList, null);
+        initChatList(chatSearchList,
+                (chat) -> {
+                    return null;
+                });
+        initSendFriendRequestList();
+        initMyFriendRequestList();
+    }
+
+    private void initSendFriendRequestList() {
+        sendRequestsList.setCellFactory(param -> {
+            ListCell<FriendRequestVo> cell = new ListCell<FriendRequestVo>() {
+                @Override
+                protected void updateItem(FriendRequestVo item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty || item == null) {
+                        setText(null);
+                        setContextMenu(null);
+                        setGraphic(null);
+                        return;
+                    }
+                    setGraphic(
+                            createFriendHboxControl(item)
+                    );
+                    if (item.getRequestStatus().name().equals(FriendRequestStatusVo.NEW.name())) {
+                        setContextMenu(createContextMenu(item,
+                                Arrays.asList("Accept request", "Decline request"),
+                                (it) -> {
+                                    acceptFriendRequest(item);
+                                },
+                                (it) -> {
+                                    declineFriendRequest(item,
+                                            (frRequest) -> {
+                                                setGraphic(
+                                                        createFriendHboxControl(frRequest)
+                                                );
+                                            }
+                                    );
+                                }));
+                        return;
+                    }
+                    setContextMenu(null);
+                }
+
+            };
+            return cell;
+        });
+    }
+
+    private HboxControl createFriendHboxControl(FriendRequestVo frRequest) {
+        return new HboxControl("friend-request-icon.jpg",
+                frRequest.getSender().getUsername() + "(" + frRequest.getRequestStatus().name() + ")",
+                requestStatusColorsMap.get(frRequest.getRequestStatus()), Color.BISQUE);
+    }
+
+    private void initMyFriendRequestList() {
+        myRequestsList.setCellFactory(param -> {
+            ListCell<FriendRequestVo> cell = new ListCell<FriendRequestVo>() {
+                @Override
+                protected void updateItem(FriendRequestVo item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty || item == null) {
+                        setText(null);
+                        setContextMenu(null);
+                        setGraphic(null);
+                        return;
+                    }
+                    setGraphic(
+                            createFriendHboxControl(item)
+                    );
+                    if (item.getRequestStatus().name().equals(FriendRequestStatusVo.DECLINED.name())) {
+                        setContextMenu(createContextMenu(item,
+                                Arrays.asList("Send request again"),
+                                (it) -> {
+                                    sendFriendRequest(it.getReceiver());
+                                }));
+                        return;
+                    }
+                    setContextMenu(null);
+                }
+
+            };
+            return cell;
+        });
+    }
+
+    private void initUserSearchList() {
+        userSearchList.setCellFactory(param -> {
             ListCell<UserVo> cell = new ListCell<UserVo>() {
                 @Override
                 protected void updateItem(UserVo item, boolean empty) {
@@ -368,51 +551,85 @@ public class ChatController implements Initializable {
                     if (empty || item == null) {
                         setText(null);
                         setGraphic(null);
+                        setContextMenu(null);
                         return;
                     }
-                    //item.getStatus()) for color
                     setGraphic(
-                            new HboxControl("avatar.png", item.getUsername(), Color.AZURE)
+                            new HboxControl("avatar.png", item.getUsername(), statusColorsMap.get(item.getStatus()), Color.BISQUE)
                     );
+                    if (!isMyFriend(item)) {
+                        setContextMenu(createContextMenu(item,
+                                Arrays.asList("Send friend request"),
+                                (it) -> {
+                                    sendFriendRequest(it);
+                                }));
+                        return;
+                    }
+                    setContextMenu(null);
                 }
             };
-            ContextMenu menu = createContextMenu(cell, menuItemsNames, actions);
-            cell.emptyProperty().addListener((obs, wasEmpty, isNowEmpty)
-                    -> cell.setContextMenu(isNowEmpty ? null : menu));
             return cell;
         });
     }
 
-    private <T> ContextMenu createContextMenu(ListCell< T> cell, List<String> menuItemsNames, final Consumer<T>... actions) {
+    private void initFriendList() {
+        friendsList.setCellFactory(param -> {
+            ListCell<UserVo> cell = new ListCell<UserVo>() {
+                @Override
+                protected void updateItem(UserVo item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty || item == null) {
+                        setText(null);
+                        setGraphic(null);
+                        setContextMenu(null);
+                        return;
+                    }
+                    setGraphic(
+                            new HboxControl("avatar.png", item.getUsername(), statusColorsMap.get(item.getStatus()), Color.BISQUE)
+                    );
+                }
+            };
+            return cell;
+        });
+    }
+
+    private boolean isMyFriend(UserVo item) {
+        return friendChats.keySet().contains(item);
+    }
+
+    private <T> ContextMenu createContextMenu(T value, List<String> menuItemsNames, final Consumer<T>... actions) {
         ContextMenu menu = new ContextMenu();
         for (int i = 0; i < actions.length; i++) {
             MenuItem item = new MenuItem(menuItemsNames.get(i));
             final Consumer<T> action = actions[i];
             item.setOnAction((ActionEvent e) -> {
-                action.accept(cell.getItem());
+                action.accept(value);
             });
             menu.getItems().add(item);
         }
         return menu;
     }
 
-    public static void initChatList(ListView<ChatVo>... chatLists) {
-        for (ListView<ChatVo> chatList : chatLists) {
-            chatList.setCellFactory(param -> new ListCell<ChatVo>() {
-                @Override
-                protected void updateItem(ChatVo item, boolean empty) {
-                    super.updateItem(item, empty);
-                    if (empty || item == null) {
-                        setText(null);
-                        setGraphic(null);
-                        return;
-                    }
-                    setGraphic(
-                            new HboxControl("group-chat-icon.png", item.getName(), Color.BLACK)
-                    );
+    public static void initChatList(ListView<ChatVo> chatList, Function<ChatVo, ContextMenu> createContextMenu) {
+        chatList.setCellFactory(param -> new ListCell<ChatVo>() {
+            @Override
+            protected void updateItem(ChatVo item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                    setGraphic(null);
+                    return;
                 }
-            });
-        }
+                setGraphic(
+                        new HboxControl("group-chat-icon.png", item.getName(), Color.BLACK, Color.BISQUE)
+                );
+                if (createContextMenu != null) {
+                    setContextMenu(createContextMenu.apply(item));
+                    return;
+                }
+                setContextMenu(null);
+            }
+        });
     }
 
 }

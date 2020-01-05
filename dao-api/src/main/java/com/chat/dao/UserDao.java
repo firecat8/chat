@@ -12,7 +12,7 @@ public interface UserDao extends CrudDao<User> {
 
     public User find(String username);
 
-    public List<User> findUsers(String username);
+    public List<User> findUsers(String username, Long searcherId);
 
     public boolean updateStatus(User user, UserStatus status);
 }

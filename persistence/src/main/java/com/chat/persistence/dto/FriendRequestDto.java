@@ -25,11 +25,11 @@ public class FriendRequestDto extends AbstractDto {
 
     public final static String RECEIVER_COLUMN = "receiver_id";
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = SENDER_COLUMN)
     private UserDto sender;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = RECEIVER_COLUMN)
     private UserDto receiver;
 

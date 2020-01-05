@@ -3,6 +3,7 @@ package com.chat.messaging.services;
 import com.chat.messaging.message.user.RegistrationRequest;
 import com.chat.messaging.message.ResponseListener;
 import com.chat.messaging.message.SuccessResponse;
+import com.chat.messaging.message.chat.ChatResponse;
 import com.chat.messaging.message.user.ChangeStatusRequest;
 import com.chat.messaging.message.user.FindFriendRequest;
 import com.chat.messaging.message.user.FriendRequestResponse;
@@ -39,7 +40,7 @@ public interface UserService {
 
     public void loadSenderRequests(LoadFriendRequests request, ResponseListener<FriendRequestsResponse> listener);
 
-    public void acceptFriendRequest(FriendRequestStatusRequest request, ResponseListener<FriendRequestResponse> listener);
+    public void acceptFriendRequest(FriendRequestStatusRequest request, ResponseListener<ChatResponse> listener);
 
     public void declineFriendRequest(FriendRequestStatusRequest request, ResponseListener<FriendRequestResponse> listener);
 }

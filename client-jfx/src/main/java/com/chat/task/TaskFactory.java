@@ -27,6 +27,7 @@ import com.chat.messaging.message.chat.SendMessageRequest;
 import com.chat.messaging.message.user.ChangeStatusRequest;
 import com.chat.messaging.message.user.FindFriendRequest;
 import com.chat.messaging.message.user.FriendRequestResponse;
+import com.chat.messaging.message.user.FriendRequestStatusRequest;
 import com.chat.messaging.message.user.FriendRequestsResponse;
 import com.chat.messaging.message.user.LoadFriendRequests;
 import com.chat.messaging.message.user.LoginRequest;
@@ -35,11 +36,9 @@ import com.chat.messaging.message.user.RegistrationRequest;
 import com.chat.messaging.message.user.SendFriendRequest;
 import com.chat.messaging.message.user.UserResponse;
 import com.chat.messaging.message.user.UsersResponse;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import com.chat.messaging.vo.FriendRequestVo;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
-import javafx.application.Platform;
 
 /**
  *
@@ -63,17 +62,24 @@ public class TaskFactory {
         return createTask(ClientApp.getRegistry().getUserService()::changeStatus, new ChangeStatusRequest(status, currentUser.getUsername()), onSuccess, onError);
     }
 
-    public static Task createFindFriendTask(String friendName, Consumer<UsersResponse> onSuccess, Consumer<ErrorVo> onError) {
-        return createTask(ClientApp.getRegistry().getUserService()::findFriend, new FindFriendRequest(friendName), onSuccess, onError);
+    public static Task createFindFriendTask(String friendName, Long searcherId, Consumer<UsersResponse> onSuccess, Consumer<ErrorVo> onError) {
+        return createTask(ClientApp.getRegistry().getUserService()::findFriend, new FindFriendRequest(friendName, searcherId), onSuccess, onError);
     }
-    //
+
+    public static Task createSendFriendRequestTask(Long userId, Long friendId, Consumer<FriendRequestResponse> onSuccess, Consumer<ErrorVo> onError) {
+        return createTask(ClientApp.getRegistry().getUserService()::sendFriendRequest, new SendFriendRequest(userId, friendId), onSuccess, onError);
+    }
 
     public static Task createLoadFriendRequestsTask(UserVo currentUser, Consumer<FriendRequestsResponse> onSuccess, Consumer<ErrorVo> onError) {
         return createTask(ClientApp.getRegistry().getUserService()::loadFriendRequests, new LoadFriendRequests(currentUser.getId()), onSuccess, onError);
     }
 
-    public static Task createSendFriendRequestTask(Long userId, Long friendId, Consumer<FriendRequestResponse> onSuccess, Consumer<ErrorVo> onError) {
-        return createTask(ClientApp.getRegistry().getUserService()::sendFriendRequest, new SendFriendRequest(userId, friendId), onSuccess, onError);
+    public static Task createAcceptFriendRequestTask(FriendRequestVo friendRequest, Consumer<ChatResponse> onSuccess, Consumer<ErrorVo> onError) {
+        return createTask(ClientApp.getRegistry().getUserService()::acceptFriendRequest, new FriendRequestStatusRequest(friendRequest), onSuccess, onError);
+    }
+
+    public static Task createDeclineFriendRequestTask(FriendRequestVo friendRequest, Consumer<FriendRequestResponse> onSuccess, Consumer<ErrorVo> onError) {
+        return createTask(ClientApp.getRegistry().getUserService()::declineFriendRequest, new FriendRequestStatusRequest(friendRequest), onSuccess, onError);
     }
 
     // Chat service methods

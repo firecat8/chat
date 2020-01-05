@@ -55,7 +55,15 @@ public abstract class AbstractDao<D extends Dto, E extends Entity> {
         CriteriaBuilder cb = getCriteriaBuilder();
         CriteriaQuery<D> query = cb.createQuery(dtoClassName);
         Root<D> root = query.from(dtoClassName);
-        query.select(root).where(cb.like(root.get(property),"%"+ value+"%"));
+        query.select(root).where(cb.like(root.get(property), "%" + value + "%"));
+        return exchangeResults(em.createQuery(query).getResultList());
+    }
+
+    protected List<E> getResultsLikeExpr(String property, String value, String propId, Long id) {
+        CriteriaBuilder cb = getCriteriaBuilder();
+        CriteriaQuery<D> query = cb.createQuery(dtoClassName);
+        Root<D> root = query.from(dtoClassName);
+        query.select(root).where(cb.and(cb.like(root.get(property), "%" + value + "%"), cb.not(cb.equal(root.get(propId), id))));
         return exchangeResults(em.createQuery(query).getResultList());
     }
 

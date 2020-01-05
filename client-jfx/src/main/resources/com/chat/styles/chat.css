@@ -11,6 +11,7 @@
     -fx-alignment: center;
     -fx-text-fill: transparent;
     -fx-padding: 10 0 10 0;
+    -fx-margin: 10 0 10 0;
 }
 
 .tab-pane *.tab-label {
@@ -86,6 +87,6 @@
     -fx-border-width: 0px;
 }
 
-#userSearchList, #chatSearchList {
+#userSearchList, #chatSearchList,#myRequestsList,#sendRequestsList {
     height: 50%;
 }
