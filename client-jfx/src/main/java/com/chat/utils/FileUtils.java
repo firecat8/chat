@@ -21,11 +21,11 @@ public class FileUtils {
 
     private static final Logger LOGGER = Logger.getLogger(FileUtils.class.getName());
 
-    public static <S extends Serializable> void writeFile(String fileName, S object) {
-        writeFile(fileName, Arrays.asList(object));
+    public static <S extends Serializable> void writeInFile(String fileName, S object) {
+        writeInFile(fileName, Arrays.asList(object));
     }
 
-    public static <S extends Serializable> void writeFile(String fileName, List<S> objects) {
+    public static <S extends Serializable> void writeInFile(String fileName, List<S> objects) {
         try (ObjectOutputStream o = new ObjectOutputStream(new FileOutputStream(new File(fileName + ".txt")));) {
             for (S obj : objects) {
                 o.writeObject(obj);
@@ -35,7 +35,7 @@ public class FileUtils {
         }
     }
 
-    public static <S extends Serializable> List<S> readFile(String fileName) {
+    public static <S extends Serializable> List<S> readFromFile(String fileName) {
         List<S> objects = new ArrayList<>();
         try (ObjectInputStream oi = new ObjectInputStream(new FileInputStream(new File(fileName + ".txt")))) {
             S obj = null;
