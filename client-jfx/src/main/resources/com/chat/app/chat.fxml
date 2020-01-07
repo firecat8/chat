@@ -111,7 +111,7 @@
                                         </VBox>
                                     </content>
                                 </Tab>
-                                <Tab fx:id="requestsTab" text=" Friend Requests  ">
+                                <Tab fx:id="requestsTab" text="    Friend Requests  ">
                                     <content>   
                                         <VBox minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="200.0">
                                             <children>

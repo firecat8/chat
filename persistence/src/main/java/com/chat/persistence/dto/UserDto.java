@@ -2,15 +2,13 @@ package com.chat.persistence.dto;
 
 import java.util.HashSet;
 import java.util.Set;
-import javax.persistence.CascadeType;
+import javax.persistence.CollectionTable;
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
 /**
@@ -46,7 +44,14 @@ public class UserDto extends AbstractDto {
     @Column(name = STATUS_TIME_COLUMN, nullable = false)
     private Long statusTime;
 
-    @ManyToMany(cascade = {CascadeType.ALL}, fetch = FetchType.EAGER)
+//    @OneToMany(cascade = {CascadeType.ALL}, fetch = FetchType.EAGER, mappedBy = "user")
+//    private final Set<FriendRelationshipDto> friends = new HashSet<>();
+    @ElementCollection
+    @CollectionTable(name = "friends", joinColumns = @JoinColumn(name = "friend_id"))
+    @Column(name = "USER_ID")
+    protected Set<Long> friendsIdentifiers = new HashSet<>();
+
+    /*  @ManyToMany//(cascade = {CascadeType.ALL}, fetch = FetchType.EAGER)
     @JoinTable(name = "friends",
             joinColumns = {
                 @JoinColumn(name = "user_id")},
@@ -54,9 +59,12 @@ public class UserDto extends AbstractDto {
                 @JoinColumn(name = "friend_id")})
     private final Set<UserDto> friends = new HashSet<>();
 
-    @ManyToMany(mappedBy = "friends", fetch = FetchType.EAGER)
-    private final Set<UserDto> users = new HashSet<>();
-
+    @ManyToMany//(mappedBy = "friends", fetch = FetchType.EAGER)
+    @JoinTable(name = "friends",
+            joinColumns = @JoinColumn(name = "friend_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    private final Set<UserDto> users = new HashSet<>();*/
     public UserDto() {
         // Hibernate
     }
@@ -92,16 +100,16 @@ public class UserDto extends AbstractDto {
         this.status = status;
     }
 
-    public Set<UserDto> getFriends() {
-        return friends;
+    public Set<Long> getFriends() {
+        return friendsIdentifiers;
     }
 
-    public void addFriend(UserDto friend) {
-        friends.add(friend);
+    public void addFriend(Long friend) {
+        friendsIdentifiers.add(friend);
     }
 
-    public void removeFriend(UserDto friend) {
-        friends.remove(friend);
+    public void removeFriend(Long friend) {
+        friendsIdentifiers.remove(friend);
     }
 
     public Long getStatusTime() {

@@ -13,7 +13,9 @@ import com.chat.messaging.message.user.FriendRequestResponse;
 import com.chat.messaging.message.user.FriendRequestsResponse;
 import com.chat.messaging.message.user.UserResponse;
 import com.chat.messaging.message.user.UsersResponse;
+import com.chat.messaging.vo.ChatEventVo;
 import com.chat.messaging.vo.EntityVo;
+import com.chat.messaging.vo.FriendRelationshipVo;
 import com.chat.messaging.vo.FriendRequestStatusVo;
 import com.chat.messaging.vo.FriendRequestVo;
 import com.chat.task.TaskFactory;
@@ -28,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
@@ -303,7 +306,8 @@ public class ChatController implements Initializable {
     private void sendMessage() {
         TaskManager.executeTask(TaskFactory.createSendMessageTask(messageBox.getText(), currentUser, currentChat,
                 (ChatEventResponse rsp) -> {
-                    // nothing for now
+            ChatEventVo chatEvent = rsp.getChatEvent();
+            // nothing for now
                 },
                 (errorResponse) -> {
                     setMessage(errorResponse.getMessage());
@@ -363,8 +367,8 @@ public class ChatController implements Initializable {
         TaskManager.executeTask(TaskFactory.createAcceptFriendRequestTask(
                 friendRequest,
                 (ChatResponse rsp) -> {
-                    friendChats.put(friendRequest.getReceiver().getUsername(), rsp.getChat());
-                    friendsList.getItems().add(friendRequest.getReceiver());
+                    friendChats.put(friendRequest.getSender().getUsername(), rsp.getChat());
+                    friendsList.getItems().add(friendRequest.getSender());
                 },
                 (errorResponse) -> {
                     setMessage(errorResponse.getMessage());
@@ -427,7 +431,10 @@ public class ChatController implements Initializable {
     }
 
     private void addFriendList() {
-        Set<UserVo> friends = currentUser.getFriends();
+         Set<UserVo> friends=new HashSet<>();
+         currentUser.getFriends().forEach((friend) -> {
+           //  friends.add(friend.getFriend());
+        });
         if (friends.isEmpty()) {
             friendsList.getItems().clear();
             LOGGER.info("NO FRIENDS ;(");
@@ -530,7 +537,10 @@ public class ChatController implements Initializable {
                         setContextMenu(createContextMenu(item,
                                 Arrays.asList("Send request again"),
                                 (it) -> {
-                                    sendFriendRequest(it.getReceiver());
+                                    sendFriendRequest(it.getReceiver(), (frRequest)
+                                            -> setGraphic(
+                                            createFriendHboxControl(frRequest)
+                                    ));
                                 }));
                         return;
                     }

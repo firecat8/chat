@@ -17,7 +17,7 @@ public class UserVo extends EntityVo {
 
     private Long statusTime;
 
-    private final Set<UserVo> friends = new HashSet<>();
+    private final Set<Long> friends = new HashSet<>();
 
     public UserVo(String username, String password, UserStatusVo status, Long statusTime) {
         this.username = username;
@@ -58,15 +58,15 @@ public class UserVo extends EntityVo {
         this.statusTime = statusTime;
     }
 
-    public Set<UserVo> getFriends() {
+    public Set<Long> getFriends() {
         return friends;
     }
 
-    public void addFriend(UserVo friend) {
+    public void addFriend(Long friend) {
         friends.add(friend);
     }
 
-    public void removeFriend(UserVo friend) {
+    public void removeFriend(Long friend) {
         friends.remove(friend);
     }
 

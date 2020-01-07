@@ -149,8 +149,8 @@ public class UserServiceImpl extends AbstractTransactionalService implements Use
             FriendRequest friendRequest = FriendRequestVoExchanger.INSTANCE.exchange(req.getFriendRequest());
             User sender = registry.getUserDao().loadById(friendRequest.getSender().getId());
             User receiver = registry.getUserDao().loadById(friendRequest.getReceiver().getId());
-            sender.getFriends().add(receiver);
-            receiver.getFriends().add(sender);
+            sender.addFriend(receiver.getId());
+            receiver.addFriend(sender.getId());
             registry.getUserDao().save(sender);
             registry.getUserDao().save(receiver);
             Chat chat = new Chat("", ChatType.PRIVATE);

@@ -10,6 +10,7 @@ import com.chat.persistence.dto.ChatUserDto;
 import com.chat.persistence.dto.ParticipantDto;
 import java.util.HashSet;
 import java.util.Set;
+import javax.persistence.EntityManager;
 
 /**
  *
@@ -17,9 +18,12 @@ import java.util.Set;
  */
 public class ChatDtoExchanger extends DtoEntityExchanger<ChatDto, Chat> {
 
-    public final static ChatDtoExchanger INSTANCE = new ChatDtoExchanger();
+    public final static ChatDtoExchanger INSTANCE = new ChatDtoExchanger(null);
 
-    private ChatDtoExchanger() {
+    private final UserDtoExchanger userDtoExchanger;
+
+    public ChatDtoExchanger(EntityManager em) {
+        userDtoExchanger = new UserDtoExchanger(em);
     }
 
     @Override
@@ -60,14 +64,14 @@ public class ChatDtoExchanger extends DtoEntityExchanger<ChatDto, Chat> {
 
     private Participant exchangeFrom(ParticipantDto dto) {
         return new Participant(
-                UserDtoExchanger.INSTANCE.exchange(dto.getUser()),
+                userDtoExchanger.exchange(dto.getUser()),
                 ChatUser.valueOf(dto.getUserType().name())
         );
     }
 
     private ParticipantDto exchangeFrom(Participant e) {
         return new ParticipantDto(
-                UserDtoExchanger.INSTANCE.exchange(e.getUser()),
+                userDtoExchanger.exchange(e.getUser()),
                 ChatUserDto.valueOf(e.getUserType().name())
         );
     }

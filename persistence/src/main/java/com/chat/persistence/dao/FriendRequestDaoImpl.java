@@ -57,6 +57,6 @@ public class FriendRequestDaoImpl extends AbstractCrudDao<FriendRequestDto, Frie
     }
 
     private UserDto exchangeUser(User user) {
-        return UserDtoExchanger.INSTANCE.exchange(user);
+        return new UserDtoExchanger(em).exchange(user);
     }
 }

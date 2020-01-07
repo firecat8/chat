@@ -23,13 +23,16 @@ import javax.persistence.criteria.Root;
  */
 public class ChatDaoImpl extends AbstractCrudDao<ChatDto, Chat> implements ChatDao {
 
+    private final UserDtoExchanger userDtoExchanger;
+
     public ChatDaoImpl(EntityManager em) {
-        super(ChatDto.class, em, ChatDtoExchanger.INSTANCE);
+        super(ChatDto.class, em, new ChatDtoExchanger(em));
+        userDtoExchanger = new UserDtoExchanger(em);
     }
 
     @Override
     public Chat save(String name, ChatType type, User user) {
-        return save(new ChatDto(name, ChatTypeDto.valueOf(type.name()), new ParticipantDto(UserDtoExchanger.INSTANCE.exchange(user))));
+        return save(new ChatDto(name, ChatTypeDto.valueOf(type.name()), new ParticipantDto(userDtoExchanger.exchange(user))));
     }
 
     @Override

@@ -18,18 +18,29 @@ public class UserVoExchanger extends VoEntityExchanger<UserVo, User> {
     }
 
     @Override
-    public User exchangeFrom(UserVo dto) {
-        User user = new User(dto.getUsername(), dto.getPassword(), UserStatus.valueOf(dto.getStatus().name()), dto.getStatusTime());
-        user.getFriends().addAll(exchangeDtoList(new ArrayList<>(dto.getFriends())));
+    public User exchangeFrom(UserVo vo) {
+        User user = exchangeFromUser(vo);
+        vo.getFriends().forEach((friend) -> {
+            user.addFriend(friend);
+        });
         return user;
     }
 
     @Override
     public UserVo exchangeFrom(User entity) {
-        UserVo user = new UserVo(entity.getUsername(), entity.getPassword(),
-                UserStatusVo.valueOf(entity.getStatus().name()), entity.getStatusTime());
-        user.getFriends().addAll(exchangeEntityList(new ArrayList<>(entity.getFriends())));
+        UserVo user = exchangeFromUser(entity);
+        entity.getFriends().forEach((friend) -> {
+            user.addFriend(friend);
+        });
         return user;
     }
 
+    private UserVo exchangeFromUser(User entity) {
+        return new UserVo(entity.getUsername(), entity.getPassword(),
+                UserStatusVo.valueOf(entity.getStatus().name()), entity.getStatusTime());
+    }
+
+    private User exchangeFromUser(UserVo vo) {
+        return new User(vo.getUsername(), vo.getPassword(), UserStatus.valueOf(vo.getStatus().name()), vo.getStatusTime());
+    }
 }

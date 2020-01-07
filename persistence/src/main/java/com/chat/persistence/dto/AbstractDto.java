@@ -2,9 +2,9 @@ package com.chat.persistence.dto;
 
 import java.io.Serializable;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
-import org.hibernate.annotations.GenericGenerator;
 
 /**
  *
@@ -14,8 +14,7 @@ import org.hibernate.annotations.GenericGenerator;
 public abstract class AbstractDto implements Dto, Serializable {
 
     @Id
-    @GeneratedValue(generator = "id")
-    @GenericGenerator(name = "id", strategy = "increment")
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     protected Long id;
 
     @Override
