@@ -158,7 +158,7 @@
                     <children>
                         <ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" pannable="true" prefHeight="807.0" prefWidth="87.0" vbarPolicy="NEVER" vmin="1.0" vvalue="1.0">
                             <content>
-                                <ListView fx:id="chatPanel1" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="605.0" prefWidth="163.0" />
+                                <ListView fx:id="participantsList" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="605.0" prefWidth="163.0" />
                             </content>
                         </ScrollPane>
                     </children>

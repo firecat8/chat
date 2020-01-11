@@ -7,12 +7,14 @@ import com.chat.messaging.vo.ParticipantVo;
 import com.chat.messaging.vo.UserVo;
 import com.chat.messaging.vo.UserStatusVo;
 import com.chat.messaging.message.chat.ChatEventResponse;
+import com.chat.messaging.message.chat.ChatHistoryResponse;
 import com.chat.messaging.message.chat.ChatResponse;
 import com.chat.messaging.message.chat.ChatsResponse;
 import com.chat.messaging.message.user.FriendRequestResponse;
 import com.chat.messaging.message.user.FriendRequestsResponse;
 import com.chat.messaging.message.user.UserResponse;
 import com.chat.messaging.message.user.UsersResponse;
+import com.chat.messaging.vo.ChatEventTypeVo;
 import com.chat.messaging.vo.ChatEventVo;
 import com.chat.messaging.vo.EntityVo;
 import com.chat.messaging.vo.FriendRequestStatusVo;
@@ -28,6 +30,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -38,11 +41,15 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Pos;
+import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
@@ -52,8 +59,12 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.FileChooser;
 import javafx.util.StringConverter;
 
@@ -99,6 +110,9 @@ public class ChatController implements Initializable {
     private ListView<UserVo> friendsList;
 
     @FXML
+    private ListView<ParticipantVo> participantsList;
+
+    @FXML
     private ListView<UserVo> userSearchList;
 
     @FXML
@@ -106,6 +120,12 @@ public class ChatController implements Initializable {
 
     @FXML
     private ListView<FriendRequestVo> sendRequestsList;
+
+    @FXML
+    private ListView<HBox> chatPanel;
+
+    @FXML
+    private Button leaveChatBtn;
 
     @FXML
     private TextField searchBar;
@@ -362,7 +382,7 @@ public class ChatController implements Initializable {
                 }));
     }
 
-    private void acceptFriendRequest(FriendRequestVo friendRequest,int cellIndex) {
+    private void acceptFriendRequest(FriendRequestVo friendRequest, int cellIndex) {
         TaskManager.executeTask(TaskFactory.createAcceptFriendRequestTask(
                 friendRequest,
                 (ChatResponse rsp) -> {
@@ -375,11 +395,22 @@ public class ChatController implements Initializable {
                 }));
     }
 
-    private void declineFriendRequest(FriendRequestVo friendRequest,int cellIndex) {
+    private void declineFriendRequest(FriendRequestVo friendRequest, int cellIndex) {
         TaskManager.executeTask(TaskFactory.createDeclineFriendRequestTask(
                 friendRequest,
                 (FriendRequestResponse rsp) -> {
-                   myRequestsList.getItems().remove(cellIndex);
+                    myRequestsList.getItems().remove(cellIndex);
+                },
+                (errorResponse) -> {
+                    setMessage(errorResponse.getMessage());
+                }));
+    }
+
+    private void loadLastTenEvents(ChatVo chat) {
+        TaskManager.executeTask(TaskFactory.createLoadLastTenEventsTask(
+                chat,
+                (ChatHistoryResponse rsp) -> {
+                    setChatHistory(rsp.getHistory());
                 },
                 (errorResponse) -> {
                     setMessage(errorResponse.getMessage());
@@ -439,11 +470,66 @@ public class ChatController implements Initializable {
         return chat.getParticipants().stream().filter(c -> !c.getUser().getId().equals(currentUserId)).findFirst().get();
     }
 
+    private void selectChat(UserVo friend) {
+        selectChat(friendChats.get(friend.getId()), false);
+    }
+
+    private void selectChat(ChatVo chat, boolean isLeaveChatBtnVisible) {
+        participantsList.setItems(FXCollections.observableArrayList(chat.getParticipants()));
+        loadLastTenEvents(chat);
+        leaveChatBtn.setVisible(isLeaveChatBtnVisible);
+    }
+
+    private void setChatHistory(List<ChatEventVo> history) {
+        List<HBox> hboxes = new ArrayList<>();
+        history.forEach((chatEvent) -> {
+            createHboxMessage(hboxes, chatEvent);
+        });
+        chatPanel.setItems(FXCollections.observableArrayList(hboxes));
+    }
+
+    private void createHboxMessage(List<HBox> hboxes, ChatEventVo c) {
+        ChatEventTypeVo type = c.getChatEventType();
+        String message = c.getMessage();
+        String username = c.getSender().getUsername();
+        String eventTime = dateFormater.format(new Date(c.getEventTime()));
+
+        if (type.equals(ChatEventTypeVo.MESSAGE)) {
+            hboxes.add(new HBox(createLabel(username + "," + eventTime, Color.LIGHTGREY, 20)));
+            hboxes.add(new HBox(createLabel(message, Color.BLACK, 24)));
+            return;
+        }
+
+        if (type.equals(ChatEventTypeVo.LOG)) {
+            hboxes.add(new HBox(createLabel(eventTime + " " + message, Color.ALICEBLUE, 20)));
+            return;
+        }
+
+        if (type.equals(ChatEventTypeVo.FILE_TRANSFER)) {
+            Button btn = new Button("Download");
+            btn.onMouseClickedProperty().addListener((ObservableValue<? extends EventHandler<? super MouseEvent>> ov, EventHandler<? super MouseEvent> t, EventHandler<? super MouseEvent> t1) -> {
+                // TO DO Download
+            });
+            hboxes.add(new HBox(createLabel(eventTime + " " + message, Color.BLACK, 24), btn));
+        }
+
+    }
+
+    private Label createLabel(String labelText, Color color, int fontSize) {
+        Label newLabel = new Label(labelText);
+        newLabel.setAlignment(Pos.CENTER_LEFT);
+        newLabel.setFont(new Font("Verdana", fontSize));
+        newLabel.setTextAlignment(TextAlignment.CENTER);
+        newLabel.setTextFill(color);
+        return newLabel;
+    }
+
     private <T extends EntityVo> void clearLists() {
         userSearchList.getItems().clear();
         friendsList.getItems().clear();
         groupChatsList.getItems().clear();
         chatSearchList.getItems().clear();
+        participantsList.getItems().clear();
         myRequestsList.getItems().clear();
         sendRequestsList.getItems().clear();
     }
@@ -456,8 +542,33 @@ public class ChatController implements Initializable {
                 (chat) -> {
                     return null;
                 });
+        initParticipantsList();
         initSendFriendRequestList();
         initMyFriendRequestList();
+    }
+
+    private void initParticipantsList() {
+        participantsList.setCellFactory(param -> {
+            ListCell<ParticipantVo> cell = new ListCell<ParticipantVo>() {
+                @Override
+                protected void updateItem(ParticipantVo item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty || item == null) {
+                        setText(null);
+                        setContextMenu(null);
+                        setGraphic(null);
+                        return;
+                    }
+                    UserVo user = item.getUser();
+                    setGraphic(
+                            new HboxControl("avatar.png", user.getUsername(), statusColorsMap.get(user.getStatus()), Color.BISQUE)
+                    );
+
+                }
+
+            };
+            return cell;
+        });
     }
 
     private void initSendFriendRequestList() {
@@ -479,10 +590,10 @@ public class ChatController implements Initializable {
                         setContextMenu(createContextMenu(item,
                                 Arrays.asList("Accept request", "Decline request"),
                                 (it) -> {
-                                    acceptFriendRequest(item,  getIndex());
+                                    acceptFriendRequest(item, getIndex());
                                 },
                                 (it) -> {
-                                    declineFriendRequest(item,getIndex());
+                                    declineFriendRequest(item, getIndex());
                                 }));
                         return;
                     }
@@ -581,6 +692,19 @@ public class ChatController implements Initializable {
                     );
                 }
             };
+//            cell.onMouseClickedProperty().addListener(new ChangeListener<EventHandler<? super MouseEvent>>() {
+//                @Override
+//                public void changed(ObservableValue<? extends EventHandler<? super MouseEvent>> ov, EventHandler<? super MouseEvent> t, EventHandler<? super MouseEvent> t1) {
+//                    selectChat(cell.getItem());
+//                }
+//            }
+            cell.setOnMousePressed((MouseEvent event) -> {
+                if (!cell.isEmpty()) {
+                    selectChat(cell.getItem());
+                }
+            }
+            );
+
             return cell;
         });
     }

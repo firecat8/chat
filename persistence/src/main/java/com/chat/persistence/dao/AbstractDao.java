@@ -78,9 +78,11 @@ public abstract class AbstractDao<D extends Dto, E extends Entity> {
     protected List<E> getResults(String property, Object value, String orderProperty, int limit) {
         CriteriaBuilder cb = getCriteriaBuilder();
         CriteriaQuery<D> query = cb.createQuery(dtoClassName);
-        Expression<D> prop = query.from(dtoClassName).get(property);
-        query.orderBy(cb.desc(query.from(dtoClassName).get(orderProperty)));
+        Root<D> root = query.from(dtoClassName);
+        Expression<D> prop = root.get(property);
+        query.select(root);
         query.where(cb.equal(prop, value));
+        query.orderBy(cb.desc(root.get(orderProperty)));
         return exchangeResults(em.createQuery(query).setMaxResults(limit).getResultList());
     }
 
