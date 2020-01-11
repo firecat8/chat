@@ -87,18 +87,18 @@ public class TaskFactory {
         return createTask(ClientApp.getRegistry().getChatService()::addFriend, new AddFriendRequest(chatId, userId, friendId), onSuccess, onError);
     }
 
-    public static Task createDownloadFileTask(ChatEventVo event, Consumer<DownloadedFile> onSuccess, Consumer<ErrorVo> onError) {
-        return createTask(ClientApp.getRegistry().getChatService()::downloadFile, new DownloadFileRequest(event), onSuccess, onError);
-    }
-
     public static Task createLeaveChatTask(Long chatId, Long userId, Consumer<SuccessResponse> onSuccess, Consumer<ErrorVo> onError) {
         return createTask(ClientApp.getRegistry().getChatService()::leaveChat, new LeaveChatRequest(chatId, userId), onSuccess, onError);
+    }
+
+    //
+    public static Task createDownloadFileTask(ChatEventVo event, Consumer<DownloadedFile> onSuccess, Consumer<ErrorVo> onError) {
+        return createTask(ClientApp.getRegistry().getChatService()::downloadFile, new DownloadFileRequest(event), onSuccess, onError);
     }
 
     public static Task createLoadLastTenEventsTask(ChatVo chat, Consumer<ChatHistoryResponse> onSuccess, Consumer<ErrorVo> onError) {
         return createTask(ClientApp.getRegistry().getChatService()::loadLastTenEvents, new LoadHistoryRequest(chat), onSuccess, onError);
     }
-    //
 
     public static Task createSendFileTask(String filename, byte[] file, UserVo sender, ChatVo chat, Consumer<ChatEventResponse> onSuccess, Consumer<ErrorVo> onError) {
         return createTask(ClientApp.getRegistry().getChatService()::sendFile, new SendFileRequest(filename, file, sender.getId(), chat.getId()), onSuccess, onError);

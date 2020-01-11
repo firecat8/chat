@@ -16,15 +16,19 @@ import com.chat.messaging.message.user.UserResponse;
 import com.chat.messaging.message.user.UsersResponse;
 import com.chat.messaging.vo.ChatEventTypeVo;
 import com.chat.messaging.vo.ChatEventVo;
+import com.chat.messaging.vo.DownloadedFile;
 import com.chat.messaging.vo.EntityVo;
 import com.chat.messaging.vo.FriendRequestStatusVo;
 import com.chat.messaging.vo.FriendRequestVo;
 import com.chat.task.TaskFactory;
 import com.chat.task.TaskManager;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -339,7 +343,7 @@ public class ChatController implements Initializable {
             TaskManager.executeTask(TaskFactory.createSendFileTask(
                     file.getName(), Files.readAllBytes(file.toPath()), currentUser, currentChat,
                     (ChatEventResponse rsp) -> {
-
+                        addChatEvent(rsp.getChatEvent());
                     },
                     (errorResponse) -> {
                         setMessage(errorResponse.getMessage());
@@ -418,7 +422,30 @@ public class ChatController implements Initializable {
                 }));
     }
 
+    private void downloadFile(ChatEventVo c) {
+        TaskManager.executeTask(TaskFactory.createDownloadFileTask(
+                c,
+                (DownloadedFile rsp) -> {
+                    saveFile(c, rsp.getFile());
+                },
+                (errorResponse) -> {
+                    setMessage(errorResponse.getMessage());
+                }));
+    }
+
     // Help methods
+    private void saveFile(ChatEventVo c, byte[] fileBytes)  {
+        fileChooser.setInitialFileName(c.getMessage());
+        File file = fileChooser.showSaveDialog(GUIApp.stage);
+        if (file != null) {
+            try {
+                Files.write(file.toPath(), fileBytes);
+            } catch (IOException ex) {
+                Logger.getLogger(ChatController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+
     private void setLoginPaneVisible() {
         setPaneVisibility(loginPane, true);
         setPaneVisibility(chatPane, false);
@@ -491,7 +518,7 @@ public class ChatController implements Initializable {
     }
 
     private void addChatEvent(ChatEventVo c) {
-        chatPanel.getItems().addAll(createHboxMessage(new ArrayList<HBox>(), c));
+        chatPanel.getItems().addAll(createHboxMessage(new ArrayList<>(), c));
     }
 
     private List<HBox> createHboxMessage(List<HBox> hboxes, ChatEventVo c) {
@@ -501,22 +528,23 @@ public class ChatController implements Initializable {
         String eventTime = dateFormater.format(new Date(c.getEventTime()));
 
         if (type.equals(ChatEventTypeVo.MESSAGE)) {
-            hboxes.add(new HBox(createLabel(username + "," + eventTime, Color.LIGHTGREY, 20)));
-            hboxes.add(new HBox(createLabel(message, Color.BLACK, 24)));
+            hboxes.add(new HBox(createLabel(username + "," + eventTime, Color.BLUE, 10)));
+            hboxes.add(new HBox(createLabel(message, Color.BLACK, 12)));
             return hboxes;
         }
 
         if (type.equals(ChatEventTypeVo.LOG)) {
-            hboxes.add(new HBox(createLabel(eventTime + " " + message, Color.ALICEBLUE, 20)));
+            hboxes.add(new HBox(createLabel(eventTime + " " + message, Color.ALICEBLUE, 10)));
             return hboxes;
         }
 
         if (type.equals(ChatEventTypeVo.FILE_TRANSFER)) {
-            Button btn = new Button("Download");
-            btn.onMouseClickedProperty().addListener((ObservableValue<? extends EventHandler<? super MouseEvent>> ov, EventHandler<? super MouseEvent> t, EventHandler<? super MouseEvent> t1) -> {
-                // TO DO Download
+            Button btn = new Button("Download File");
+            btn.setOnMousePressed((MouseEvent event) -> {
+                downloadFile(c);
             });
-            hboxes.add(new HBox(createLabel(eventTime + " " + message, Color.BLACK, 24), btn));
+            hboxes.add(new HBox(createLabel(username + "," + eventTime, Color.BLUE, 10)));
+            hboxes.add(new HBox(createLabel(eventTime + " " + message, Color.BLACK, 12), btn));
         }
         return hboxes;
 
@@ -524,7 +552,7 @@ public class ChatController implements Initializable {
 
     private Label createLabel(String labelText, Color color, int fontSize) {
         Label newLabel = new Label(labelText);
-        newLabel.setAlignment(Pos.CENTER_LEFT);
+        newLabel.setAlignment(Pos.CENTER_RIGHT);
         newLabel.setFont(new Font("Verdana", fontSize));
         newLabel.setTextAlignment(TextAlignment.CENTER);
         newLabel.setTextFill(color);

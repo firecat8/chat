@@ -72,7 +72,7 @@ public class ChatServiceImpl extends AbstractTransactionalService implements Cha
             ChatEventResponse ce = saveEvent(registry, req.getMessage(), ChatEventType.FILE_TRANSFER, req.getEventTime(), req.getSender(), req.getChat());
             try {
                 saveFile(ce, req.getFile());
-            } catch (IOException ex) {
+            } catch (Exception ex) {
                 LOGGER.log(Level.SEVERE, ex.getMessage(), ex);
                 listener.onError(new ErrorVo(ResponseCode.SERVER_ERROR, ex.getMessage()));
             }
