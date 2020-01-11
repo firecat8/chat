@@ -15,7 +15,6 @@ import com.chat.messaging.message.user.UserResponse;
 import com.chat.messaging.message.user.UsersResponse;
 import com.chat.messaging.vo.ChatEventVo;
 import com.chat.messaging.vo.EntityVo;
-import com.chat.messaging.vo.FriendRelationshipVo;
 import com.chat.messaging.vo.FriendRequestStatusVo;
 import com.chat.messaging.vo.FriendRequestVo;
 import com.chat.task.TaskFactory;
