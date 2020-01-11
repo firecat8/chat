@@ -12,7 +12,7 @@ import java.util.List;
  */
 public interface ChatEventDao {
 
-    public ChatEvent save(String message, ChatEventType chatEventType, Long eventTime, User sender, Chat chat);
+    public ChatEvent save(String message, ChatEventType chatEventType, Long eventTime, Long senderId, Long chatId);
 
     public List<ChatEvent> loadTheLastTenEvents(Chat chat);
 }

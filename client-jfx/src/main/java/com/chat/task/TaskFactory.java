@@ -101,11 +101,11 @@ public class TaskFactory {
     //
 
     public static Task createSendFileTask(String filename, byte[] file, UserVo sender, ChatVo chat, Consumer<ChatEventResponse> onSuccess, Consumer<ErrorVo> onError) {
-        return createTask(ClientApp.getRegistry().getChatService()::sendFile, new SendFileRequest(filename, file, sender, chat), onSuccess, onError);
+        return createTask(ClientApp.getRegistry().getChatService()::sendFile, new SendFileRequest(filename, file, sender.getId(), chat.getId()), onSuccess, onError);
     }
 
     public static Task createSendMessageTask(String message, UserVo sender, ChatVo chat, Consumer<ChatEventResponse> onSuccess, Consumer<ErrorVo> onError) {
-        return createTask(ClientApp.getRegistry().getChatService()::sendMessage, new SendMessageRequest(message, sender, chat), onSuccess, onError);
+        return createTask(ClientApp.getRegistry().getChatService()::sendMessage, new SendMessageRequest(message, sender.getId(), chat.getId()), onSuccess, onError);
     }
 
     public static Task createFindChatsTask(String chatName, Consumer<ChatsResponse> onSuccess, Consumer<ErrorVo> onError) {

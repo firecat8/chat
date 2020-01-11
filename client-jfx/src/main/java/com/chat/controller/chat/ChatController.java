@@ -190,6 +190,8 @@ public class ChatController implements Initializable {
         statusBar.getSelectionModel().selectedItemProperty().addListener((ObservableValue<? extends UserStatusSelectionItem> ov, UserStatusSelectionItem oldValue, UserStatusSelectionItem newValue) -> {
             changeStatus(newValue.getUserStatus());
         });
+
+        leaveChatBtn.setVisible(false);
         // TODO
     }
 
@@ -325,8 +327,7 @@ public class ChatController implements Initializable {
     private void sendMessage() {
         TaskManager.executeTask(TaskFactory.createSendMessageTask(messageBox.getText(), currentUser, currentChat,
                 (ChatEventResponse rsp) -> {
-                    ChatEventVo chatEvent = rsp.getChatEvent();
-                    // nothing for now
+                    addChatEvent(rsp.getChatEvent());
                 },
                 (errorResponse) -> {
                     setMessage(errorResponse.getMessage());
@@ -475,6 +476,7 @@ public class ChatController implements Initializable {
     }
 
     private void selectChat(ChatVo chat, boolean isLeaveChatBtnVisible) {
+        currentChat = chat;
         participantsList.setItems(FXCollections.observableArrayList(chat.getParticipants()));
         loadLastTenEvents(chat);
         leaveChatBtn.setVisible(isLeaveChatBtnVisible);
@@ -488,7 +490,11 @@ public class ChatController implements Initializable {
         chatPanel.setItems(FXCollections.observableArrayList(hboxes));
     }
 
-    private void createHboxMessage(List<HBox> hboxes, ChatEventVo c) {
+    private void addChatEvent(ChatEventVo c) {
+        chatPanel.getItems().addAll(createHboxMessage(new ArrayList<HBox>(), c));
+    }
+
+    private List<HBox> createHboxMessage(List<HBox> hboxes, ChatEventVo c) {
         ChatEventTypeVo type = c.getChatEventType();
         String message = c.getMessage();
         String username = c.getSender().getUsername();
@@ -497,12 +503,12 @@ public class ChatController implements Initializable {
         if (type.equals(ChatEventTypeVo.MESSAGE)) {
             hboxes.add(new HBox(createLabel(username + "," + eventTime, Color.LIGHTGREY, 20)));
             hboxes.add(new HBox(createLabel(message, Color.BLACK, 24)));
-            return;
+            return hboxes;
         }
 
         if (type.equals(ChatEventTypeVo.LOG)) {
             hboxes.add(new HBox(createLabel(eventTime + " " + message, Color.ALICEBLUE, 20)));
-            return;
+            return hboxes;
         }
 
         if (type.equals(ChatEventTypeVo.FILE_TRANSFER)) {
@@ -512,6 +518,7 @@ public class ChatController implements Initializable {
             });
             hboxes.add(new HBox(createLabel(eventTime + " " + message, Color.BLACK, 24), btn));
         }
+        return hboxes;
 
     }
 
@@ -692,12 +699,6 @@ public class ChatController implements Initializable {
                     );
                 }
             };
-//            cell.onMouseClickedProperty().addListener(new ChangeListener<EventHandler<? super MouseEvent>>() {
-//                @Override
-//                public void changed(ObservableValue<? extends EventHandler<? super MouseEvent>> ov, EventHandler<? super MouseEvent> t, EventHandler<? super MouseEvent> t1) {
-//                    selectChat(cell.getItem());
-//                }
-//            }
             cell.setOnMousePressed((MouseEvent event) -> {
                 if (!cell.isEmpty()) {
                     selectChat(cell.getItem());

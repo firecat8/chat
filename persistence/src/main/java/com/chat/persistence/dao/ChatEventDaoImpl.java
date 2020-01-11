@@ -23,20 +23,14 @@ import javax.persistence.EntityManager;
  */
 public class ChatEventDaoImpl extends AbstractCrudDao<ChatEventDto, ChatEvent> implements ChatEventDao {
 
-    private final UserDtoExchanger userDtoExchanger;
-
-    private final ChatDtoExchanger chatDtoExchanger;
-
     public ChatEventDaoImpl(EntityManager em) {
         super(ChatEventDto.class, em, ChatEventDtoExchanger.INSTANCE);
-        userDtoExchanger = new UserDtoExchanger(em);
-        chatDtoExchanger = new ChatDtoExchanger(em);
     }
 
     @Override
-    public ChatEvent save(String message, ChatEventType eType, Long eventTime, User s, Chat c) {
-        UserDto sender = userDtoExchanger.exchangeFrom(s);
-        ChatDto chat = chatDtoExchanger.exchangeFrom(c);
+    public ChatEvent save(String message, ChatEventType eType, Long eventTime, Long senderId, Long chatId) {
+        UserDto sender = em.find(UserDto.class, senderId);
+        ChatDto chat = em.find(ChatDto.class, chatId);
         return save(new ChatEventDto(message, ChatEventTypeDto.valueOf(eType.name()), eventTime, sender, chat));
     }
 

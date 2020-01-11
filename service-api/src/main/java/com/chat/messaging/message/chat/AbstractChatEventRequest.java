@@ -1,7 +1,5 @@
 package com.chat.messaging.message.chat;
 
-import com.chat.messaging.vo.ChatVo;
-import com.chat.messaging.vo.UserVo;
 import com.chat.messaging.message.AbstractRequest;
 import java.util.Calendar;
 
@@ -15,14 +13,14 @@ public abstract class AbstractChatEventRequest extends AbstractRequest {
 
     private final Long eventTime;
 
-    private final UserVo sender;
+    private final Long senderId ;
 
-    private final ChatVo chat;
+    private final Long chatId ;
 
-    protected AbstractChatEventRequest(String message, UserVo sender, ChatVo chat) {
+    protected AbstractChatEventRequest(String message, Long senderId , Long chatId ) {
         this.message = message;
-        this.sender = sender;
-        this.chat = chat;
+        this.senderId  = senderId ;
+        this.chatId  = chatId ;
         this.eventTime = Calendar.getInstance().getTimeInMillis();
     }
 
@@ -34,12 +32,12 @@ public abstract class AbstractChatEventRequest extends AbstractRequest {
         return eventTime;
     }
 
-    public UserVo getSender() {
-        return sender;
+    public Long getSender() {
+        return senderId ;
     }
 
-    public ChatVo getChat() {
-        return chat;
+    public Long getChat() {
+        return chatId ;
     }
 
 }

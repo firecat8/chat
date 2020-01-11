@@ -113,7 +113,7 @@ public class ChatServiceImpl extends AbstractTransactionalService implements Cha
                 if (found != null) {
                     participants.remove(found);
                     registry.getChatDao().update(chat);
-                    saveEvent(registry, "User " + found.getUser().getUsername() + " leave chat.", ChatEventType.LOG, Calendar.getInstance().getTimeInMillis(), found.getUser(), chat);
+                    saveEvent(registry, "User " + found.getUser().getUsername() + " leave chat.", ChatEventType.LOG, Calendar.getInstance().getTimeInMillis(), found.getUser().getId(), chat.getId());
                 }
             }
             return null;
@@ -131,7 +131,7 @@ public class ChatServiceImpl extends AbstractTransactionalService implements Cha
             User friend = registry.getUserDao().loadById(req.getFriendId());
             chat.getParticipants().add(new Participant(friend, ChatUser.PARTICIPANT, chat));
             registry.getChatDao().update(chat);
-            saveEvent(registry, "User " + adder.getUsername() + " add " + friend.getUsername() + ".", ChatEventType.LOG, Calendar.getInstance().getTimeInMillis(), adder, chat);
+            saveEvent(registry, "User " + adder.getUsername() + " add " + friend.getUsername() + ".", ChatEventType.LOG, Calendar.getInstance().getTimeInMillis(), adder.getId(), chat.getId());
             return null;
         }, listener);
     }
@@ -148,26 +148,18 @@ public class ChatServiceImpl extends AbstractTransactionalService implements Cha
 
     private void saveEvent(
             String message, ChatEventType chatEventType,
-            Long eventTime, UserVo s, ChatVo c,
+            Long eventTime, Long senderId, Long chatId,
             ResponseListener<ChatEventResponse> listener) {
         doInTransaction((DaoRegistry registry) -> {
-            return saveEvent(registry, message, chatEventType, eventTime, s, c);
+            return saveEvent(registry, message, chatEventType, eventTime, senderId, chatId);
         }, listener);
     }
 
     private ChatEventResponse saveEvent(DaoRegistry registry,
             String message, ChatEventType chatEventType,
-            Long eventTime, UserVo s, ChatVo c) {
-        User sender = UserVoExchanger.INSTANCE.exchangeFrom(s);
-        Chat chat = ChatVoExchanger.INSTANCE.exchangeFrom(c);
-        return saveEvent(registry, message, chatEventType, eventTime, sender, chat);
-    }
-
-    private ChatEventResponse saveEvent(DaoRegistry registry,
-            String message, ChatEventType chatEventType,
-            Long eventTime, User s, Chat c) {
+            Long eventTime, Long senderId, Long chatId) {
         ChatEventVo chatEvent = ChatEventVoExchanger.INSTANCE.exchange(
-                registry.getChatEventDao().save(message, chatEventType, eventTime, s, c)
+                registry.getChatEventDao().save(message, chatEventType, eventTime, senderId, chatId)
         );
         return new ChatEventResponse(chatEvent);
     }
