@@ -120,7 +120,7 @@ public class ChatController implements Initializable {
 
     private final Map<Long, ChatVo> chats = new HashMap<>();
 
-    private final Map<String, ChatVo> friendChats = new HashMap<>();
+    private final Map<Long, ChatVo> friendChats = new HashMap<>();
 
     private ChatVo currentChat;
 
@@ -263,7 +263,7 @@ public class ChatController implements Initializable {
         TaskManager.executeTask(TaskFactory.createLoadChatsTask(
                 currentUser,
                 (ChatsResponse rsp) -> {
-                    addChats(rsp.getList());
+                    fillCacheAndLists(rsp.getList());
                 },
                 (errorResponse) -> {
                     setMessage(errorResponse.getMessage());
@@ -305,8 +305,8 @@ public class ChatController implements Initializable {
     private void sendMessage() {
         TaskManager.executeTask(TaskFactory.createSendMessageTask(messageBox.getText(), currentUser, currentChat,
                 (ChatEventResponse rsp) -> {
-            ChatEventVo chatEvent = rsp.getChatEvent();
-            // nothing for now
+                    ChatEventVo chatEvent = rsp.getChatEvent();
+                    // nothing for now
                 },
                 (errorResponse) -> {
                     setMessage(errorResponse.getMessage());
@@ -362,23 +362,24 @@ public class ChatController implements Initializable {
                 }));
     }
 
-    private void acceptFriendRequest(FriendRequestVo friendRequest) {
+    private void acceptFriendRequest(FriendRequestVo friendRequest,int cellIndex) {
         TaskManager.executeTask(TaskFactory.createAcceptFriendRequestTask(
                 friendRequest,
                 (ChatResponse rsp) -> {
-                    friendChats.put(friendRequest.getSender().getUsername(), rsp.getChat());
+                    friendChats.put(friendRequest.getSender().getId(), rsp.getChat());
                     friendsList.getItems().add(friendRequest.getSender());
+                    sendRequestsList.getItems().remove(cellIndex);
                 },
                 (errorResponse) -> {
                     setMessage(errorResponse.getMessage());
                 }));
     }
 
-    private void declineFriendRequest(FriendRequestVo friendRequest, Consumer<FriendRequestVo> listener) {
+    private void declineFriendRequest(FriendRequestVo friendRequest,int cellIndex) {
         TaskManager.executeTask(TaskFactory.createDeclineFriendRequestTask(
                 friendRequest,
                 (FriendRequestResponse rsp) -> {
-                    listener.accept(rsp.getFriendRequest());
+                   myRequestsList.getItems().remove(cellIndex);
                 },
                 (errorResponse) -> {
                     setMessage(errorResponse.getMessage());
@@ -404,7 +405,6 @@ public class ChatController implements Initializable {
     private void onLoadedUser(UserResponse rsp) {
         currentUser = rsp.getUser();
         loadChats();
-        addFriendList();
         loadFriendRequests();
         setMessage("Sucessfully login " + currentUser.getUsername());
         userName.setText(currentUser.getUsername());
@@ -412,33 +412,22 @@ public class ChatController implements Initializable {
         setChatPaneVisible();
     }
 
-    private void addChats(List<ChatVo> list) {
+    private void fillCacheAndLists(List<ChatVo> list) {
         chats.clear();
-        list.forEach((chat) -> {
-            chats.put(chat.getId(), chat);
-        });
         List<ChatVo> groupChats = new ArrayList<>();
         Long currentUserId = currentUser.getId();
-        for (ChatVo chat : chats.values()) {
+        Set<UserVo> friends = new HashSet<>();
+        for (ChatVo chat : list) {
+            chats.put(chat.getId(), chat);
             if (chat.getChatType().equals(ChatTypeVo.GROUP)) {
                 groupChats.add(chat);
                 continue;
             }
-            friendChats.put(findFriend(chat, currentUserId).getUser().getUsername(), chat);
+            UserVo friend = findFriend(chat, currentUserId).getUser();
+            friendChats.put(friend.getId(), chat);
+            friends.add(friend);
         }
         groupChatsList.setItems(FXCollections.observableArrayList(groupChats));
-    }
-
-    private void addFriendList() {
-         Set<UserVo> friends=new HashSet<>();
-         currentUser.getFriends().forEach((friend) -> {
-           //  friends.add(friend.getFriend());
-        });
-        if (friends.isEmpty()) {
-            friendsList.getItems().clear();
-            LOGGER.info("NO FRIENDS ;(");
-            return;
-        }
         friendsList.setItems(FXCollections.observableArrayList(friends));
     }
 
@@ -490,16 +479,10 @@ public class ChatController implements Initializable {
                         setContextMenu(createContextMenu(item,
                                 Arrays.asList("Accept request", "Decline request"),
                                 (it) -> {
-                                    acceptFriendRequest(item);
+                                    acceptFriendRequest(item,  getIndex());
                                 },
                                 (it) -> {
-                                    declineFriendRequest(item,
-                                            (frRequest) -> {
-                                                setGraphic(
-                                                        createFriendHboxControl(frRequest)
-                                                );
-                                            }
-                                    );
+                                    declineFriendRequest(item,getIndex());
                                 }));
                         return;
                     }

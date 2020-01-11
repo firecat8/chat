@@ -12,6 +12,11 @@ public class ParticipantVo extends EntityVo {
 
     private ChatVo chat;
 
+    public ParticipantVo(UserVo user, ChatUserVo userType) {
+        this.user = user;
+        this.userType = userType;
+    }
+
     public UserVo getUser() {
         return user;
     }

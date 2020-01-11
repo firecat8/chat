@@ -40,6 +40,10 @@ public class ChatVo extends EntityVo {
         this.participants.add(participant);
     }
 
+    public void addParticipants(Set<ParticipantVo> participants) {
+        this.participants.addAll(participants);
+    }
+
     public void removeParticipant(ParticipantVo participant) {
         this.participants.remove(participant);
     }
