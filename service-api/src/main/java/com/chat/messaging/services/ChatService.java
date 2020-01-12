@@ -40,7 +40,7 @@ public interface ChatService {
 
     public void leaveChat(LeaveChatRequest req, ResponseListener<SuccessResponse> listener);
 
-    public void addFriend(AddFriendRequest req, ResponseListener<SuccessResponse> listener);
+    public void addFriend(AddFriendRequest req, ResponseListener<ChatResponse> listener);
 
     public void loadLastTenEvents(LoadHistoryRequest req, ResponseListener<ChatHistoryResponse> listener);
 }

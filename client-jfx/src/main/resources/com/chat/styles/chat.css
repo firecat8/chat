@@ -46,21 +46,25 @@
 }
 
 .list-cell{
-    -fx-background-color:  lavenderblush;
+    -fx-background-color:  white;
     -fx-text-color: black;
     -fx-cell-size: 50 ;
     -fx-animated: true;
-    -fx-padding: 1px;
+    -fx-padding:1px;
+    -fx-alignment:center-left;
 }
-
 .list-cell:hover{
-    -fx-background-color: blanchedalmond;
+    -fx-background-color: lightblue;
+}
+.list-view .list-cell{
+    -fx-content-display:left;
 }
 
+/*
 .list-cell:selected{
     -fx-text-color: black;
     -fx-background-color: lightblue;
-}
+}*/
 /*.send {
     -fx-text-fill: black;
     -fx-border-color: black;

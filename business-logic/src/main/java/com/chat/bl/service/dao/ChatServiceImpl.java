@@ -121,7 +121,7 @@ public class ChatServiceImpl extends AbstractTransactionalService implements Cha
     }
 
     @Override
-    public void addFriend(AddFriendRequest req, ResponseListener<SuccessResponse> listener) {
+    public void addFriend(AddFriendRequest req, ResponseListener<ChatResponse> listener) {
         doInTransaction((DaoRegistry registry) -> {
             Chat chat = registry.getChatDao().loadById(req.getChatId());
             if (chat == null) {
@@ -130,9 +130,9 @@ public class ChatServiceImpl extends AbstractTransactionalService implements Cha
             User adder = registry.getUserDao().loadById(req.getUserId());
             User friend = registry.getUserDao().loadById(req.getFriendId());
             chat.getParticipants().add(new Participant(friend, ChatUser.PARTICIPANT, chat));
-            registry.getChatDao().update(chat);
+            registry.getChatDao().save(chat);
             saveEvent(registry, "User " + adder.getUsername() + " add " + friend.getUsername() + ".", ChatEventType.LOG, Calendar.getInstance().getTimeInMillis(), adder.getId(), chat.getId());
-            return null;
+            return new ChatResponse(ChatVoExchanger.INSTANCE.exchange(chat));
         }, listener);
     }
 

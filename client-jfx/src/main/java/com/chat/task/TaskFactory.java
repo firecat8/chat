@@ -55,6 +55,9 @@ public class TaskFactory {
     }
 
     public static Task createRegisterTask(String username, String password, String firstName, String lastName, Consumer<UserResponse> onSuccess, Consumer<ErrorVo> onError) {
+        if (username.isBlank() || password.isBlank()) {
+            throw new IllegalArgumentException("Empty username or password");
+        }
         return createTask(ClientApp.getRegistry().getUserService()::register, new RegistrationRequest(username, password, firstName, lastName), onSuccess, onError);
     }
 
@@ -83,15 +86,14 @@ public class TaskFactory {
     }
 
     // Chat service methods
-    public static Task createAddFriendTask(Long chatId, Long userId, Long friendId, Consumer<SuccessResponse> onSuccess, Consumer<ErrorVo> onError) {
-        return createTask(ClientApp.getRegistry().getChatService()::addFriend, new AddFriendRequest(chatId, userId, friendId), onSuccess, onError);
+    public static Task createAddFriendToChatTask(UserVo user, UserVo friend, ChatVo chat, Consumer<ChatResponse> onSuccess, Consumer<ErrorVo> onError) {
+        return createTask(ClientApp.getRegistry().getChatService()::addFriend, new AddFriendRequest(chat.getId(), user.getId(), friend.getId()), onSuccess, onError);
     }
 
-    public static Task createLeaveChatTask(Long chatId, Long userId, Consumer<SuccessResponse> onSuccess, Consumer<ErrorVo> onError) {
-        return createTask(ClientApp.getRegistry().getChatService()::leaveChat, new LeaveChatRequest(chatId, userId), onSuccess, onError);
+    public static Task createLeaveChatTask(UserVo user, ChatVo chat, Consumer<SuccessResponse> onSuccess, Consumer<ErrorVo> onError) {
+        return createTask(ClientApp.getRegistry().getChatService()::leaveChat, new LeaveChatRequest(chat.getId(), user.getId()), onSuccess, onError);
     }
 
-    //
     public static Task createDownloadFileTask(ChatEventVo event, Consumer<DownloadedFile> onSuccess, Consumer<ErrorVo> onError) {
         return createTask(ClientApp.getRegistry().getChatService()::downloadFile, new DownloadFileRequest(event), onSuccess, onError);
     }

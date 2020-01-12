@@ -31,7 +31,8 @@ public class HboxControl extends HBox {
     @FXML
     private final Label label;
 
-    public HboxControl(String imageName, String labelText, Color textColor, Color backgroundColor) {
+    public HboxControl(String imageName, String labelText, Color textColor, int fontSize, Color backgroundColor, double w, double h) {
+        super();
         FXMLLoader fxmlLoader = FXMLUtils.createFXMLLoader("hboxControl");
         fxmlLoader.setRoot(this);
         fxmlLoader.setController(this);
@@ -42,12 +43,14 @@ public class HboxControl extends HBox {
             throw new RuntimeException(exception);
         }
         this.imageView = createImage(imageName);
-        this.label = createLabel(labelText, textColor);
-        Region region = new Region();
-        HBox.setHgrow(region, Priority.ALWAYS);
+        this.label = createLabel(labelText, textColor, fontSize);
+        setWidth(w);
+        setHeight(h);
         setAlignment(Pos.CENTER_LEFT);
-        setBackground(new Background(new BackgroundFill(backgroundColor, CornerRadii.EMPTY, Insets.EMPTY)));
-        getChildren().addAll(imageView, label, region);
+     //   setBackground(new Background(new BackgroundFill(backgroundColor, CornerRadii.EMPTY, Insets.EMPTY)));
+        HBox hBox = new HBox();
+        setHgrow(label, Priority.ALWAYS);
+        getChildren().addAll(imageView, label);
     }
 
     private ImageView createImage(String imageName) {
@@ -58,10 +61,10 @@ public class HboxControl extends HBox {
         return imgView;
     }
 
-    private Label createLabel(String labelText, Color color) {
+    private Label createLabel(String labelText, Color color, int fontSize) {
         Label newLabel = new Label(labelText);
         newLabel.setAlignment(Pos.CENTER_LEFT);
-        newLabel.setFont(new Font("Verdana", 28));
+        newLabel.setFont(new Font("Verdana", fontSize));
         newLabel.setTextAlignment(TextAlignment.CENTER);
         newLabel.setTextFill(color);
         return newLabel;

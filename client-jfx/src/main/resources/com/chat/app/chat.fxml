@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import java.net.URL?>
+<?import javafx.scene.Group?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.Label?>
@@ -163,17 +164,21 @@
                         </ScrollPane>
                     </children>
                 </VBox>
-                <Button fx:id="leaveChatBtn" layoutX="272.0" layoutY="47.0" mnemonicParsing="false" onMouseClicked="#onLogoutButtonClick" prefHeight="32.0" prefWidth="120.0" style="-fx-background-color: #993333;" text="Leave chat" textAlignment="CENTER" textFill="WHITE">
-                    <font>
-                        <Font size="16.0" />
-                    </font>
-                </Button>
-                <TextField fx:id="addFriendTextField" layoutX="399.0" layoutY="50.0" prefHeight="26.0" prefWidth="130.0" promptText="Friend name:" stylesheets="@../styles/chat.css" />
-                <Button fx:id="addFriendToChatButton" layoutX="537.0" layoutY="47.0" mnemonicParsing="false" onMouseClicked="#onLogoutButtonClick" prefHeight="32.0" prefWidth="120.0" style="-fx-background-color: #993333;" text="Add friend" textAlignment="CENTER" textFill="WHITE">
-                    <font>
-                        <Font size="16.0" />
-                    </font>
-                </Button>
+            <Group fx:id="groupChatExtraControl" layoutX="272.0" layoutY="47.0">
+               <children>
+                      <Button fx:id="leaveChatBtn" mnemonicParsing="false" onMouseClicked="#onLeaveChatButtonClick" prefHeight="32.0" prefWidth="120.0" style="-fx-background-color: #993333;" text="Leave chat" textAlignment="CENTER" textFill="WHITE">
+                          <font>
+                              <Font size="16.0" />
+                          </font>
+                      </Button>
+                      <TextField fx:id="addFriendTextField" layoutX="127.0" layoutY="3.0" prefHeight="26.0" prefWidth="130.0" promptText="Friend name:" stylesheets="@../styles/chat.css" />
+                      <Button fx:id="addFriendToChatButton" layoutX="265.0" mnemonicParsing="false" onMouseClicked="#onAddFriendButtonClick" prefHeight="32.0" prefWidth="120.0" style="-fx-background-color: #993333;" text="Add friend" textAlignment="CENTER" textFill="WHITE">
+                          <font>
+                              <Font size="16.0" />
+                          </font>
+                      </Button>
+               </children>
+            </Group>
             </children>
         </AnchorPane>
     </children>

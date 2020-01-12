@@ -1,6 +1,7 @@
 package com.chat.controller.chat;
 
 import com.chat.app.GUIApp;
+import com.chat.messaging.message.SuccessResponse;
 import com.chat.messaging.vo.ChatVo;
 import com.chat.messaging.vo.ChatTypeVo;
 import com.chat.messaging.vo.ParticipantVo;
@@ -23,12 +24,9 @@ import com.chat.messaging.vo.FriendRequestVo;
 import com.chat.task.TaskFactory;
 import com.chat.task.TaskManager;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -42,17 +40,15 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
+import javafx.scene.Group;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ContextMenu;
@@ -63,6 +59,8 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
@@ -129,7 +127,7 @@ public class ChatController implements Initializable {
     private ListView<HBox> chatPanel;
 
     @FXML
-    private Button leaveChatBtn;
+    private Group groupChatExtraControl;
 
     @FXML
     private TextField searchBar;
@@ -138,13 +136,18 @@ public class ChatController implements Initializable {
     private TextField groupChatName;
 
     @FXML
+    private TextField addFriendTextField;
+
+    @FXML
     private TextArea messageBox;
 
     private final DateFormat dateFormater = new SimpleDateFormat("HH:mm:ss");
 
     private final Map<Long, ChatVo> chats = new HashMap<>();
 
-    private final Map<Long, ChatVo> friendChats = new HashMap<>();
+    private final Map<Long, ChatVo> privateChatsByFriendId = new HashMap<>();
+
+    private final Map<String, UserVo> friendsMapByFriendName = new HashMap<>();
 
     private ChatVo currentChat;
 
@@ -195,7 +198,7 @@ public class ChatController implements Initializable {
             changeStatus(newValue.getUserStatus());
         });
 
-        leaveChatBtn.setVisible(false);
+        groupChatExtraControl.setVisible(false);
         // TODO
     }
 
@@ -232,6 +235,22 @@ public class ChatController implements Initializable {
     @FXML
     private void onLogoutButtonClick() {
         logout();
+    }
+
+    @FXML
+    private void onLeaveChatButtonClick() {
+        leaveChat();
+    }
+
+    @FXML
+    private void onAddFriendButtonClick() {
+        String friendName = addFriendTextField.getText();
+        UserVo friend = friendsMapByFriendName.get(friendName);
+        if (friend != null) {
+            addFriendToChat(friend);
+            return;
+        }
+        setMessage("Not found friend by that name " + friendName);
     }
 
     // Service task methods
@@ -387,13 +406,14 @@ public class ChatController implements Initializable {
                 }));
     }
 
-    private void acceptFriendRequest(FriendRequestVo friendRequest, int cellIndex) {
-        TaskManager.executeTask(TaskFactory.createAcceptFriendRequestTask(
-                friendRequest,
+    private void acceptFriendRequest(FriendRequestVo friendRequest) {
+        TaskManager.executeTask(TaskFactory.createAcceptFriendRequestTask(friendRequest,
                 (ChatResponse rsp) -> {
-                    friendChats.put(friendRequest.getSender().getId(), rsp.getChat());
-                    friendsList.getItems().add(friendRequest.getSender());
-                    sendRequestsList.getItems().remove(cellIndex);
+                    UserVo sender = friendRequest.getSender();
+                    privateChatsByFriendId.put(sender.getId(), rsp.getChat());
+                    friendsMapByFriendName.put(sender.getUsername(), sender);
+                    friendsList.getItems().add(sender);
+                    sendRequestsList.getItems().remove(friendRequest);
                 },
                 (errorResponse) -> {
                     setMessage(errorResponse.getMessage());
@@ -433,15 +453,41 @@ public class ChatController implements Initializable {
                 }));
     }
 
+    private void leaveChat() {
+
+        TaskManager.executeTask(TaskFactory.createLeaveChatTask(
+                currentUser, currentChat,
+                (SuccessResponse rsp) -> {
+
+                },
+                (errorResponse) -> {
+                    setMessage(errorResponse.getMessage());
+                }));
+    }
+
+    private void addFriendToChat(UserVo friend) {
+        TaskManager.executeTask(TaskFactory.createAddFriendToChatTask(
+                currentUser, friend, currentChat,
+                (ChatResponse rsp) -> {
+                    ChatVo chat = rsp.getChat();
+                    chats.put(chat.getId(), chat);
+                    selectChat(chat, true);
+                },
+                (errorResponse) -> {
+                    setMessage(errorResponse.getMessage());
+                }));
+    }
+
     // Help methods
-    private void saveFile(ChatEventVo c, byte[] fileBytes)  {
+    private void saveFile(ChatEventVo c, byte[] fileBytes) {
         fileChooser.setInitialFileName(c.getMessage());
         File file = fileChooser.showSaveDialog(GUIApp.stage);
         if (file != null) {
             try {
                 Files.write(file.toPath(), fileBytes);
             } catch (IOException ex) {
-                Logger.getLogger(ChatController.class.getName()).log(Level.SEVERE, null, ex);
+                setMessage(ex.getMessage());
+                LOGGER.log(Level.SEVERE, null, ex);
             }
         }
     }
@@ -483,7 +529,8 @@ public class ChatController implements Initializable {
                 continue;
             }
             UserVo friend = findFriend(chat, currentUserId).getUser();
-            friendChats.put(friend.getId(), chat);
+            privateChatsByFriendId.put(friend.getId(), chat);
+            friendsMapByFriendName.put(friend.getUsername(), friend);
             friends.add(friend);
         }
         groupChatsList.setItems(FXCollections.observableArrayList(groupChats));
@@ -499,14 +546,14 @@ public class ChatController implements Initializable {
     }
 
     private void selectChat(UserVo friend) {
-        selectChat(friendChats.get(friend.getId()), false);
+        selectChat(privateChatsByFriendId.get(friend.getId()), false);
     }
 
     private void selectChat(ChatVo chat, boolean isLeaveChatBtnVisible) {
         currentChat = chat;
         participantsList.setItems(FXCollections.observableArrayList(chat.getParticipants()));
         loadLastTenEvents(chat);
-        leaveChatBtn.setVisible(isLeaveChatBtnVisible);
+        groupChatExtraControl.setVisible(isLeaveChatBtnVisible);
     }
 
     private void setChatHistory(List<ChatEventVo> history) {
@@ -552,7 +599,7 @@ public class ChatController implements Initializable {
 
     private Label createLabel(String labelText, Color color, int fontSize) {
         Label newLabel = new Label(labelText);
-        newLabel.setAlignment(Pos.CENTER_RIGHT);
+        newLabel.setAlignment(Pos.BOTTOM_LEFT);
         newLabel.setFont(new Font("Verdana", fontSize));
         newLabel.setTextAlignment(TextAlignment.CENTER);
         newLabel.setTextFill(color);
@@ -572,11 +619,8 @@ public class ChatController implements Initializable {
     private void initLists() {
         initUserSearchList();
         initFriendList();
-        initChatList(groupChatsList, null);
-        initChatList(chatSearchList,
-                (chat) -> {
-                    return null;
-                });
+        initGroupChatList();
+        initChatSearchList();
         initParticipantsList();
         initSendFriendRequestList();
         initMyFriendRequestList();
@@ -596,12 +640,12 @@ public class ChatController implements Initializable {
                     }
                     UserVo user = item.getUser();
                     setGraphic(
-                            new HboxControl("avatar.png", user.getUsername(), statusColorsMap.get(user.getStatus()), Color.BISQUE)
+                            new HBox(createImage("avatar.png"), createLabel(user.getUsername() + " " + item.getUserType().name(),
+                                    statusColorsMap.get(user.getStatus()), 16))
                     );
-
                 }
-
             };
+            cell.setAlignment(Pos.CENTER);
             return cell;
         });
     }
@@ -625,7 +669,7 @@ public class ChatController implements Initializable {
                         setContextMenu(createContextMenu(item,
                                 Arrays.asList("Accept request", "Decline request"),
                                 (it) -> {
-                                    acceptFriendRequest(item, getIndex());
+                                    acceptFriendRequest(item);
                                 },
                                 (it) -> {
                                     declineFriendRequest(item, getIndex());
@@ -640,10 +684,13 @@ public class ChatController implements Initializable {
         });
     }
 
-    private HboxControl createFriendHboxControl(FriendRequestVo frRequest) {
-        return new HboxControl("friend-request-icon.jpg",
-                frRequest.getSender().getUsername() + "(" + frRequest.getRequestStatus().name() + ")",
-                requestStatusColorsMap.get(frRequest.getRequestStatus()), Color.BISQUE);
+    private HBox createFriendHboxControl(FriendRequestVo frRequest) {
+        return new HBox(
+                createImage("friend-request-icon.jpg"),
+                createLabel(
+                        frRequest.getSender().getUsername() + "(" + frRequest.getRequestStatus().name() + ")",
+                        requestStatusColorsMap.get(frRequest.getRequestStatus()), 24)
+        );
     }
 
     private void initMyFriendRequestList() {
@@ -693,7 +740,7 @@ public class ChatController implements Initializable {
                         return;
                     }
                     setGraphic(
-                            new HboxControl("avatar.png", item.getUsername(), statusColorsMap.get(item.getStatus()), Color.BISQUE)
+                            new HBox(createImage("avatar.png"), createLabel(item.getUsername(), statusColorsMap.get(item.getStatus()), 24))
                     );
                     if (!isMyFriend(item)) {
                         setContextMenu(createContextMenu(item,
@@ -722,8 +769,11 @@ public class ChatController implements Initializable {
                         setContextMenu(null);
                         return;
                     }
+//                    setGraphic(
+//                            new HboxControl("avatar.png", item.getUsername(), statusColorsMap.get(item.getStatus()), 24, Color.BISQUE, getWidth(), getHeight())
+//                    );
                     setGraphic(
-                            new HboxControl("avatar.png", item.getUsername(), statusColorsMap.get(item.getStatus()), Color.BISQUE)
+                            new HBox(createImage("avatar.png"), createLabel(item.getUsername(), statusColorsMap.get(item.getStatus()), 24))
                     );
                 }
             };
@@ -733,13 +783,21 @@ public class ChatController implements Initializable {
                 }
             }
             );
-
+            cell.setAlignment(Pos.BASELINE_CENTER);
             return cell;
         });
     }
 
+    private ImageView createImage(String imageName) {
+        ImageView imgView = new ImageView();
+        imgView.setImage(new Image(HboxControl.class.getResourceAsStream("../../image/" + imageName)));
+        imgView.setFitHeight(50);
+        imgView.setFitWidth(50);
+        return imgView;
+    }
+
     private boolean isMyFriend(UserVo item) {
-        return friendChats.keySet().contains(item);
+        return privateChatsByFriendId.keySet().contains(item.getId());
     }
 
     private <T> ContextMenu createContextMenu(T value, List<String> menuItemsNames, final Consumer<T>... actions) {
@@ -755,25 +813,54 @@ public class ChatController implements Initializable {
         return menu;
     }
 
-    public static void initChatList(ListView<ChatVo> chatList, Function<ChatVo, ContextMenu> createContextMenu) {
-        chatList.setCellFactory(param -> new ListCell<ChatVo>() {
+    public void initChatSearchList() {
+        chatSearchList.setCellFactory(param -> new ListCell<ChatVo>() {
             @Override
             protected void updateItem(ChatVo item, boolean empty) {
                 super.updateItem(item, empty);
                 if (empty || item == null) {
                     setText(null);
                     setGraphic(null);
+                    setContextMenu(null);
                     return;
                 }
                 setGraphic(
-                        new HboxControl("group-chat-icon.png", item.getName(), Color.BLACK, Color.BISQUE)
+                        new HBox(createImage("group-chat-icon.png"), createLabel(item.getName(), Color.BLACK, 24))
                 );
-                if (createContextMenu != null) {
-                    setContextMenu(createContextMenu.apply(item));
-                    return;
-                }
-                setContextMenu(null);
+                setContextMenu(createContextMenu(item,
+                        Arrays.asList("Join to chat"),
+                        (it) -> {
+                            selectChat(it, empty);
+                        }));
             }
+        });
+    }
+
+    private void initGroupChatList() {
+        groupChatsList.setCellFactory(param -> {
+            ListCell<ChatVo> cell = new ListCell<ChatVo>() {
+                @Override
+                protected void updateItem(ChatVo item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty || item == null) {
+                        setText(null);
+                        setGraphic(null);
+                        setContextMenu(null);
+                        return;
+                    }
+                    setGraphic(
+                            new HBox(createImage("group-chat-icon.png"), createLabel(item.getName(), Color.BLACK, 24))
+                    );
+                }
+            };
+            cell.setOnMousePressed((MouseEvent event) -> {
+                if (!cell.isEmpty()) {
+                    selectChat(cell.getItem(), true);
+                }
+            }
+            );
+
+            return cell;
         });
     }
 
