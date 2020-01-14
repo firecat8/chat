@@ -44,27 +44,11 @@ public class UserDto extends AbstractDto {
     @Column(name = STATUS_TIME_COLUMN, nullable = false)
     private Long statusTime;
 
-//    @OneToMany(cascade = {CascadeType.ALL}, fetch = FetchType.EAGER, mappedBy = "user")
-//    private final Set<FriendRelationshipDto> friends = new HashSet<>();
     @ElementCollection
     @CollectionTable(name = "friends", joinColumns = @JoinColumn(name = "friend_id"))
     @Column(name = "USER_ID")
     protected Set<Long> friendsIdentifiers = new HashSet<>();
 
-    /*  @ManyToMany//(cascade = {CascadeType.ALL}, fetch = FetchType.EAGER)
-    @JoinTable(name = "friends",
-            joinColumns = {
-                @JoinColumn(name = "user_id")},
-            inverseJoinColumns = {
-                @JoinColumn(name = "friend_id")})
-    private final Set<UserDto> friends = new HashSet<>();
-
-    @ManyToMany//(mappedBy = "friends", fetch = FetchType.EAGER)
-    @JoinTable(name = "friends",
-            joinColumns = @JoinColumn(name = "friend_id"),
-            inverseJoinColumns = @JoinColumn(name = "user_id")
-    )
-    private final Set<UserDto> users = new HashSet<>();*/
     public UserDto() {
         // Hibernate
     }

@@ -458,7 +458,7 @@ public class ChatController implements Initializable {
         TaskManager.executeTask(TaskFactory.createLeaveChatTask(
                 currentUser, currentChat,
                 (SuccessResponse rsp) -> {
-
+                    selectChat(null, false);
                 },
                 (errorResponse) -> {
                     setMessage(errorResponse.getMessage());
@@ -551,9 +551,14 @@ public class ChatController implements Initializable {
 
     private void selectChat(ChatVo chat, boolean isLeaveChatBtnVisible) {
         currentChat = chat;
-        participantsList.setItems(FXCollections.observableArrayList(chat.getParticipants()));
-        loadLastTenEvents(chat);
         groupChatExtraControl.setVisible(isLeaveChatBtnVisible);
+        if (chat != null) {
+            participantsList.setItems(FXCollections.observableArrayList(chat.getParticipants()));
+            loadLastTenEvents(chat);
+            return;
+        }
+        participantsList.getItems().clear();
+        chatPanel.getItems().clear();
     }
 
     private void setChatHistory(List<ChatEventVo> history) {

@@ -32,7 +32,7 @@ public class ChatDto extends AbstractDto {
     @Column
     private ChatTypeDto type;
 
-    @OneToMany(cascade = {CascadeType.ALL}, fetch = FetchType.EAGER, mappedBy = "chat")
+    @OneToMany(cascade = {CascadeType.ALL},  mappedBy = "chat")
     private Set<ParticipantDto> participants = new HashSet<>();
 
     public ChatDto() {
@@ -43,14 +43,13 @@ public class ChatDto extends AbstractDto {
         this.name = name;
         this.type = type;
     }
-    
+
     public ChatDto(String name, ChatTypeDto type, ParticipantDto owner) {
         this.name = name;
         this.type = type;
         owner.setChat(this);
         this.participants.add(owner);
     }
-
 
     public String getName() {
         return name;
@@ -71,7 +70,8 @@ public class ChatDto extends AbstractDto {
     public void addParticipant(ParticipantDto participant) {
         this.participants.add(participant);
     }
-    public void addParticipants( Set<ParticipantDto> participants) {
+
+    public void addParticipants(Set<ParticipantDto> participants) {
         this.participants.addAll(participants);
     }
 

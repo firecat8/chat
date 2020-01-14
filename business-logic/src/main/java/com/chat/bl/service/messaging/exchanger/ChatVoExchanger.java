@@ -59,16 +59,20 @@ public class ChatVoExchanger extends VoEntityExchanger<ChatVo, Chat> {
     }
     
     private Participant exchangeFrom(ParticipantVo vo) {
-        return new Participant(
+        Participant participant = new Participant(
                 UserVoExchanger.INSTANCE.exchange(vo.getUser()),
                 ChatUser.valueOf(vo.getUserType().name())
         );
+        participant.setId(vo.getId());
+        return participant;
     }
     
     private ParticipantVo exchangeFrom(Participant e) {
-        return new ParticipantVo(
+        ParticipantVo participantVo = new ParticipantVo(
                 UserVoExchanger.INSTANCE.exchange(e.getUser()),
                 ChatUserVo.valueOf(e.getUserType().name())
         );
+        participantVo.setId(e.getId());
+        return participantVo;
     }
 }

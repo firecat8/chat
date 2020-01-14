@@ -1,5 +1,6 @@
 package com.chat.persistence.dto;
 
+import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -71,6 +72,39 @@ public class ParticipantDto extends AbstractDto {
 
     public void setChat(ChatDto chat) {
         this.chat = chat;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 67 * hash + Objects.hashCode(this.user);
+        hash = 67 * hash + Objects.hashCode(this.userType);
+        hash = 67 * hash + Objects.hashCode(this.chat);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final ParticipantDto other = (ParticipantDto) obj;
+        if (!Objects.equals(this.user, other.user)) {
+            return false;
+        }
+        if (this.userType != other.userType) {
+            return false;
+        }
+        if (!Objects.equals(this.getId(), other.getId())) {
+            return false;
+        }
+        return Objects.equals(this.chat, other.chat);
     }
 
 }
